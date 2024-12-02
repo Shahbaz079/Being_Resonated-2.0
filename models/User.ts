@@ -1,0 +1,20 @@
+import mongoose from 'mongoose'
+
+const userSchema=new mongoose.Schema({
+  firstName:{type:String,required:true},
+  lastName:{type:String,required:true},
+  email:{type:String,required:true},
+  password:{type:String,select:false},
+  image:{type:String,required:false},
+  interests:[{type:String,required:false}],
+  teams:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Team"}],
+  assignedWorks: [ {
+     work: { type: String, required: false },
+     completionDate:{type:Date,required:true},
+     team: { type:mongoose.Schema.Types.ObjectId, ref: 'Team', required: true } }],
+  role:{type:String,default:'user'},
+  authProviderId:{type:String},
+
+},{timestamps:true})
+
+export const User=mongoose.models?.User || mongoose.model("User",userSchema);
