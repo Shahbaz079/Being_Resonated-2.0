@@ -7,6 +7,9 @@ import {hash} from "bcryptjs";
 import { CredentialsSignin } from "next-auth";
 import { signIn } from "@/auth";
 
+
+ 
+
 const signGithub=async ()=>{
   
    await signIn("github")
@@ -70,5 +73,12 @@ const login=async(formData:FormData)=>{
        redirect("/")
 
   }
+
+
+ 
+
+ 
+
+  
 
   export {register,login,signGithub,signGoogle}
