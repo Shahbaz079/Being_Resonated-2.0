@@ -51,14 +51,14 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
     return <>
     <div className="">Loading....</div>
     </>
-  }
+  } 
  
 
 
   return (<div className="mainContainer">
     
     <div className=" text-gray-300 cardContainer" style={{"--quantity":3}} >
-      <div style={{"--position":1}} className="cards w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-gradient-start to-gradient-end rounded-xl  flex flex-col justify-center">
+      <div style={{"--position":1}} className="cards w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl  flex flex-col justify-center z-50">
         <h1 className="text-center text-[#9e8e9af8] text-2xl font-semibold italic">Personal Details</h1>
 
         <div className="h-[75%] flex flex-col justify-start align-middle text-lg">
@@ -76,7 +76,7 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
 
       </div>
 
-      <div style={{"--position":2}} className="cards w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#f2a4a4] to-[#848383] rounded-xl  flex flex-col justify-center">
+      <div style={{"--position":2}} className="cards   w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#f2a4a4] to-[#848383] rounded-xl  flex flex-col justify-center z-40">
         <h1 className="text-center text-[#9e8e9af8] text-2xl font-semibold italic">Teams</h1>
 
         <div className="h-[75%] flex flex-col justify-start align-middle text-lg">
@@ -94,7 +94,7 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
 
       </div>
 
-      <div style={{"--position":3}} className="cards w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#09b9b6] to-[#2f4a4b] rounded-xl  flex flex-col justify-center">
+      <div style={{"--position":3}} className="cards w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#09b9b6] to-[#2f4a4b] rounded-xl  flex flex-col justify-center z-0">
         <h1 className="text-center text-[#9e8e9af8] text-2xl font-semibold italic">Assigned Works</h1>
 
         <div className="h-[75%] flex flex-col justify-start align-middle text-lg">

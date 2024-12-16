@@ -12,6 +12,7 @@
 
 .cardContainer {
   position: absolute;
+  bottom: 15%;
   left: 10%;
   width: 50vw;
   height: 80vh;
@@ -20,31 +21,34 @@
   transition: transform 1s, width 1s, height 1s, left 1s;
 }
 
-.cardContainer:hover {
+.mainAnimation {
   animation: sideFlip 0.1s linear forwards;
 }
 
 @keyframes sideFlip {
   from {
+    bottom: 15%;
     width: 50vw;
     height: 80vh;
     left: 10%;
     transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
   }
   to {
+    bottom: 4%;
     width: 40vw;
-    height: 60vh;
-    left: 20%;
-    transform: perspective(20000px) rotateY(-30deg)rotateX(-40deg);
+    height: 70vh;
+    left: 5%;
+    transform: perspective(20000px) rotateY(30deg)rotateX(40deg);
   }
 }
 
 .cards {
   position: absolute;
   inset: 0 0 0 0;
-  transition: transform 1s;
+  transition: transform 0.1s;
 }
 
-.cardContainer:hover .cards {
+
+.cardAnimation {
   transform: translateZ(calc((300px / var(--quantity)) * var(--position)));
 }
