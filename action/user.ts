@@ -46,9 +46,9 @@ const login=async(formData:FormData)=>{
 }
 
   const register=async(formData:FormData)=>{
-       const firstName=formData.get('firstname') as string
+       const name=formData.get('name') as string
        
-       const lastName=formData.get('lastname') as string
+     
        
        const email=formData.get('email') as string
        
@@ -57,7 +57,7 @@ const login=async(formData:FormData)=>{
        const confirmPassword=formData.get('confirmPassword') as string
 
        
-       if(!firstName||!lastName||!email||!password ||!confirmPassword){
+       if(!name||!email||!password ||!confirmPassword){
           throw new Error("Please Fill all the details")
        }
 
@@ -67,7 +67,7 @@ const login=async(formData:FormData)=>{
 
        const hashedPassword=await hash(password,10)
 
-       await User.create({firstName,lastName,email,password:hashedPassword});
+       await User.create({name,email,password:hashedPassword});
        
        console.log("user craeted successfully");
        redirect("/")

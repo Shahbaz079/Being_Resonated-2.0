@@ -1,46 +1,78 @@
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
+import { signOut } from "@/auth";
+
 
 const Ring = () => {
 
   useEffect(() => { 
-    const hoverElements = document.querySelectorAll('.one, .two, .three');
-     const targetElement1 = document.querySelector('.cardContainer');
+    const hoverElements = document.querySelector('.one') as HTMLElement;
+     const targetElement1 = document.querySelector('.cardContainer') as HTMLElement;
       const targetElements2 = document.querySelectorAll('.cards');
        const onMouseEnter = () => { 
-        console.log('Mouse enter'); 
+         
         targetElement1.classList.add('mainAnimation');
          targetElements2.forEach(element => { element.classList.add('cardAnimation'); }); }; 
          
          const onMouseLeave = () => { 
-          console.log('Mouse leave');
+          
            targetElement1.classList.remove('mainAnimation'); 
            targetElements2.forEach(element => { element.classList.remove('cardAnimation'); }); };
             // Add event listeners if elements are found 
-             if (hoverElements.length && targetElement1 && targetElements2.length) {
-               hoverElements.forEach(hoverElement => { hoverElement.addEventListener('mouseenter', onMouseEnter);
-                 hoverElement.addEventListener('mouseleave', onMouseLeave); }); } 
+             if (hoverElements && targetElement1 && targetElements2.length) {
+                hoverElements.addEventListener('mouseenter', onMouseEnter);
+                 hoverElements.addEventListener('mouseleave', onMouseLeave); } 
                  // Cleanup event listeners on component unmount
-                   return () => { hoverElements.forEach(hoverElement => { hoverElement.removeEventListener('mouseenter', onMouseEnter); hoverElement.removeEventListener('mouseleave', onMouseLeave); }); };
+                   return () => {
+                     hoverElements.removeEventListener('mouseenter', onMouseEnter); hoverElements.removeEventListener('mouseleave', onMouseLeave); ; };
   },[])
+
+const [peakPosition,setPeakPosition]=useState("pCard");
+
+const changePosition=(cardname :string):void=>{
+
+const targetCard=document.querySelector(`.${cardname}`) as HTMLElement;
+const initialPeak=document.querySelector(`.${peakPosition}`) as HTMLElement;
+if(targetCard){
+  const computedStyle=getComputedStyle(targetCard);
+  const computedStyleZ=getComputedStyle(initialPeak);
+
+  const currentZ = computedStyle.getPropertyValue('z-index');
+  const initialZ=computedStyleZ.getPropertyValue('z-index');
+
+  
+  const currentPosition=computedStyle.getPropertyValue('--position');
+  setPeakPosition(`${cardname}`)
+
+  targetCard.style.setProperty('--position','3');
+  targetCard.style.setProperty('z-index',`${initialZ}`);
+  
+  initialPeak.style.setProperty('--position',`${currentPosition}`)
+  initialPeak.style.setProperty('z-index',`${currentZ}`);
+
+
+
+  
+}
+
+}
+; 
+const handleLogout = () => { signOut({ callbackUrl: '/login',
+   // Redirect to the login page after logout
+    }); };
+
+
   return (
     <div className='w-[50vw] absolute right-[10%] left-[50vw] h-[80vh] '>
 
-      <div className="absolute right-[25%] top-[25%] bg-slate-600  w-[55%] h-[75%] rounded-[10000px]">
-        <div className="bg-black absolute right-[5%] top-[5%] rounded-full w-[90%] h-[90%]">
+      <div className="one absolute right-[25%] top-[20%] bg-slate-600  w-[60%] h-[90%] rounded-[10px]">
 
-          <div className="one bg-slate-600 absolute w-[25%] h-[25%] top-[-15%] left-[38%] rounded-full">P</div>
-
-
-          <div className="center bg-slate-600 absolute w-[50%] h-[50%] top-[25%] left-[25%] rounded-full">
-
-          </div>
-
-          <div className="two bg-slate-600 absolute w-[25%] h-[25%] top-[65%] left-[-5%] rounded-full">W</div>
-
-
-           <div className= " three bg-slate-600 absolute w-[25%] h-[25%] top-[65%] right-[-5%] rounded-full">T</div>
-
-        </div>
+        <button onClick={()=>changePosition("pCard")} className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">Personal Details</button>
+        <button onClick={()=>changePosition("tCard")}  className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">Teams</button>
+        <button onClick={()=>changePosition("wCard")}  className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">Assigned Works</button>
+      
+      <button onClick={()=>handleLogout()} className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">LogOut</button>
+      
+        
       </div>
     </div>
   )

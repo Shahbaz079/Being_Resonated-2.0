@@ -2,7 +2,7 @@
 const Academics = () => {
   return (
     <div>
-        Academics      
+       <div className="relative w-[70vw] h-[70vh] top-0 left-0 bg-[#b53c3c]"></div> 
     </div>
   )
 }

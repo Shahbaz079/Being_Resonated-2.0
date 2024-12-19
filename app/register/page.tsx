@@ -27,17 +27,12 @@ const  Register=async()=> {
       <form className="my-8" action={register}>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
           <div>
-            <label htmlFor="firstname">First name</label>
-            <Input id="firstname" placeholder="Tyler" 
-            name="firstname"
+            <label htmlFor="name">Username</label>
+            <Input id="name" placeholder="Tyler" 
+            name="name"
             type="text" />
           </div>
-          <div>
-            <label htmlFor="lastname">Last name</label>
-            <Input id="lastname" placeholder="Durden" 
-            name="lastname"
-            type="text" />
-          </div>
+         
         </div>
         <div className="mb-4">
           <label htmlFor="email">Email Address</label>
