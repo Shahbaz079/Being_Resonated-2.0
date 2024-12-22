@@ -41,35 +41,49 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
 
     const [edit,setEdit]=useState<boolean>(false);
 
- useEffect(() => { if ((status === 'authenticated' && session?.user?.id !== id) ) {
-     redirect('/'); 
-    
-    } else if (id) { 
+    const redirectIfUnauthenticated = () =>
+       { if (status === 'authenticated' && session?.user?.id !== id) { 
+        redirect('/'); } };
 
-
-      fetch(`/api/user/${id}`)  
-      .then(response => response.json()) 
-      .then(data => {setUser(data)
-            setName(data.name || ""); 
-           
-            setEmail(data.email || ""); 
-            setInterests(data.interests || []);
-             setTeams(data.teams || []);
-             setAssignedWorks(data.assignedWorks || []);
-             setBirthDate(data.dob || "")
-             setGradYear(data.gradYear || "")
-             
-
-      }) 
-      .catch(error => console.error('Error fetching user:', error)); } },
-       [status, session, id]);
+        const fetchTeamData = async (teamId: string) => {
+            try { 
+              const response = await fetch(`/api/team/${teamId}`);
+                const data = await response.json(); 
+                setTeams(data); 
+                console.log(data);
+              } catch (error) { 
+                console.error('Error fetching team:', error); } };
+        
+        
+        const fetchUserData = async (userId: string) => { 
+          try { const response = await fetch(`/api/user/${userId}`);
+             const data = await response.json(); 
+             setUser(data);
+              setName(data.name || ""); 
+              setEmail(data.email || ""); 
+              setInterests(data.interests || []); 
+              setTeams(data.teams || []); 
+              setAssignedWorks(data.assignedWorks || []); 
+              setBirthDate(data.dob || "");
+               setGradYear(data.gradYear || ""); 
+              } catch (error) { 
+                console.error('Error fetching user:', error); } };
+                
+                useEffect(() => {
+                   redirectIfUnauthenticated(); 
+                   if (id) { fetchUserData(id);
+                    fetchTeamData(id);
+                    }
+                  
+                  },
+                    [status, session, id]); 
   
   
 
        
         const [inputValue, setInputValue] = useState<string>('');
 
-        const predefinedOptions = [ 'Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models' ]; 
+        const predefinedOptions = [ 'Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models',"coding","Music","Travel","Content Creation","Social Media Influencing","Enterprenuership","Socail Activity","Body Building","Robotics","Cooking" ]; 
         const handleAddOption = (option: string) => {
            if (!interests.includes(option)) { 
             setInterests([...interests, option]); } };
@@ -204,12 +218,15 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
         <div className="w-[90%] h-[90%] p-3 flex flex-col ">
          {
           teams.map((team)=>(
-            <div className="w-[100%] h-8 rounded-[5px] text-center" key={team.name}>{team.name}</div>
+            <div className="w-[100%] h-8 rounded-[5px] text-center bg-neutral-500 rounded-full py-2 my-2" key={team.name}>{team.name}</div>
           ))
          }
+         <Link href={`/becommunity`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
+         <Link href={`/teamcreate?id=${id}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
         </div>
        ):(<>
-         <Link href={`/explore?id=${id}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
+         <Link href={`/becommunity`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
+         <Link href={`/teamcreate?id=${id}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
        </>)}
         
 

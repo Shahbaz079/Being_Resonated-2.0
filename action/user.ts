@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import {hash} from "bcryptjs";
 import { CredentialsSignin } from "next-auth";
 import { signIn } from "@/auth";
+import mongoose, { Schema,connect } from "mongoose";
 
 
  
@@ -45,6 +46,9 @@ const login=async(formData:FormData)=>{
 
 }
 
+
+
+
   const register=async(formData:FormData)=>{
        const name=formData.get('name') as string
        
@@ -75,10 +79,51 @@ const login=async(formData:FormData)=>{
   }
 
 
+  const people = async (id: string
+  ): Promise<any[]> => { 
+    await connectDB(); 
+    const existingUser = await User.findById(id);
+     if (!existingUser) { 
+      throw new Error('User not found'); } 
+      const referenceArray = existingUser.interests;
+       const users = await User.find({}); 
+       const matchCount = (arr: string[]) => arr.filter(element => referenceArray.includes(element)).length;
+       const sortedUsers= users.sort((a, b) => matchCount(b.interests) - matchCount(a.interests));
+
+       const plainUsers = sortedUsers.map(user => {
+         const plainUser = user.toObject();
+          plainUser._id = plainUser._id.toString();
+           plainUser.teams = plainUser.teams?.map((teamId: mongoose.Types.ObjectId) => teamId.toString()); 
+           plainUser.assignedWorks = plainUser.assignedWorks?.map((work: any) => ({ ...work, team: work.team.toString() }));
+           return plainUser; });
+
+
+      return plainUsers;
+      }
+     
+
+      const currentPerson = async (id: string
+      ): Promise<any> => { 
+        await connectDB(); 
+        const existingUser = await User.findById(id);
+         if (!existingUser) { 
+          throw new Error('User not found'); } 
+          
+           
+             const plainUser = existingUser.toObject();
+              plainUser._id = plainUser._id.toString();
+               plainUser.teams = plainUser.teams?.map((teamId: mongoose.Types.ObjectId) => teamId.toString()); plainUser.assignedWorks = plainUser.assignedWorks?.map((work: any) => ({ ...work, team: work.team.toString() }));
+               
+    
+    
+          return plainUser;
+          }
+         
+
  
 
  
 
   
 
-  export {register,login,signGithub,signGoogle}
+  export {register,login,signGithub,signGoogle,people,currentPerson}
