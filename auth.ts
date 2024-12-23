@@ -1,4 +1,6 @@
-'use server'
+{/*
+  
+  'use server'
 import NextAuth, { CredentialsSignin } from "next-auth"
 import Credentials from "next-auth/providers/credentials" 
 import connectDB from "./config/db";
@@ -115,3 +117,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }
   }
 })
+
+
+
+*/}

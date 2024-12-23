@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./styles/globals.css";
 import "./styles/profilepage.css"
 import { SessionProvider } from "next-auth/react"
+import { ClerkProvider } from "@clerk/nextjs";
 
 
 const geistSans = localFont({
@@ -28,6 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider>
     <html lang="en" className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
@@ -41,5 +43,6 @@ export default function RootLayout({
       
       </body>
     </html>
+    </ClerkProvider>
   );
 }

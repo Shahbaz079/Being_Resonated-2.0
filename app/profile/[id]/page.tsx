@@ -104,7 +104,7 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
               "content-Type":'application/json',
             },
             body:JSON.stringify({
-              gradYear:gradYear,
+              gradYear:gradYear, //edit it carefully
               interests:interests,
               dob:birthDate,
             })

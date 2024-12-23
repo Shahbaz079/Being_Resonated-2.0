@@ -3,10 +3,11 @@
 import SimPeople from "@/components/commonPeople/SimPeople"
 import { useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
+import { useAuth } from "@clerk/nextjs"
 
 const BeCommunity = () => {
-const {data:session}=useSession();
-  if(!session?.user?.id){
+const {userId}=useAuth();
+  if(!userId){
     redirect('/login');
  }
   return (

@@ -137,7 +137,7 @@ const register = async (formData: FormData) => {
 
   
 
-   */  }
+ 
 
    import { redirect } from 'next/navigation';
 
@@ -211,4 +211,4 @@ const register = async (formData: FormData) => {
     }
   };
   
-  export {register,login,signGithub,signGoogle} ;
+  export {register,login,signGithub,signGoogle} ;  */  }

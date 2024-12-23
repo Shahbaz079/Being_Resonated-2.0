@@ -1,4 +1,5 @@
 import { useEffect,useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 
 
 
@@ -58,19 +59,11 @@ if(targetCard){
 ; 
 
 const handleLogout = async () => {
-   try { const response = await fetch('/api/auth/logout', { 
-    method: 'POST'
-   });
-   
-   const result = await response.json();
-    if (response.ok) { 
-      console.log(result.message); 
-      window.location.href = '/login';
-     } else { 
-      console.error('Error logging out:', result.message); } 
-    } catch (error) { 
-      console.error('Error logging out:', error); 
-    } }
+   const {signOut}=useAuth();
+   useEffect(() => {
+    signOut({redirectUrl: '/'});
+   }, [signOut]);
+     }
 
 
   return (
