@@ -1,5 +1,5 @@
 import { useEffect,useState } from "react";
-import { signOut } from "@/auth";
+
 
 
 const Ring = () => {
@@ -56,9 +56,21 @@ if(targetCard){
 
 }
 ; 
-const handleLogout = () => { signOut({ callbackUrl: '/login',
-   // Redirect to the login page after logout
-    }); };
+
+const handleLogout = async () => {
+   try { const response = await fetch('/api/auth/logout', { 
+    method: 'POST'
+   });
+   
+   const result = await response.json();
+    if (response.ok) { 
+      console.log(result.message); 
+      window.location.href = '/login';
+     } else { 
+      console.error('Error logging out:', result.message); } 
+    } catch (error) { 
+      console.error('Error logging out:', error); 
+    } }
 
 
   return (
