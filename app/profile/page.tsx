@@ -9,6 +9,7 @@ import { use } from "react";
 import { ObjectId } from "mongoose";
 import Link from "next/link";
 import { MdOutlineModeEditOutline } from "react-icons/md";
+import { useSearchParams } from "next/navigation";
 
 
 interface Team { 
@@ -21,9 +22,11 @@ interface Team {
    createdAt?: Date; 
    updatedAt?: Date;}
 
-const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
-  const unwrappedParams = use(params)  // Unwrap the promise 
-  const { id } = unwrappedParams;
+const ProfilePage = () => {
+ 
+
+  const searchParams = useSearchParams();
+      const id = searchParams.get('id') as string;
 
   const {data:session,status}=useSession();
 

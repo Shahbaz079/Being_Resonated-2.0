@@ -13,7 +13,7 @@ const [isHovered,setIsHovered]=useState(false);
 
   return (
     <div className={`bg-[#3498db] mx-5 rounded-full transition-[width] ease duration-300 ${isHovered?"w-[120px]":"w-[40px] "} h-[40px]   `}  onMouseEnter={()=>{setIsHovered(true)}} onMouseLeave={()=>{setIsHovered(false)}}>
-    {isHovered ? ( user ? ( <Link className="relative left-6 top-2 text-pretty " href={`/profile/${user.id}`}>{user.firstName} </Link> ) : ( <Link href="/login"> Login</Link> ) ) :null }
+    {isHovered ? ( user ? ( <Link className="relative left-6 top-2 text-pretty " href={`/profile?id=${user.id}`}>{user.firstName} </Link> ) : ( <Link href="/login"> Login</Link> ) ) :null }
     </div>
   )
 }
