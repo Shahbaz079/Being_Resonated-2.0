@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "install:legacy": "npm install --legacy-peer-deps",
-    "uninstall:legacy": "npm uninstall --legacy-peer-deps",
-    "add:legacy": "npm install --legacy-peer-deps",
+    
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -24,6 +22,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.4.0",
+    "react-toast": "^1.0.3",
     "tailwind-merge": "^2.5.5"
   },
   "devDependencies": {
