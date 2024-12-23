@@ -134,9 +134,9 @@ const ProfilePage = () => {
 
   return (<div className="mainContainer">
     
-    <div className=" text-gray-300 cardContainer" style={{"--quantity":3}} >
+    <div className=" text-gray-300 cardContainer" style={{"--quantity":3} as React.CSSProperties} >
      
-      <div style={{"--position":3}} className="cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl  flex flex-col justify-center z-20">
+      <div style={{"--position":3} as React.CSSProperties} className="cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl  flex flex-col justify-center z-20">
 
 
       <button onClick={()=>setEdit(true)} className={`${edit?"hidden":""} absolute top-1 right-2 w-8 h-8 bg-slate-500 rounded-full`}>
@@ -215,7 +215,7 @@ const ProfilePage = () => {
        
       </div>
 
-      <div style={{"--position":2}} className="cards tCard  w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#f2a4a4] to-[#848383] rounded-xl  flex flex-col justify-center z-10">
+      <div style={{"--position":2} as React.CSSProperties} className="cards tCard  w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#f2a4a4] to-[#848383] rounded-xl  flex flex-col justify-center z-10">
        {teams.length?(
         <div className="w-[90%] h-[90%] p-3 flex flex-col ">
          {
@@ -234,7 +234,7 @@ const ProfilePage = () => {
 
       </div>
 
-      <div style={{"--position":1}} className="cards wCard w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#09b9b6] to-[#2f4a4b] rounded-xl  flex flex-col justify-center z-0">
+      <div style={{"--position":1} as React.CSSProperties} className="cards wCard w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#09b9b6] to-[#2f4a4b] rounded-xl  flex flex-col justify-center z-0">
         <h1 className="text-center text-[#9e8e9af8] text-2xl font-semibold italic">Assigned Works</h1>
 
         <div className="h-[75%] flex flex-col justify-start align-middle text-lg">
