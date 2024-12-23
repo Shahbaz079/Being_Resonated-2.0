@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Input } from '@/components/signup/input';
-import { IconBrandGithub, IconBrandGoogle, IconBrandOnlyfans } from '@tabler/icons-react';
+import {  IconBrandGoogle, IconBrandOnlyfans } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 

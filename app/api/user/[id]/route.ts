@@ -20,17 +20,17 @@ export async function GET(req: NextRequest) {
   try {
     await client.connect();
     const db = client.db(dbName);
-    const collection = db.collection('users');
+    const collection = db.collection<IUser>('users');
     
     const path=req.nextUrl.pathname
     const id = path.split('/').pop();
-    console.log(id)
+    
 
     if (!id || !ObjectId.isValid(id as string )) {
       return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
     }
 
-    const user = await collection.findOne({ _id: new ObjectId(id as string) });
+    const user:IUser | null = await collection.findOne({ id }) ;
 
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
@@ -58,7 +58,7 @@ export async function POST(req:NextRequest){
   try {
     await client.connect();
     const db = client.db(dbName);
-    const collection = db.collection('users');
+    const collection = db.collection<IUser>('users');
     
     const path=req.nextUrl.pathname
     const id = path.split('/').pop();
@@ -73,7 +73,7 @@ export async function POST(req:NextRequest){
       return acc; }, {} as { [key: string]: any });
 
 
-    const updatedUser = await collection.findOneAndUpdate( { _id: new ObjectId(id as string) }, { $set: validData }, { returnDocument: 'after' } );
+    const updatedUser:IUser|null = await collection.findOneAndUpdate( {id }, { $set: validData }, { returnDocument: 'after' } );
 
 
 
