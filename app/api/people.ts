@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const matchCount = (arr: string[]) => arr.filter(element => referenceArray.includes(element)).length;
   const sortedUsers = users.sort((a, b) => matchCount(b.interests) - matchCount(a.interests));
 
-  const plainUsers = sortedUsers.map(user => {
+  const plainUsers:any = sortedUsers.map(user => {
     const plainUser = user.toObject();
     plainUser._id = plainUser._id.toString();
     plainUser.teams = plainUser.teams?.map((teamId: mongoose.Types.ObjectId) => teamId.toString());

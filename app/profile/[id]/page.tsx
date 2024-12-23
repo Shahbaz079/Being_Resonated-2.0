@@ -2,15 +2,14 @@
 import Ring from "@/components/ring/ring";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useRouter } from "next/router";
+
 import  {useEffect} from "react";
 import { useState } from "react";
 import { use } from "react";
 import { ObjectId } from "mongoose";
 import Link from "next/link";
 import { MdOutlineModeEditOutline } from "react-icons/md";
-import { button } from "framer-motion/client";
-import { error } from "console";
+
 
 interface Team { 
   _id:ObjectId;
@@ -28,15 +27,15 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
 
   const {data:session,status}=useSession();
 
-  const [user, setUser] = useState<any>(null); // Type appropriately
+ // const [user, setUser] = useState<any>(null); // Type appropriately
    const [name, setName] = useState<string>(""); 
    
    const [email, setEmail] = useState<string>("");
     const [interests, setInterests] = useState<string[]>([]);
     const [teams, setTeams] = useState<Team[]>([]);
-    const [assignedWorks, setAssignedWorks] = useState<string[]>([]);
+    //const [assignedWorks, setAssignedWorks] = useState<string[]>([]);
     const [birthDate, setBirthDate] = useState<Date>(); 
-    const [gradYear, setGradYear] = useState<Number>(); 
+    const [gradYear, setGradYear] = useState<number>(); 
 
 
     const [edit,setEdit]=useState<boolean>(false);
@@ -58,12 +57,12 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
         const fetchUserData = async (userId: string) => { 
           try { const response = await fetch(`/api/user/${userId}`);
              const data = await response.json(); 
-             setUser(data);
+            // setUser(data);
               setName(data.name || ""); 
               setEmail(data.email || ""); 
               setInterests(data.interests || []); 
               setTeams(data.teams || []); 
-              setAssignedWorks(data.assignedWorks || []); 
+             // setAssignedWorks(data.assignedWorks || []); 
               setBirthDate(data.dob || "");
                setGradYear(data.gradYear || ""); 
               } catch (error) { 
@@ -111,7 +110,7 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
             })
           }).then(response=>response.json())
           .then(data=>{
-            setUser(data)
+           // setUser(data)
             
             setInterests(data.interests || []);
              setTeams(data.teams || []);
@@ -151,7 +150,7 @@ const ProfilePage = ({params}:{ params: { id: Promise<string> }}) => {
 
              {edit?(<div className="flex flex-row">
           <label htmlFor="gradYear">Graduation Year:</label>
-          <input type="number" className="w-[50%]" onChange={(e)=>setGradYear(e.target.value)} />
+          <input type="number" className="w-[50%]" onChange={(e)=>setGradYear(Number(e.target.value))} />
           </div>):
           <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6] flex flex-row">
           <div className="">Graduation Year:</div>

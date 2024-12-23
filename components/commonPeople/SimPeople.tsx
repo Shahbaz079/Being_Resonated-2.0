@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-import mongoose from "mongoose";
-import { ExpandableCardDemo,IUser,IUserArray } from "@/components/expandableCards/card";
+
+import { ExpandableCardDemo,IUser } from "@/components/expandableCards/card";
 
 const SimPeople = () => {
 

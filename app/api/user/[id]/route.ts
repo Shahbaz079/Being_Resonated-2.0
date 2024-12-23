@@ -1,6 +1,7 @@
 "use Server"
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
+import { IUser } from '@/components/expandableCards/card';
 
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;
@@ -13,7 +14,7 @@ if (!dbName) {
   throw new Error('Invalid/Missing environment variable: "DB_NAME"');
 }
 
-export async function GET(req: NextRequest,res:NextResponse) {
+export async function GET(req: NextRequest) {
   const client = new MongoClient(uri);
 
   try {
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest,res:NextResponse) {
   }
 }
 
-export async function POST(req:NextRequest,res:NextResponse){
+export async function POST(req:NextRequest){
   const body=await req.json();
   
   

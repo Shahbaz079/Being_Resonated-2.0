@@ -4,8 +4,8 @@ import SimPeople from "@/components/commonPeople/SimPeople"
 import { useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
 
-const beCommunity = () => {
-const {data:session,status}=useSession();
+const BeCommunity = () => {
+const {data:session}=useSession();
   if(!session?.user?.id){
     redirect('/login');
  }
@@ -27,4 +27,4 @@ const {data:session,status}=useSession();
   )
 }
 
-export default beCommunity
+export default BeCommunity

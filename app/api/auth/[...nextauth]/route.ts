@@ -84,8 +84,8 @@ export default NextAuth({
             await User.create({ email, name, image, authProviderId: id });
           }
           return true;
-        } catch (error) {
-          throw new Error("Error while creating user");
+        } catch (error :unknown) {
+          throw new Error(error.message);
         }
       }
       return true;

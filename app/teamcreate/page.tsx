@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { redirect } from "next/navigation";
 import SimPeople from "@/components/commonPeople/SimPeople";
-import { IUser,newMember } from "@/components/expandableCards/card";
+import { newMember } from "@/components/expandableCards/card";
 
 const CreateTeam = () => {
      const [name, setName] = useState(''); 
@@ -13,8 +13,8 @@ const CreateTeam = () => {
      const [deadline, setDeadline] = useState('');
       const [members, setMembers] = useState<newMember[]>([]);
        const [leader, setLeader] = useState<newMember>(); 
-       const [timage, setTimage] = useState('');
-      const [choosed, setChoosed] = useState(false);
+     //  const [timage, setTimage] = useState('');
+     // const [choosed, setChoosed] = useState(false);
 
       const searchParams = useSearchParams();
       const id = searchParams.get('id') as string;
@@ -40,7 +40,7 @@ const CreateTeam = () => {
 
         const handleSubmit = async (event) => { 
             event.preventDefault(); // Prepare data
-              const data = { name, description, deadline, members, leader, timage, createdBy: id }; 
+              const data = { name, description, deadline, members, leader, createdBy: id }; 
               // Send data to the API
 
               try {

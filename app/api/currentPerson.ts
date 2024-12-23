@@ -3,6 +3,7 @@ import connectDB from '@/config/db';
 import { User } from '@/models/User';
 import mongoose from 'mongoose';
 
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await connectDB();
   const { id } = req.query;
@@ -16,7 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(404).json({ message: 'User not found' });
   }
 
-  const plainUser = existingUser.toObject();
+  const plainUser:any = existingUser.toObject();
   plainUser._id = plainUser._id.toString();
   plainUser.teams = plainUser.teams?.map((teamId: mongoose.Types.ObjectId) => teamId.toString());
   plainUser.assignedWorks = plainUser.assignedWorks?.map((work: any) => ({ ...work, team: work.team.toString() }));

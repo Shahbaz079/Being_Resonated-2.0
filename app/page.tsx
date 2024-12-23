@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Profile from "@/components/profile/profile";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+
 
 const Home = () => {
 
