@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import { IUser } from '@/components/expandableCards/card';
 
+
+interface IUserUpdate { interests?: string[]; dob?: Date; gradYear?: number; image?: string; }
+
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;
 
@@ -49,7 +52,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req:NextRequest){
-  const body=await req.json();
+  const body:IUserUpdate=await req.json();
   
   
  
@@ -62,14 +65,15 @@ export async function POST(req:NextRequest){
     
     const path=req.nextUrl.pathname
     const id = path.split('/').pop();
-    console.log(id)
+    
 
     if (!id || !ObjectId.isValid(id as string )) {
       return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
     }
 
     const validFields = ['interests', 'dob', 'gradYear', 'image'];
-     const validData = validFields.reduce((acc, field) => { if (body[field] !== undefined && body[field] !== null) { acc[field] = body[field]; }
+     const validData = validFields.reduce((acc, field) => { if (body[field as keyof IUserUpdate] !== undefined && body[field as keyof IUserUpdate] !== null) { acc[field] = body[field as keyof IUserUpdate]; }
+     
       return acc; }, {} as { [key: string]: any });
 
 
