@@ -73,8 +73,9 @@ export async function POST(req:NextRequest){
 
     const validFields = ['interests', 'dob', 'gradYear', 'image'];
      const validData = validFields.reduce((acc, field) => { if (body[field as keyof IUserUpdate] !== undefined && body[field as keyof IUserUpdate] !== null) { acc[field] = body[field as keyof IUserUpdate]; }
-     
-      return acc; }, {} as { [key: string]: any });
+
+      return acc;
+     }, {} as { [key: string]: any });
 
 
     const updatedUser:IUser|null = await collection.findOneAndUpdate( {id }, { $set: validData }, { returnDocument: 'after' } );
