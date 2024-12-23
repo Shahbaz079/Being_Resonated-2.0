@@ -1,3 +1,5 @@
+'use client' 
+
 import { useEffect } from 'react';
 import { Input } from '@/components/signup/input';
 import { IconBrandGithub, IconBrandGoogle, IconBrandOnlyfans } from '@tabler/icons-react';
