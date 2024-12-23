@@ -1,4 +1,4 @@
-  "use server";
+ { /* "use server";
 import { User } from "@/models/User";
 import connectDB from "@/config/db";
 import { redirect } from "next/navigation";
@@ -85,7 +85,7 @@ const register = async (formData: FormData) => {
       
       throw new Error("Registration failed");
         }
-  }
+  }           */}
 
 { /*
   const people = async (id: string
@@ -126,7 +126,7 @@ const register = async (formData: FormData) => {
     
     
           return plainUser;
-        */  }
+       
          
 
  
@@ -135,4 +135,80 @@ const register = async (formData: FormData) => {
 
   
 
-  export {register,login,signGithub,signGoogle}
+  
+
+   */  }
+
+   import { redirect } from 'next/navigation';
+
+
+
+   const signGithub = async () => {
+    try {
+      const response = await fetch('/api/auth/github', { method: 'POST' });
+      const result = await response.json();
+      console.log(result.message);
+    } catch (error) {
+      console.error('Error signing in with GitHub:', error);
+    }
+  };
+  
+  const signGoogle = async () => {
+    try {
+      const response = await fetch('/api/auth/google', { method: 'POST' });
+      const result = await response.json();
+      console.log(result.message);
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+    }
+  };
+  
+  const login = async (formData: FormData) => {
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+  
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        console.log('Logged in successfully');
+        redirect('/');
+      } else {
+        console.error('Error logging in:', result.message);
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
+  };
+  
+  const register = async (formData: FormData) => {
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+  
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, confirmPassword })
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        console.log('Registered successfully');
+        redirect('/');
+      } else {
+        console.error('Error registering:', result.message);
+      }
+    } catch (error) {
+      console.error('Error registering:', error);
+    }
+  };
+  
+  export {register,login,signGithub,signGoogle} ;
