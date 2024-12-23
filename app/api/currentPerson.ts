@@ -4,6 +4,29 @@ import { User } from '@/models/User';
 import mongoose from 'mongoose';
 
 
+
+
+ export interface objectUser {
+  _id:string,
+   name: string;
+    email: string;
+     dob?: Date; 
+     gradYear?: number;
+      password?: string;
+       image?: string;
+        interests?: string[]; 
+        teams?:string[];
+         assignedWorks?: { work?: string; 
+          completionDate: Date; 
+          team: mongoose.Schema.Types.ObjectId; }[];
+           role?: string; 
+           authProviderId?: string;
+            createdAt?: Date;
+             updatedAt?: Date;}
+             
+
+            
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await connectDB();
   const { id } = req.query;
@@ -12,15 +35,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Invalid user ID' });
   }
 
-  const existingUser = await User.findById(id);
+  const existingUser :mongoose.Document |null= await User.findById(id);
   if (!existingUser) {
     return res.status(404).json({ message: 'User not found' });
   }
 
-  const plainUser:any = existingUser.toObject();
+  const plainUser:objectUser= existingUser.toObject();
   plainUser._id = plainUser._id.toString();
-  plainUser.teams = plainUser.teams?.map((teamId: mongoose.Types.ObjectId) => teamId.toString());
-  plainUser.assignedWorks = plainUser.assignedWorks?.map((work: any) => ({ ...work, team: work.team.toString() }));
+  plainUser.teams = plainUser.teams?.map((teamId:string) => teamId.toString()) ?? []
+ 
 
   return res.status(200).json(plainUser);
 };
