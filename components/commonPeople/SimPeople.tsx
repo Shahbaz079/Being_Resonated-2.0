@@ -12,8 +12,32 @@ const SimPeople = () => {
     const searchParams = useSearchParams();
     const id = searchParams.get('id') as string;
     const [similarPeople, setSimilarPeople] = useState([]);
+
     const [loggedUser, setLoggedUser] = useState<IUser | null>(null);
 
+  
+   
+
+
+    useEffect(() => { 
+        const fetchPeople = async () => {
+         try { const response = await fetch(`/api/people?id=${id}`); 
+            const data = await response.json();
+             setSimilarPeople(data); } catch (error) { console.error('Error fetching people:', error); } };
+             fetchPeople();
+
+
+
+             const fetchCurrentPerson = async () => { 
+                try { const response = await fetch(`/api/currentPerson?id=${id}`); 
+                    const data = await response.json();
+                     setLoggedUser(data); } catch (error) { console.error('Error fetching current person:', error); }
+                }
+             fetchCurrentPerson();
+             
+              }, [id]);
+
+{/*
     useEffect(() => {
         if (id) {
             (async () => {
@@ -28,7 +52,7 @@ const SimPeople = () => {
                 }
             })();
         }
-    }, [id]);
+    }, [id]);    */}
 
     return (
         <div>
