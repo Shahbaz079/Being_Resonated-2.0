@@ -87,7 +87,7 @@ const register = async (formData: FormData) => {
         }
   }
 
-
+{ /*
   const people = async (id: string
   ): Promise<any[]> => { 
     await connectDB(); 
@@ -126,7 +126,7 @@ const register = async (formData: FormData) => {
     
     
           return plainUser;
-          }
+        */  }
          
 
  
@@ -135,4 +135,4 @@ const register = async (formData: FormData) => {
 
   
 
-  export {register,login,signGithub,signGoogle,people,currentPerson}
+  export {register,login,signGithub,signGoogle}
