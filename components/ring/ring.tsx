@@ -1,6 +1,5 @@
 import { useEffect,useState } from "react";
-import { useAuth } from "@clerk/nextjs";
-import { LogOutButton } from "../LogoutButton";
+
 
 
 

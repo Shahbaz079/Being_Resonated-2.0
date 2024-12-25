@@ -1,10 +1,10 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState,Suspense } from "react";
 
 import { useSearchParams } from "next/navigation";
 import { redirect } from "next/navigation";
-import SimPeople from "@/components/commonPeople/SimPeople";
+import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople";
 import { newMember } from "@/components/expandableCards/card";
 
 const CreateTeam = () => {
@@ -135,11 +135,20 @@ const CreateTeam = () => {
           </div>
           
           <div className="w-[45%] overflow-y-scroll h-[80vh] rounded-[8px] border-[4px] absolute  top-[10vh] right-5 left-[50%]">
-          <SimPeople/>
+          <SimPeopleWithSuspense/>
             </div>
            
         </div>
     );
 }
 
-export default CreateTeam;
+
+
+
+
+const CreateTeamWithSuspense = () => (
+   <Suspense fallback={<div>Loading...</div>}>
+     <CreateTeam /> 
+     </Suspense> )
+
+export default CreateTeamWithSuspense;

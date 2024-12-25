@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState,Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 
@@ -77,4 +77,9 @@ const SimPeople = () => {
     );
 }
 
-export default SimPeople;
+const SimPeopleWithSuspense = () => (
+     <Suspense fallback={<div>Loading...</div>}> 
+     <SimPeople /> 
+     </Suspense> )
+
+export default SimPeopleWithSuspense;
