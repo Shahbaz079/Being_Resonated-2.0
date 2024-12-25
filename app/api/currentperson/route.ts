@@ -71,6 +71,11 @@ if (!dbName) {
                           } return NextResponse.json(user);
                           } catch (error) {
                             console.error('Error:', error);
-                             return NextResponse.json({ error: 'Failed to fetch team' },
-                                { status: 500 }); } finally { 
-                                 if (client) { await client.close(); } } }
+                             return NextResponse.json({ error: 'Failed to fetch currrent User' },
+                                { status: 500 }); } 
+                                finally {
+
+                                 if (client) {
+                                   await client.close(); 
+                                  }
+                                 } }

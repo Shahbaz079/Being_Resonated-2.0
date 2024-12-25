@@ -11,7 +11,7 @@ const SimPeople = () => {
 
     const searchParams = useSearchParams();
     const id = searchParams.get('id') as string;
-    const [similarPeople, setSimilarPeople] = useState([]);
+    const [similarPeople, setSimilarPeople] = useState<IUser[]>([]);
 
     const [loggedUser, setLoggedUser] = useState<IUser | null>(null);
 
@@ -26,7 +26,7 @@ const SimPeople = () => {
             const response = await fetch(`/api/people?id=${id}`); 
 
             const data = await response.json();
-             setSimilarPeople(data);
+             setSimilarPeople(Array.isArray(data) ? data : []);
              } catch (error) { console.error('Error fetching people:', error); } };
 
              fetchPeople();
