@@ -2,7 +2,7 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { NextResponse,NextRequest} from 'next/server';
 
-export async function GET(req: NextRequest,res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     const auth = getAuth(req);
     const sessionId = auth.sessionId;
