@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 import { redirect } from "next/navigation";
@@ -38,7 +38,7 @@ const CreateTeam = () => {
                      }; }, [])
            
 
-        const handleSubmit = async (event) => { 
+        const handleSubmit = async (event:FormEvent) => { 
             event.preventDefault(); // Prepare data
               const data = { name, description, deadline, members, leader, createdBy: id }; 
               // Send data to the API
