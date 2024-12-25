@@ -70,7 +70,7 @@ const SimPeople = () => {
           
           <div className="">
              <h1>#Users sharing similar interests as yours</h1>
-             <ExpandableCardDemo users={similarPeople} cUser={loggedUser}/>
+             <ExpandableCardDemo users={similarPeople} cUser={loggedUser?loggedUser:null}/>
             </div>
            
         </div>

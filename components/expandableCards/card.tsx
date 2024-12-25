@@ -27,7 +27,7 @@ import mongoose from "mongoose";
          
              export type IUserArray = IUser[];
 
-             interface ExpandableCardDemoProps { users: IUserArray; cUser: IUser; }
+             interface ExpandableCardDemoProps { users: IUserArray; cUser: IUser|null; }
 
            export  interface newMember {
               _id:mongoose.Schema.Types.ObjectId,
@@ -64,7 +64,9 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
 
   useEffect(() => { 
     if (active && typeof active === "object" && cUser) {
-       const commonInterests = active.interests.filter((interest) => cUser.interests.includes(interest)); setCInterests(commonInterests); } },
+       const commonInterests =(cUser?.interests && active.interests)? active.interests.filter((interest) => cUser.interests?.includes(interest) ?? false): [];
+       
+       setCInterests(commonInterests); } },
         [active, cUser]);
 
 
