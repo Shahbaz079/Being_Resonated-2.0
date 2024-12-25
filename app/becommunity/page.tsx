@@ -21,8 +21,8 @@ const {userId}=useAuth();
               </div>
 
               <div className="absolute left-[65%] right-[10%] overflow-y-scroll top-[20vh] h-[70vh] bg-[#484444] rounded-2xl">
-              <SimPeopleWithSuspense/>
-
+            {/*  <SimPeopleWithSuspense/>
+*/}
               </div>
     </div>
   )
