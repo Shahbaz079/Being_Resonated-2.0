@@ -1,5 +1,6 @@
 import { useEffect,useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { LogOutButton } from "../LogoutButton";
 
 
 
@@ -58,12 +59,6 @@ if(targetCard){
 }
 ; 
 
-const handleLogout = async () => {
-   const {signOut}=useAuth();
-   useEffect(() => {
-    signOut({redirectUrl: '/'});
-   }, [signOut]);
-     }
 
 
   return (
@@ -74,9 +69,9 @@ const handleLogout = async () => {
         <button onClick={()=>changePosition("pCard")} className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">Personal Details</button>
         <button onClick={()=>changePosition("tCard")}  className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">Teams</button>
         <button onClick={()=>changePosition("wCard")}  className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">Assigned Works</button>
-      
-      <button onClick={()=>handleLogout()} className="w-[90%] h-[10%] bg-cyan-300 rounded-[50px]  m-4 text-center py-2">LogOut</button>
-      
+      {/*
+      <LogOutButton/>
+      */}
         
       </div>
     </div>

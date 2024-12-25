@@ -1,11 +1,11 @@
 "use client"
 import Ring from "@/components/ring/ring";
-import { useSession } from "next-auth/react";
+import { useSession } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 import  {useEffect} from "react";
 import { useState } from "react";
-import { use } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { ObjectId } from "mongoose";
 import Link from "next/link";
 import { MdOutlineModeEditOutline } from "react-icons/md";
@@ -28,7 +28,8 @@ const ProfilePage = () => {
   const searchParams = useSearchParams();
       const id = searchParams.get('id') as string;
 
-  const {data:session,status}=useSession();
+  const {userId}=useAuth();
+  const {isLoaded}=useSession();
 
  // const [user, setUser] = useState<any>(null); // Type appropriately
    const [name, setName] = useState<string>(""); 
@@ -44,7 +45,7 @@ const ProfilePage = () => {
     const [edit,setEdit]=useState<boolean>(false);
 
     const redirectIfUnauthenticated = () =>
-       { if (status === 'authenticated' && session?.user?.id !== id) { 
+       { if (status === 'authenticated' && userId !== id) { 
         redirect('/'); } };
 
         const fetchTeamData = async (teamId: string) => {
@@ -78,7 +79,7 @@ const ProfilePage = () => {
                     }
                   
                   },
-                    [status, session, id]); 
+                    [isLoaded, userId, id]); 
   
   
 
@@ -124,7 +125,7 @@ const ProfilePage = () => {
           }).catch(error=>console.error('Error:',error))  
          }        
   
-  if(status=="loading"){
+  if(!isLoaded){
     return <>
     <div className="">Loading....</div>
     </>

@@ -21,17 +21,24 @@ const SimPeople = () => {
 
     useEffect(() => { 
         const fetchPeople = async () => {
-         try { const response = await fetch(`/api/people?id=${id}`); 
+
+         try { 
+            const response = await fetch(`/api/people?id=${id}`); 
+
             const data = await response.json();
-             setSimilarPeople(data); } catch (error) { console.error('Error fetching people:', error); } };
+             setSimilarPeople(data);
+             } catch (error) { console.error('Error fetching people:', error); } };
+
              fetchPeople();
 
 
 
              const fetchCurrentPerson = async () => { 
-                try { const response = await fetch(`/api/currentPerson?id=${id}`); 
+                try { const response = await fetch(`/api/currentperson?id=${id}`); 
                     const data = await response.json();
-                     setLoggedUser(data); } catch (error) { console.error('Error fetching current person:', error); }
+                     setLoggedUser(data); } catch (error) { 
+                        console.error('Error fetching current person:', error); 
+                    }
                 }
              fetchCurrentPerson();
              
