@@ -45,7 +45,7 @@ export default handler;
 */}
 
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest, ) {
   
 
   try {
