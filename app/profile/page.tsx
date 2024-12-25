@@ -3,7 +3,7 @@ import Ring from "@/components/ring/ring";
 import { useSession } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-import  {useEffect} from "react";
+import  {useEffect,Suspense} from "react";
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { ObjectId } from "mongoose";
@@ -124,12 +124,7 @@ const ProfilePage = () => {
              
           }).catch(error=>console.error('Error:',error))  
          }        
-  
-  if(!isLoaded){
-    return <>
-    <div className="">Loading....</div>
-    </>
-  } 
+
  
 
 
@@ -221,7 +216,7 @@ const ProfilePage = () => {
         <div className="w-[90%] h-[90%] p-3 flex flex-col ">
          {
           teams.map((team)=>(
-            <div className="w-[100%] h-8 rounded-[5px] text-center bg-neutral-500 rounded-full py-2 my-2" key={team.name}>{team.name}</div>
+            <div className="w-[100%] h-8  text-center bg-neutral-500 rounded-full py-2 my-2" key={team.name}>{team.name}</div>
           ))
          }
          <Link href={`/becommunity`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
@@ -270,4 +265,18 @@ const ProfilePage = () => {
   )
 }
 
-export default ProfilePage
+
+
+
+
+const ProfilePageWithSuspense = () => ( 
+<Suspense fallback={<div>Loading...</div>}>
+ <ProfilePage />
+  </Suspense> )
+
+
+
+
+
+
+export default ProfilePageWithSuspense;
