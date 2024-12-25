@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import Profile from "@/components/profile/profile";
+
 import { useSession } from "@clerk/nextjs";
 import { useSignUp } from "@clerk/nextjs";
 import { useEffect } from "react";
@@ -14,12 +14,12 @@ import { useUser } from "@clerk/nextjs";
 const Home = () => {
 
   const {isLoaded}=useSession();
- const {userId,sessionId,getToken}=useAuth();
- const {isSignedIn,user}=useUser();
+ const {userId}=useAuth();
+ const {user}=useUser();
 const {signUp}=useSignUp();
  //console.log(sessionId,getToken)
  console.log(user)
- const mongoId=user?.publicMetadata?.mId as String
+ const mongoId=user?.publicMetadata?.mId as string
   
 useEffect(() => {
   const fetchData = async () => {

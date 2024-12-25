@@ -6,7 +6,7 @@ import "./styles/profilepage.css"
 import { SessionProvider } from "next-auth/react"
 import { ClerkProvider } from "@clerk/nextjs";
 import {ToastContainer} from 'react-toastify'
-import { SignedIn,SignedOut,SignInButton,SignOutButton,UserButton } from "@clerk/nextjs";
+import { SignedIn,SignedOut,SignInButton,UserButton } from "@clerk/nextjs";
 
 
 const geistSans = localFont({

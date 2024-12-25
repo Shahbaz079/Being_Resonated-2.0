@@ -1,6 +1,6 @@
 
 import connectDB from '@/config/db';
-import { User } from '@/models/User';
+
 import { MongoClient } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server'
 import { clerkClient ,auth} from '@clerk/nextjs/server';
@@ -16,7 +16,7 @@ if (!uri) {
 if (!dbName) {
   throw new Error('Invalid/Missing environment variable: "DB_NAME"');
 }
-export async function POST(request:NextRequest,response:NextResponse){
+export async function POST(request:NextRequest){
 
   let client:MongoClient|null=null;
 try { 

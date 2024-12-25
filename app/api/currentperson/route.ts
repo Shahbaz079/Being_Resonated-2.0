@@ -1,6 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import connectDB from '@/config/db';
-import { User } from '@/models/User';
+
 import mongoose from 'mongoose';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
@@ -32,13 +30,13 @@ import { MongoClient, ObjectId } from 'mongodb';
 
             
           
-             type ObjectUser = mongoose.Document & {
+          {/*   type ObjectUser = mongoose.Document & {
                _id: string;
                name?: string;
                email?: string;
                teams?: string[];
-             };
-
+             };  */
+}
              
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;
