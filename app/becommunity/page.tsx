@@ -2,14 +2,10 @@
 
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople"
 
-import { redirect } from "next/navigation"
-import { useAuth } from "@clerk/nextjs"
+
 
 const BeCommunity = () => {
-const {userId}=useAuth();
-  if(!userId){
-    redirect('/login');
- }
+
   return (
     <div className="w-[100vw] h-auto relative">
            <div className="absolute left-[10%] right-[10%] top-5  h-[15vh] w-[80%] bg-[#484444] rounded-2xl">
