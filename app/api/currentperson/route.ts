@@ -53,7 +53,8 @@ if (!dbName) {
 
               let client: MongoClient | null = null;
                try { 
-                const id ="67693a739ccd1cc6b0393d37"
+                const { searchParams } = new URL(request.url);
+                const id = searchParams.get('id') as string;
                  // Extract `id` from query params
                   if (!ObjectId.isValid(id)) { 
                    return NextResponse.json({ error: 'Invalid team ID' }, { status: 400 }); }

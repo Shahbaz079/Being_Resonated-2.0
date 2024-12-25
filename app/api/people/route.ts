@@ -51,7 +51,8 @@ export async function GET(req: NextRequest, ) {
   try {
     await connectDB();
 
-    const  id  = "676aca0645c9400e0c2d0604";
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id') as string;
     if (!id || typeof id !== 'string') {
       return NextResponse.json({ message: 'Invalid user ID' });
     }
