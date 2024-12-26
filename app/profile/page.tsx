@@ -107,7 +107,7 @@ const ProfilePage = () => {
 
          const handleUpdate=()=>{
           setEdit(false);
-           fetch(`/api/user/${user?.publicMetadata.mongoId}`,{
+           fetch(`/api/user/${mId}`,{
             method:'POST',
             headers:{
               "content-Type":'application/json',
