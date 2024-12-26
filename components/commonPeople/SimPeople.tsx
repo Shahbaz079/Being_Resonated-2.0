@@ -3,6 +3,7 @@
 import { useEffect, useState,Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
+import Link from "next/link";
 
 import { ExpandableCardDemo,IUser } from "@/components/expandableCards/card";
 
@@ -65,12 +66,20 @@ const SimPeople = () => {
         <div>
 
           <div className="">
-
+           <Link href={`/profile?id=${id}`} className="bg-slate-500 w-[70%] h-10 my-8 mx-8 rounded-md">Update Personal details</Link>
           </div>
           
           <div className="">
-             <h1>#Users sharing similar interests as yours</h1>
-             <ExpandableCardDemo users={similarPeople} cUser={loggedUser?loggedUser:null}/>
+            {
+                loggedUser?.interests?.length==0?(<><h1>Update your interests to find similar people</h1>
+                <Link href={`/profile?id=${id}`} ></Link>
+                        </>
+                ):
+               (<> <h1>#Users sharing similar interests as yours</h1>
+                <ExpandableCardDemo users={similarPeople} cUser={loggedUser?loggedUser:null}/>
+                </>)
+            }
+            
             </div>
            
         </div>

@@ -3,8 +3,7 @@ import React from 'react'
 import { SignedIn,SignedOut,SignInButton,UserButton } from "@clerk/nextjs";
 import { useUser } from '@clerk/nextjs';
 
-import SimPeopleWithSuspense from '../commonPeople/SimPeople';
-import Ring from '../ring/ring';
+
 
 
 
@@ -32,9 +31,7 @@ console.log(mongoId)
             </SignedOut>
             <SignedIn>
               <UserButton >
-                <UserButton.UserProfileLink label="User Details" url={`/profile?id=${mongoId}`} labelIcon={<DotIcon/>}/>
-                  
-               
+                
 
               </UserButton>
             </SignedIn>
