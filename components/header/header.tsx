@@ -2,6 +2,7 @@
 import React from 'react'
 import { SignedIn,SignedOut,SignInButton,UserButton } from "@clerk/nextjs";
 import { useUser } from '@clerk/nextjs';
+import Link from 'next/link';
 
 
 
@@ -24,7 +25,10 @@ const Header = () => {
 const mongoId=user?.publicMetadata.mongoId as string
 console.log(mongoId)
   return (
-    <header className="relative top-0 left-[5vw]  right-[8vw] w-[90vw] bg-[#555a4a] h-[8vh] my-4 rounded-full items-center text-white ">
+    <header className="relative top-0 left-[5vw]  right-[8vw] w-[90vw] bg-[#555a4a] h-[8vh] my-4 rounded-full items-center text-white flex flex-row justify-between ">
+      <div className="mx-10">
+        <Link href={'/'}>Home</Link>
+      </div>
           <div className="absolute top-0 right-[2%] py-[1%] left-[90%] flex justify-between">
           <SignedOut>
               <SignInButton />

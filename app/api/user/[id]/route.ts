@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const path=req.nextUrl.pathname
     const id = path.split('/').pop();
     
-
+   console.log( "it popping correctly",id);
     if (!id || !ObjectId.isValid(id as string )) {
       return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
     }
