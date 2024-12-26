@@ -18,7 +18,7 @@ const Home = () => {
  const {user}=useUser();
 const {signUp}=useSignUp();
  //console.log(sessionId,getToken)
- console.log(user)
+
  const mongoId=user?.publicMetadata?.mId as string
   
 useEffect(() => {

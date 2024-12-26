@@ -1,6 +1,6 @@
 "use client"
 import Ring from "@/components/ring/ring";
-import { useSession } from "@clerk/nextjs";
+import { useSession, useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 import  {useEffect,Suspense} from "react";
@@ -28,7 +28,7 @@ const ProfilePage = () => {
   const searchParams = useSearchParams();
       const id = searchParams.get('id') as string;
 
-  const {userId}=useAuth();
+ const {user}=useUser();
   const {isLoaded}=useSession();
 
  // const [user, setUser] = useState<any>(null); // Type appropriately
@@ -41,12 +41,12 @@ const ProfilePage = () => {
     const [birthDate, setBirthDate] = useState<Date>(); 
     const [gradYear, setGradYear] = useState<number>(); 
 
-
+    const [mId,setMId]=useState<string>(user?.publicMetadata.mongoId as string || "");
     const [edit,setEdit]=useState<boolean>(false);
+    
 
-    const redirectIfUnauthenticated = () =>
-       { if (status === 'authenticated' && userId !== id) { 
-        redirect('/'); } };
+    
+       
 
         const fetchTeamData = async (teamId: string) => {
             try { 
@@ -71,15 +71,17 @@ const ProfilePage = () => {
                setGradYear(data.gradYear || ""); 
               } catch (error) { 
                 console.error('Error fetching user:', error); } };
+
+
                 
                 useEffect(() => {
-                   redirectIfUnauthenticated(); 
-                   if (id) { fetchUserData(id);
-                    fetchTeamData(id);
+                   ; 
+                   if (mId) { fetchUserData(mId);
+                    fetchTeamData(mId);
                     }
                   
                   },
-                    [isLoaded, userId, id]); 
+                    [isLoaded, user, id]); 
   
   
 
@@ -87,6 +89,8 @@ const ProfilePage = () => {
         const [inputValue, setInputValue] = useState<string>('');
 
         const predefinedOptions = [ 'Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models',"coding","Music","Travel","Content Creation","Social Media Influencing","Enterprenuership","Socail Activity","Body Building","Robotics","Cooking" ]; 
+
+
         const handleAddOption = (option: string) => {
            if (!interests.includes(option)) { 
             setInterests([...interests, option]); } };
@@ -102,7 +106,7 @@ const ProfilePage = () => {
 
          const handleUpdate=()=>{
           setEdit(false);
-           fetch(`/api/user/${id}`,{
+           fetch(`/api/user/${user?.publicMetadata.mongoId}`,{
             method:'POST',
             headers:{
               "content-Type":'application/json',

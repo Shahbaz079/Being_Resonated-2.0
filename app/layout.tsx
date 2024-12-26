@@ -6,7 +6,9 @@ import "./styles/profilepage.css"
 import { SessionProvider } from "next-auth/react"
 import { ClerkProvider } from "@clerk/nextjs";
 import {ToastContainer} from 'react-toastify'
-import { SignedIn,SignedOut,SignInButton,UserButton } from "@clerk/nextjs";
+import Header from "@/components/header/header";
+
+
 
 
 const geistSans = localFont({
@@ -34,20 +36,14 @@ export default function RootLayout({
     <ClerkProvider>
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
 
 
         <SessionProvider>
-        <header>
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
-                <ToastContainer/>
+        <ToastContainer/>
+        <Header/>
+               
         {children}
         <ToastContainer/>
         </SessionProvider>
