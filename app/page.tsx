@@ -22,6 +22,9 @@ const {signUp}=useSignUp();
  const mongoId=user?.publicMetadata?.mongoId as string
   
 useEffect(() => {
+  if(!isLoaded){
+  return
+  }
   const fetchData = async () => {
 
   console.log( "userId",userId)
