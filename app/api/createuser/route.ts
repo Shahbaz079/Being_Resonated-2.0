@@ -47,11 +47,11 @@ try {
 
         const res=await client.users.updateUserMetadata(userId!, {
           publicMetadata: {
-            mId: result.insertedId,
+            mongoId: result.insertedId,
           },
         })
 
-          if(res) {       console.log("updated");}
+          if(res) { console.log("updated");}
         return NextResponse.json(result);
       } 
       else{

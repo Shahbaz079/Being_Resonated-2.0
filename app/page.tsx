@@ -19,14 +19,14 @@ const Home = () => {
 const {signUp}=useSignUp();
  //console.log(sessionId,getToken)
 
- const mongoId=user?.publicMetadata?.mId as string
+ const mongoId=user?.publicMetadata?.mongoId as string
   
 useEffect(() => {
   const fetchData = async () => {
 
   console.log("happening")
  
-  if(signUp?.status==='complete'){ 
+  if(signUp?.status==='complete' &&(!mongoId || mongoId===''|| mongoId===undefined )){ 
     try {
       const result=await fetch('/api/createuser',{
           method: 'POST',
@@ -52,7 +52,7 @@ useEffect(() => {
   fetchData();
 
  
-}, [signUp?.status]);
+}, []);
 
   if(!isLoaded) return <div>Loading...</div>
   
