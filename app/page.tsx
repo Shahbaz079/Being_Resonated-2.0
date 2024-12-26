@@ -24,9 +24,9 @@ const {signUp}=useSignUp();
 useEffect(() => {
   const fetchData = async () => {
 
-  console.log("happening")
+  console.log( "userId",userId)
  
-  if(signUp?.status==='complete' &&(!mongoId || mongoId===''|| mongoId===undefined )){ 
+  if(userId &&(!mongoId || mongoId===''|| mongoId===undefined )){ 
     try {
       const result=await fetch('/api/createuser',{
           method: 'POST',
