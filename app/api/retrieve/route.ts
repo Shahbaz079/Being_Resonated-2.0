@@ -1,65 +1,68 @@
-import { NextRequest,NextResponse } from "next/server";
-import { MongoClient } from "mongodb";
-import connectDB from "@/config/db";
-import { clerkClient } from "@clerk/nextjs/server";
-             
+import { NextRequest, NextResponse } from 'next/server';
+import { MongoClient } from 'mongodb';
+import { clerkClient } from '@clerk/nextjs/server';
+
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;
 
 if (!uri) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+  throw new Error('Invalid/Missing environment variable: "MONGO_URI"');
 }
 
 if (!dbName) {
   throw new Error('Invalid/Missing environment variable: "DB_NAME"');
 }
-    
+
 export async function POST(req: NextRequest) {
   let client: MongoClient | null = null;
   try {
-   const body = await req.json();
-   client = new MongoClient(uri);
-   const clientConnect = await clerkClient();
-    
-   await connectDB();
-    const db = client.db(dbName);
+    const body = await req.json();
+    const { email, userId } = body;
 
-    const newUser={email:body.email as string,
-      userId:body.userId as string,
-    };
+    console.log('Received email:', email);
+    console.log('Received userId:', userId);
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    client = new MongoClient(uri);
+    await client.connect();
+    const clientConnect = await clerkClient();
+
+    const db = client.db(dbName);
 
     const users = db.collection('users');
 
-    console.log("retrieving")
+    console.log('Retrieving user from MongoDB');
 
-    const existingUser = await users.findOne({email:newUser.email});
+    const existingUser = await users.findOne({ email });
 
-    if(!existingUser){
-      return NextResponse.json({error:'User does not exist'},{status:400});
+    if (!existingUser) {
+      return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
-    
-      
-      await clientConnect.users.updateUserMetadata(existingUser.userId, {
-        publicMetadata:{
-          mongoId:existingUser._id.toString()
-        }
-      })
 
+    console.log('Found existing user:', existingUser);
 
+    await clientConnect.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        mongoId: existingUser._id.toString(),
+      },
+    });
 
-      return NextResponse.json({success:true},{status:200});
+    console.log('Updated user metadata for:', userId);
 
-    
-
-   
-  
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
+    console.error('Error:', error);
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     } else {
       return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
     }
   } finally {
-    await client?.close();
-  } 
+    if (client) {
+      await client.close();
+    }
+  }
 }
