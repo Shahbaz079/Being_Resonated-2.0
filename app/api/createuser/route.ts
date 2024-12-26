@@ -60,9 +60,15 @@ try {
 
 
 }catch (error) { 
-  console.error('Error:', error);
-   return NextResponse.json({ error: 'Failed to insert user' }, { status: 500 });
-   } finally {
+  if(error instanceof Error){
+    return NextResponse.json({ error: 'Failed to insert user' }, { status: 500 });
+  }else{
+    return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+  }
+  
+   
+   }
+    finally {
      if (client) {
        await client.close(); 
       } }

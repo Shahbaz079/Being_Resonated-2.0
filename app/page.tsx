@@ -20,6 +20,7 @@ const {signUp}=useSignUp();
  //console.log(sessionId,getToken)
 
  const mongoId=user?.publicMetadata?.mongoId as string
+ console.log( "userId",userId)
   
 useEffect(() => {
   if(!isLoaded){
@@ -27,7 +28,7 @@ useEffect(() => {
   }
   const fetchData = async () => {
 
-  console.log( "userId",userId)
+  
  
   if(userId &&(!mongoId || mongoId===''|| mongoId===undefined )){ 
     try {
@@ -42,7 +43,22 @@ useEffect(() => {
 
         toast.success('User created successfully');
         console.log("Done")
-      }else{
+      }else if(result.status===400){
+        const res=await fetch('/api/retrieveuser',{
+          method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              email:user?.primaryEmailAddress?.emailAddress,
+              userId:userId
+            
+             }) });
+
+             if(res.ok){
+              toast.success('User retrieved successfully');
+             }
+        }
+      
+      else{
         toast.error('Failed to transfer user data');
         console.error('Error:', result);
       }
