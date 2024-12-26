@@ -29,7 +29,7 @@ const ProfilePage = () => {
 
  const {user}=useUser();
   const {isLoaded}=useSession();
-  const id=user?.publicMetadata.mongoId as string;
+  const mId=user?.publicMetadata.mongoId as string;
  // const [user, setUser] = useState<any>(null); // Type appropriately
    const [name, setName] = useState<string>(""); 
    
@@ -40,7 +40,7 @@ const ProfilePage = () => {
     const [birthDate, setBirthDate] = useState<Date>(); 
     const [gradYear, setGradYear] = useState<number>(); 
 
-    const [mId,setMId]=useState<string>(user?.publicMetadata.mongoId as string || "");
+  
     const [edit,setEdit]=useState<boolean>(false);
     
 
@@ -80,7 +80,7 @@ const ProfilePage = () => {
                     
                   
                   },
-                    [isLoaded, user, id]); 
+                    [isLoaded, user, mId]); 
   
   
 
@@ -223,11 +223,11 @@ const ProfilePage = () => {
           ))
          }
          <Link href={`/becommunity`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
-         <Link href={`/teamcreate?id=${id}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
+         <Link href={`/teamcreate?id=${mId}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
         </div>
        ):(<>
          <Link href={`/becommunity`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
-         <Link href={`/teamcreate?id=${id}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
+         <Link href={`/teamcreate?id=${mId}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
        </>)}
         
 
