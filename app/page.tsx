@@ -23,14 +23,15 @@ const Home = () => {
 
  useEffect(() => {
 setMongoId(user?.publicMetadata?.mongoId as string)
- },[isLoaded])
+ },[isLoaded,userId,user])
 
  
 
  console.log( "userId",userId)
+ console.log( "mongoId",mongoId)
   
 useEffect(() => {
-  if(!isLoaded){
+  if(!isLoaded ){
   return
   }
   const fetchData = async () => {
@@ -51,7 +52,7 @@ useEffect(() => {
         toast.success('User created successfully');
         console.log("Done")
       }else if(result.status===400){
-        const res=await fetch('/api/retrieveuser',{
+        const res=await fetch('/api/retrieve',{
           method: 'POST',
            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
