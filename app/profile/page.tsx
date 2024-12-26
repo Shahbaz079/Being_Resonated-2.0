@@ -59,7 +59,7 @@ const ProfilePage = () => {
         
         
         const fetchUserData = async (userId: string) => { 
-          try { const response = await fetch(`/api/user/${userId}`);
+          try { const response = await fetch(`/api/currentperson?id=${userId}`);
              const data = await response.json(); 
             // setUser(data);
               setName(data.name || ""); 
@@ -75,10 +75,10 @@ const ProfilePage = () => {
 
                 
                 useEffect(() => {
-                   ; 
-                   if (mId) { fetchUserData(mId);
+                   console.log("fetching data");
+                   fetchUserData(mId);
                     fetchTeamData(mId);
-                    }
+                    
                   
                   },
                     [isLoaded, user, id]); 
