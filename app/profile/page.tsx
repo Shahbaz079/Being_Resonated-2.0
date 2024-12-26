@@ -25,12 +25,11 @@ interface Team {
 const ProfilePage = () => {
  
 
-  const searchParams = useSearchParams();
-      const id = searchParams.get('id') as string;
+  
 
  const {user}=useUser();
   const {isLoaded}=useSession();
-
+  const id=user?.publicMetadata.mongoId as string;
  // const [user, setUser] = useState<any>(null); // Type appropriately
    const [name, setName] = useState<string>(""); 
    
