@@ -3,12 +3,13 @@
 import Link from "next/link";
 
 import { useSession } from "@clerk/nextjs";
-import { useSignUp } from "@clerk/nextjs";
-import { useEffect } from "react";
+
+import { useEffect,useState } from "react";
 import { toast } from "react-toastify";
 
 import { useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
+
 
 
 const Home = () => {
@@ -16,10 +17,15 @@ const Home = () => {
   const {isLoaded}=useSession();
  const {userId}=useAuth();
  const {user}=useUser();
-const {signUp}=useSignUp();
- //console.log(sessionId,getToken)
 
- const mongoId=user?.publicMetadata?.mongoId as string
+ //console.log(sessionId,getToken)
+ const [mongoId,setMongoId]=useState(user?.publicMetadata?.mongoId as string)
+
+ useEffect(() => {
+setMongoId(user?.publicMetadata?.mongoId as string)
+ },[isLoaded])
+
+ 
 
  console.log( "userId",userId)
   
@@ -55,6 +61,7 @@ useEffect(() => {
              }) });
 
              if(res.ok){
+
               toast.success('User retrieved successfully');
              }
         }
@@ -72,7 +79,7 @@ useEffect(() => {
   fetchData();
 
  
-}, []);
+}, [isLoaded,userId,mongoId,user]);
 
   if(!isLoaded) return <div>Loading...</div>
   
