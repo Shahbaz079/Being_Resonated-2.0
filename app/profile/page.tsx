@@ -25,11 +25,13 @@ interface Team {
 const ProfilePage = () => {
  
 
-  
+  const params=useSearchParams();
+  const id=params.get("id") as string;
 
  const {user}=useUser();
   const {isLoaded}=useSession();
-  const mId=user?.publicMetadata.mongoId as string;
+  const mId=user?.publicMetadata.mongoId as string || id as string;
+  console.log(`mongoId:${mId} and id:${id}`);
  // const [user, setUser] = useState<any>(null); // Type appropriately
    const [name, setName] = useState<string>(""); 
    
@@ -47,9 +49,9 @@ const ProfilePage = () => {
     
        
 
-        const fetchTeamData = async (teamId: string) => {
+        const fetchTeamData = async () => {
             try { 
-              const response = await fetch(`/api/team/${teamId}`);
+              const response = await fetch(`/api/team/${mId}`);
                 const data = await response.json(); 
                 setTeams(data); 
                 console.log(data);
@@ -57,8 +59,8 @@ const ProfilePage = () => {
                 console.error('Error fetching team:', error); } };
         
         
-        const fetchUserData = async (userId: string) => { 
-          try { const response = await fetch(`/api/currentperson?id=${userId}`);
+        const fetchUserData = async () => { 
+          try { const response = await fetch(`/api/currentperson?id=${mId}`);
              const data = await response.json(); 
             // setUser(data);
               setName(data.name || ""); 
@@ -75,8 +77,8 @@ const ProfilePage = () => {
                 
                 useEffect(() => {
                    console.log("fetching data");
-                   fetchUserData(mId);
-                    fetchTeamData(mId);
+                   fetchUserData();
+                    fetchTeamData();
                     
                   
                   },
