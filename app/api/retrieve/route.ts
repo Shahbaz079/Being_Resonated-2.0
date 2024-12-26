@@ -1,5 +1,5 @@
 import { NextRequest,NextResponse } from "next/server";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import connectDB from "@/config/db";
 import { clerkClient } from "@clerk/nextjs/server";
              
@@ -36,7 +36,8 @@ export async function POST(req: NextRequest) {
 
     if(!existingUser){
       return NextResponse.json({error:'User does not exist'},{status:400});
-    }else{
+    }
+    
       
       await clientConnect.users.updateUserMetadata(existingUser.userId, {
         publicMetadata:{
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({success:true},{status:200});
 
-    }
+    
 
    
   

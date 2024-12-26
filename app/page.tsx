@@ -20,6 +20,7 @@ const {signUp}=useSignUp();
  //console.log(sessionId,getToken)
 
  const mongoId=user?.publicMetadata?.mongoId as string
+
  console.log( "userId",userId)
   
 useEffect(() => {
