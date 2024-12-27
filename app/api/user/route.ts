@@ -39,9 +39,9 @@ export async function POST(req:NextRequest){
     
     console.log("got id",id)
 
-    if (!id || !ObjectId.isValid(id as string )) {
-      return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
-    }
+   // if (!id || !ObjectId.isValid(id as string )) {
+     // return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
+   // }
 
     const validFields = ['interests', 'dob', 'gradYear', 'image'];
      const validData = validFields.reduce((acc, field) => { 
