@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { redirect } from "next/navigation";
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople";
 import { newMember } from "@/components/expandableCards/card";
+import { toast } from "react-toastify";
 
 const CreateTeam = () => {
      const [name, setName] = useState(''); 
@@ -49,12 +50,13 @@ const CreateTeam = () => {
                   body: JSON.stringify(data), }); 
                   // Handle response
                   if (response.ok) { 
-                    alert('Team created successfully!'); 
                     
-                    localStorage.removeItem('members'); 
+                    toast.success('Team created successfully!');
+                    localStorage.removeItem('members');
+
                     redirect(`/profile/${id}`);
                     } else { 
-                      alert('Failed to create team!');  }
+                      toast.error('Failed to create team!');  }
               } catch (error) {
                 console.error('Error creating team:', error);
                 

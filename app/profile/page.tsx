@@ -107,7 +107,8 @@ const ProfilePage = () => {
 
          const handleUpdate=()=>{
           setEdit(false);
-           fetch(`/api/user?id=${mId}`,{
+          
+          const res=  fetch(`/api/user?id=${mId}`,{
             method:'POST',
             headers:{
               "content-Type":'application/json',
@@ -127,7 +128,9 @@ const ProfilePage = () => {
              setBirthDate(data.dob || "")
              setGradYear(data.gradyr || "")
              
-          }).catch(error=>console.error('Error:',error))  
+          }).catch(error=>console.error('Error:',error))
+          
+          
          }        
 
  
