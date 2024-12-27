@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import { IUser } from '@/components/expandableCards/card';
-import { useSearchParams } from 'next/navigation';
+
 
 
 interface IUserUpdate { interests?: string[]; dob?: Date; gradYear?: number; image?: string; }
@@ -31,8 +31,9 @@ export async function POST(req:NextRequest){
     const db = client.db(dbName);
     const collection = db.collection<IUser>('users');
     
-   const searchparams=useSearchParams()
-    const id = searchparams.get('id');
+    
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id') as string;
     
     console.log("got id",id)
 
