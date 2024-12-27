@@ -1,11 +1,12 @@
 "use Server"
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ObjectId, WithId } from 'mongodb';
 import { IUser } from '@/components/expandableCards/card';
 
 
 
-interface IUserUpdate { interests?: string[]; dob?: Date; gradYear?: number; image?: string; }
+
+interface IUserUpdate { interests?: string[]; dob?: Date; gradYear?: number; image?: string; email: string; }
 
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;
@@ -31,6 +32,7 @@ export async function POST(req:NextRequest){
     const db = client.db(dbName);
     const collection = db.collection<IUser>('users');
     
+    const email = body.email
     
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id') as string;
@@ -48,8 +50,8 @@ export async function POST(req:NextRequest){
       return acc;
      }, {} as { [key: string] : any});
 
-
-    const updatedUser:IUser|null = await collection.findOneAndUpdate( {id }, { $set: validData }, { returnDocument: 'after' } );
+     const updatedUser:IUser|null = await collection.findOneAndUpdate( {email }, { $set: validData }, { returnDocument: 'after' } );
+      
 
 
 

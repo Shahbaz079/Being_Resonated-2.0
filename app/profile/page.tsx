@@ -114,6 +114,7 @@ const ProfilePage = () => {
               "content-Type":'application/json',
             },
             body:JSON.stringify({
+              email:email,
               gradYear:gradYear, //edit it carefully
               interests:interests,
               dob:birthDate,
