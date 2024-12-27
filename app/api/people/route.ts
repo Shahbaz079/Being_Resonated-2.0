@@ -72,7 +72,9 @@ export async function GET(req: NextRequest, ) {
     const matchCount = (arr: string[]) => arr.filter(element => referenceArray.includes(element)).length;
     const sortedUsers = users.sort((a, b) => matchCount(b.interests) - matchCount(a.interests));
 
-    const plainUsers: objectUser[] = sortedUsers.map(user => {
+    const filteredUsers = sortedUsers.filter(user => matchCount(user.interests) > 0 && user._id.toString() !== id);
+
+    const plainUsers: objectUser[] = filteredUsers.map(user => {
       const plainUser: objectUser = user.toObject();
       plainUser._id = plainUser._id.toString();
       plainUser.teams = plainUser.teams?.map((teamId: string) => teamId.toString()) ?? [];
