@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  images: { domains: ['images.unsplash.com'], // Add the hostname here
+  images: { domains: ['plus.unsplash.com'], // Add the hostname here
    },
 };
 

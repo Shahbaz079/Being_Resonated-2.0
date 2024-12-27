@@ -118,7 +118,7 @@ useEffect(() => {
      
      handleProfileImageChange(); 
 
-   }   }, [ user?.imageUrl]);
+   }   }, [ user?.imageUrl,isLoaded]);
 
   if(!isLoaded) return <div>Loading...</div>
   
