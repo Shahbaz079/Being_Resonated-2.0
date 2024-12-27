@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import { IUser } from '@/components/expandableCards/card';
+import { useSearchParams } from 'next/navigation';
 
 
 interface IUserUpdate { interests?: string[]; dob?: Date; gradYear?: number; image?: string; }
@@ -17,39 +18,6 @@ if (!dbName) {
   throw new Error('Invalid/Missing environment variable: "DB_NAME"');
 }
 
-export async function GET(req: NextRequest) {
-  const client = new MongoClient(uri);
-
-  try {
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection<IUser>('users');
-    
-    const path=req.nextUrl.pathname
-    const id = path.split('/').pop();
-    
-   console.log( "it popping correctly",id);
-    if (!id || !ObjectId.isValid(id as string )) {
-      return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
-    }
-
-    const user:IUser | null = await collection.findOne({ id }) ;
-
-    if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(user, { status: 200 });
-  } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
-    } else {
-      return NextResponse.json({ message: 'Unknown error' }, { status: 500 });
-    }
-  } finally {
-    await client.close();
-  }
-}
 
 export async function POST(req:NextRequest){
   const body:IUserUpdate=await req.json();
@@ -63,16 +31,18 @@ export async function POST(req:NextRequest){
     const db = client.db(dbName);
     const collection = db.collection<IUser>('users');
     
-    const path=req.nextUrl.pathname
-    const id = path.split('/').pop();
+   const searchparams=useSearchParams()
+    const id = searchparams.get('id');
     
+    console.log("got id",id)
 
     if (!id || !ObjectId.isValid(id as string )) {
       return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
     }
 
     const validFields = ['interests', 'dob', 'gradYear', 'image'];
-     const validData = validFields.reduce((acc, field) => { if (body[field as keyof IUserUpdate] !== undefined && body[field as keyof IUserUpdate] !== null) { acc[field] = body[field as keyof IUserUpdate]; }
+     const validData = validFields.reduce((acc, field) => { 
+      if (body[field as keyof IUserUpdate] !== undefined && body[field as keyof IUserUpdate] !== null) { acc[field] = body[field as keyof IUserUpdate]; }
 
       return acc;
      }, {} as { [key: string] : any});

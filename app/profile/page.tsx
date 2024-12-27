@@ -89,7 +89,7 @@ const ProfilePage = () => {
        
         const [inputValue, setInputValue] = useState<string>('');
 
-        const predefinedOptions = [ 'Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models',"coding","Music","Travel","Content Creation","Social Media Influencing","Enterprenuership","Socail Activity","Body Building","Robotics","Cooking" ]; 
+        const predefinedOptions = [ 'Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models',"coding","Music","Travel","Content Creation","Social Media Influencing","Enterprenuership","Socail Activity","Body Building","Robotics","Cooking","Blogging","Writing","Reading","Gaming","Sports","Drama","Dance","Singing","Crafting","Drawing","Painting","Photography","Videography","Editing","Designing","Fashion","Modelling","Acting","Anchoring","Public Speaking","Debating","MUN","Hackathons","Competitive Coding","Web Development","App Development","Game Development","Graphic Designing","UI/UX Designing","Digital Marketing","Content Writing","Blogging","Vlogging","Social Media Influencing","Entrepreneurship","Startup","Finance","Investment","Trading","Economics","Marketing","Management","HR","Law","Legal","Politics","Public Policy","International Relations","History","Geography","Psychology","Sociology","Philosophy","Literature","Languages","Science","Mathematics","Physics","Chemistry","Biology","Astronomy","Astrophysics","Medicine","Engineering","Computer Science","Artificial Intelligence","Machine Learning","Data Science","Cyber Security","Blockchain","Cloud Computing","IoT","Robotics","Automation","Ethical Hacking","Game Development","Web Development","App Development","Software Development","Hardware Development","Network Security","Database Management","System Administration","DevOps","Full Stack Development","Frontend Development","Backend Development","Mobile Development","Desktop Development","Embedded Development","Cloud Development","AI Development","ML Development","Data Analysis","Data Engineering","Data Mining","Data Visualization","Big Data","Business Intelligence","Business Analysis","Business Development","Product Management","Project Management","Quality Assurance","Quality Control","Testing","Technical Support","Customer Support","Customer Success","Sales","Marketing","Advertising","Public Relations","Content Marketing","Email Marketing","Social Media Marketing","SEO","SEM","SMM"]; 
 
 
         const handleAddOption = (option: string) => {
@@ -107,7 +107,7 @@ const ProfilePage = () => {
 
          const handleUpdate=()=>{
           setEdit(false);
-           fetch(`/api/user/${mId}`,{
+           fetch(`/api/user?id=${mId}`,{
             method:'POST',
             headers:{
               "content-Type":'application/json',
