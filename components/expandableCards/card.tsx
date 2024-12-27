@@ -227,13 +227,21 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
           >
             <div className="flex gap-4 flex-col md:flex-row ">
               <motion.div layoutId={`image-${card.name}-${id}`}>
-                <Image
-                  width={100}
-                  height={100}
-                  src={'https://images.unsplash.com/photo-1507072757289-c7de1a8c075e?q=80&w=1854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+              { card.image ? <Image
+                  priority
+                  width={200}
+                  height={200}
+                  src={card.image}
                   alt={card.name}
-                  className="h-40 w-40 md:h-14 md:w-14 rounded-lg object-cover object-top"
-                />
+                  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"/>:
+                <Image
+                  priority
+                  width={200}
+                  height={200}
+                  src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                  alt={"user did'nt provide image"}
+                  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
+                />}
               </motion.div>
               <div className="">
                 <motion.h3

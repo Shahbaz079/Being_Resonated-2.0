@@ -6,7 +6,6 @@ import { IUser } from '@/components/expandableCards/card';
 
 import { objectUser } from '../currentperson/route';
 
-
 {/*
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -56,6 +55,8 @@ export async function GET(req: NextRequest, ) {
     if (!id || typeof id !== 'string') {
       return NextResponse.json({ message: 'Invalid user ID' });
     }
+
+    
 
     const existingUser: IUser | null = await User.findById(id);
     if (!existingUser) {
