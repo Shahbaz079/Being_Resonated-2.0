@@ -29,6 +29,7 @@ try {
       
       const newUser = { name: body.name as string,
          email: body.email as string,
+         image: body.image as string,
           createdAt: new Date(), 
           updatedAt: new Date() }; 
 

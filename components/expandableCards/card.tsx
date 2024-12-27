@@ -40,6 +40,8 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
   const [active, setActive] = useState<IUser | boolean | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
+  
+
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -109,6 +111,8 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
              console.log('New member added to local storage'); 
             }
 
+
+            
             
   
   return (
@@ -152,14 +156,21 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
               className="w-full max-w-[500px]  h-full md:h-fit md:max-h-[90%]  flex flex-col bg-white dark:bg-neutral-900 sm:rounded-3xl overflow-hidden"
             >
               <motion.div layoutId={`image-${active.name}-${id}`}>
+               { active.image ? <Image
+                  priority
+                  width={200}
+                  height={200}
+                  src={active.image}
+                  alt={active.name}
+                  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"/>:
                 <Image
                   priority
                   width={200}
                   height={200}
-                  src={'https://images.unsplash.com/photo-1507072757289-c7de1a8c075e?q=80&w=1854&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                  alt={active.name}
+                  src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                  alt={"user did'nt provide image"}
                   className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                />
+                />}
               </motion.div>
 
               <div>

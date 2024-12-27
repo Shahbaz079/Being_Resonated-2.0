@@ -57,7 +57,8 @@ useEffect(() => {
            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               email:user?.primaryEmailAddress?.emailAddress,
-              userId:userId
+              userId:userId,
+              image:user?.imageUrl,
             
              }) });
 
@@ -81,6 +82,43 @@ useEffect(() => {
 
  
 }, [isLoaded,userId,mongoId,user]);
+
+useEffect(() => {
+   if (isLoaded && user?.imageUrl) { 
+  // Function to be triggered when profileImageUrl changes
+   const handleProfileImageChange = () => { console.log('Profile image updated:', user.imageUrl);
+     // Add your additional logic here 
+
+      const fetchData = async () => {
+        try {
+          const result=await fetch('/api/user',{
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  email:user?.primaryEmailAddress?.emailAddress,
+                  image:user?.imageUrl,
+                
+                }) });
+          if(result.ok){
+    
+            toast.success('User updated successfully');
+            console.log("Done")
+          }
+          else{
+            toast.error('Failed to update user data');
+            console.error('Error:', result);
+          }
+        } catch (error) {
+          toast.error('Failed to update user');
+          console.error('Error:', error);
+        }
+      }
+     }; 
+
+     
+     handleProfileImageChange(); 
+
+   }   }, [ user?.imageUrl]);
 
   if(!isLoaded) return <div>Loading...</div>
   
