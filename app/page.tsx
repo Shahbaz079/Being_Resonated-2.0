@@ -64,16 +64,16 @@ useEffect(() => {
 
              if(res.ok){
 
-              toast.success('User retrieved successfully');
+              console.log('User retrieved successfully');
              }
         }
       
       else{
-        toast.error('Failed to transfer user data');
+       
         console.error('Error:', result);
       }
     } catch (error) {
-      toast.error('Failed to create user');
+      
       console.error('Error:', error);
     }}
   };
@@ -86,7 +86,7 @@ useEffect(() => {
 useEffect(() => {
    if (isLoaded && user?.imageUrl) { 
   // Function to be triggered when profileImageUrl changes
-   const handleProfileImageChange = () => { console.log('Profile image updated:', user.imageUrl);
+   const handleProfileImageChange = () => { 
      // Add your additional logic here 
 
       const fetchData = async () => {
@@ -101,15 +101,14 @@ useEffect(() => {
                 }) });
           if(result.ok){
     
-            toast.success('User updated successfully');
+           
             console.log("Done")
           }
           else{
-            toast.error('Failed to update user data');
             console.error('Error:', result);
           }
         } catch (error) {
-          toast.error('Failed to update user');
+         
           console.error('Error:', error);
         }
       }

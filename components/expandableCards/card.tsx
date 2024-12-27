@@ -183,7 +183,7 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
                       {active.name}
                     </motion.h3>
                     <motion.p
-                      layoutId={`description-${active.gradYear}-${id}`}
+                      layoutId={`description-${active.name}-${id}`}
                       className="text-neutral-600 dark:text-neutral-400"
                     >
                      You Both Share these Common Interests: {cInterests.join(", ")}
@@ -252,7 +252,7 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
                   {card.name}
                 </motion.h3>
                 <motion.p
-                  layoutId={`description-${card.gradYear}-${id}`}
+                  layoutId={`description-${card.name}-${id}`}
                   className="text-neutral-600 dark:text-neutral-400 text-center md:text-left"
                 >
                   {card.gradYear}
