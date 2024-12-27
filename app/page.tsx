@@ -113,6 +113,7 @@ useEffect(() => {
           console.error('Error:', error);
         }
       }
+      fetchData();
      }; 
 
      

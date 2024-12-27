@@ -118,6 +118,7 @@ const ProfilePage = () => {
               gradYear:gradYear, //edit it carefully
               interests:interests,
               dob:birthDate,
+              image:user?.imageUrl
             })
           }).then(response=>response.json())
           .then(data=>{
