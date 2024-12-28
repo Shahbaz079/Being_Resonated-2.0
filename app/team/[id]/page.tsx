@@ -72,7 +72,7 @@ const modalCloseHandler=()=>{
         <div className="flex flex-col">
           <div className="">{teamName}</div>
           <div className="">{description}...</div>
-          <button>MORE</button>
+          <button onClick={()=>setModal(true)}>MORE</button>
           <Modal isOpen={modal} onClose={modalCloseHandler}>
             
           <div className="flex flex-col">
