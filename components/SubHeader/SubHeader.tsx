@@ -49,8 +49,8 @@ const SubHeader = () => {
       });
       const data = await result.json();
       setTeams(data.teams);
-      console.log("teams",teams)
-  console.log("data",data);
+      localStorage.setItem("teams",JSON.stringify(data.teams));
+     localStorage.setItem('currentUser', JSON.stringify(data));
       if (result.ok) {
         console.log('teams retrieved successfully');
       } else {
@@ -69,7 +69,7 @@ fetchData();
   }, [isLoaded, user, mongoId]);
  
  
-  
+  console.log("teams",teams)
 
   return (
     <div className='absolute  top-0 left-[5vw]  right-[8vw] w-[50vw] bg-[#555a4a] h-[8vh] my-4 rounded-full items-center text-white flex flex-row justify-between'>
@@ -129,7 +129,7 @@ fetchData();
       )))}
     </Modal></div>
 
-      <Link  href={'/academics'}>Affilated Events</Link>
+      <Link href={'/academics'}>Affilated Events</Link>
       <Link href={'/academics'}>Assigned Works</Link>
     </div>
   )
