@@ -76,3 +76,5 @@ export async function POST(request: NextRequest) {
                                             return NextResponse.json({ error: 'Failed to fetch team' },
                                                { status: 500 }); } finally { 
                                                 if (client) { await client.close(); } } }
+
+

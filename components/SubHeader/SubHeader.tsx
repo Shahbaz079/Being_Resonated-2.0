@@ -117,8 +117,8 @@ fetchData();
             </div>
          
             <Link
-              
-              href={`/team/${team._id}`}
+              onClick={()=>setTeamModal(false)}
+              href={`/team/${team._id}?id=${team._id}`}
               className="addButton px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0" 
             
             >
