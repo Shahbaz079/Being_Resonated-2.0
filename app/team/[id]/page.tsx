@@ -25,7 +25,7 @@ const modalCloseHandler=()=>{
 
   useEffect(()=>{
     const TeamHandler=async()=>{
-      await fetch(`/api/team/${id}?id=${id}`).then(res=>res.json()).then(data=>{
+      await fetch(`/api/team?id=${id}`).then(res=>res.json()).then(data=>{
         setMembers(data.members);
         setTeamImg(data.timage);
         setDescription(data.description);

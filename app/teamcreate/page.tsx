@@ -29,6 +29,7 @@ const CreateTeam = () => {
             const storedMembers: newMember[] = JSON.parse(storedMembersString); 
             setMembers(storedMembers); 
           if(storedUser){
+            setCurrentPerson(JSON.parse(storedUser));
             const totalMembers=[...storedMembers,JSON.parse(storedUser)]
             setMembers(totalMembers);
           } 
@@ -109,7 +110,8 @@ const CreateTeam = () => {
                                 <div className="">
                               {member.name    }  
                               {    member.gradYear}</div>
-                              <button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeHandler(member._id.toString())}>X</button>
+                              {(member._id.toString()!==currentperson?._id.toString())&&<button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeHandler(member._id.toString())}>X</button>}
+                            
                               <button  className= {`$ mx-10 bg-lime-600  rounded-full w-12 h-7`} onClick={()=>{
                                 setLeader(member);
                               
