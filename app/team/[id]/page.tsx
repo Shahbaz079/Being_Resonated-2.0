@@ -1,7 +1,7 @@
 'use client'
 import { useState } from "react";
 
-const page = () => {
+const TeamPage = () => {
   const [userData,setUserData]=useState(null);
   const [teamData,setTeamData]=useState(null);
 
@@ -23,4 +23,4 @@ const page = () => {
   )
 }
 
-export default page
+export default TeamPage
