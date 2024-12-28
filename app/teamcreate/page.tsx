@@ -65,7 +65,7 @@ const CreateTeam = () => {
                     toast.success('Team created successfully!');
                     localStorage.removeItem('members');
 
-                    redirect(`/team/${resData?._id}?id=${resData?._id}`);
+                    window.location.href = `/team/${resData?._id}?id=${resData?._id}`;
                     } else { 
                       toast.error('Failed to create team!');
                         redirect(`/`);
