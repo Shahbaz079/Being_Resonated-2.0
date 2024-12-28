@@ -90,7 +90,7 @@ const CreateTeam = () => {
         <div className="flex flex-row relative w-[100vw] ">
 
           <div className="absolute left-5  h-[80vh] w-[45vw]">
-           <form  className="create-team-form w-[100%] my-[20%] flex flex-col " onSubmit={()=>handleSubmit}>
+           <form  className="create-team-form w-[100%] my-[20%] flex flex-col " onSubmit={handleSubmit}>
 
              <div className="w-[80%] px-4 py-2 flex flex-col ">
                <label htmlFor="name">Team Name:</label>
