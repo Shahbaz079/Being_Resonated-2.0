@@ -8,7 +8,8 @@ const TeamPage = () => {
   
   const currentu=localStorage.getItem('currentUser');
   const currentT=localStorage.getItem('teams');
-
+console.log("users",currentu)
+console.log("teams",currentT)
   if(currentu && currentT){
     const currentUser = JSON.parse(currentu);
     const currentTeams = JSON.parse(currentT);
@@ -16,9 +17,12 @@ const TeamPage = () => {
     setTeamData(currentTeams)
   }
 
+  console.log("localUser",userData)
+  console.log("lacalTeam",teamData)
+
   return (
     <div>
-      {userData} && {teamData}
+      Hii
     </div>
   )
 }
