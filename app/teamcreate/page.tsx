@@ -9,6 +9,7 @@ import { newMember } from "@/components/expandableCards/card";
 import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
 
+
 const CreateTeam = () => {
      const [name, setName] = useState(''); 
      const [description, setDescription] = useState(''); 
@@ -54,7 +55,7 @@ const CreateTeam = () => {
               // Send data to the API
 
               try {
-                const response = await fetch(`/api/team/${id}`, { method: 'POST', 
+                const response = await fetch(`/api/team`, { method: 'POST', 
                   headers: { 'Content-Type': 'application/json' }, 
                   body: JSON.stringify(data), });
                   const resData:IUser |null=await response.json(); 
@@ -66,10 +67,12 @@ const CreateTeam = () => {
 
                     redirect(`/team/${resData?._id}?id=${resData?._id}`);
                     } else { 
-                      toast.error('Failed to create team!');  }
+                      toast.error('Failed to create team!');
+                        redirect(`/`);
+                        }
               } catch (error) {
                 console.error('Error creating team:', error);
-                redirect(`/`);
+              
                 
               }
              
