@@ -74,7 +74,7 @@ fetchData();
   return (
     <div className='absolute  top-0 left-[5vw]  right-[8vw] w-[50vw] bg-[#555a4a] h-[8vh] my-4 rounded-full items-center text-white flex flex-row justify-between'>
       <Link href={'/'}>Home</Link>
-      <div className="">
+      <div className="mx-[5%]">
         
       <button onClick={()=>handleOpenTeamModal()}>Affliated Teams</button>
     <Modal isOpen={teamModal} onClose={handleCloseTeamModal}>
@@ -105,13 +105,13 @@ fetchData();
                   
                   className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left"
                 >
-                  team.name
+                  {team.name}
                 </h3>
                 <p
         
                   className="text-neutral-600 dark:text-neutral-400 text-center md:text-left"
                 >
-                  {team.leader.toString()}
+                  {team.description}
                 </p>
               </div>
             </div>
@@ -129,7 +129,7 @@ fetchData();
       )))}
     </Modal></div>
 
-      <Link href={'/academics'}>Affilated Events</Link>
+      <Link  href={'/academics'}>Affilated Events</Link>
       <Link href={'/academics'}>Assigned Works</Link>
     </div>
   )

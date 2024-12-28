@@ -22,7 +22,11 @@ interface ITeam {
   description: string;
   deadline?: Date;
   members?: Types.ObjectId[];
-  leader: Types.ObjectId;
+  leader: {
+    _id: mongoose.Schema.Types.ObjectId;
+    name: string;
+    gradYear?: number
+  };
   timage?: string;
   createdBy: Types.ObjectId;
   createdAt?: Date;
