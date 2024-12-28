@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople";
 import { newMember } from "@/components/expandableCards/card";
 import { toast } from "react-toastify";
+import { IUser } from "@/components/expandableCards/card";
 
 const CreateTeam = () => {
      const [name, setName] = useState(''); 
@@ -14,6 +15,7 @@ const CreateTeam = () => {
      const [deadline, setDeadline] = useState('');
       const [members, setMembers] = useState<newMember[]>([]);
        const [leader, setLeader] = useState<newMember>(); 
+       const [currentperson,setCurrentPerson]=useState<IUser>()
      //  const [timage, setTimage] = useState('');
      // const [choosed, setChoosed] = useState(false);
 
@@ -21,10 +23,16 @@ const CreateTeam = () => {
       const id = searchParams.get('id') as string;
 
        const loadMembers = () => { 
+        const storedUser = localStorage.getItem('currentUser');
           const storedMembersString = localStorage.getItem('members');
            if (storedMembersString) { 
             const storedMembers: newMember[] = JSON.parse(storedMembersString); 
-            setMembers(storedMembers); } };
+            setMembers(storedMembers); 
+          if(storedUser){
+            const totalMembers=[...storedMembers,JSON.parse(storedUser)]
+            setMembers(totalMembers);
+          } 
+          } };
             
             useEffect(() => {
                loadMembers(); 
@@ -47,18 +55,20 @@ const CreateTeam = () => {
               try {
                 const response = await fetch(`/api/team/${id}`, { method: 'POST', 
                   headers: { 'Content-Type': 'application/json' }, 
-                  body: JSON.stringify(data), }); 
+                  body: JSON.stringify(data), });
+                  const resData:IUser |null=await response.json(); 
                   // Handle response
                   if (response.ok) { 
                     
                     toast.success('Team created successfully!');
                     localStorage.removeItem('members');
 
-                    redirect(`/profile/${id}`);
+                    redirect(`/team/${resData?._id}?id=${resData?._id}`);
                     } else { 
                       toast.error('Failed to create team!');  }
               } catch (error) {
                 console.error('Error creating team:', error);
+                redirect(`/`);
                 
               }
              
@@ -76,7 +86,7 @@ const CreateTeam = () => {
         <div className="flex flex-row relative w-[100vw] ">
 
           <div className="absolute left-5  h-[80vh] w-[45vw]">
-           <form  className="create-team-form w-[100%] my-[20%] flex flex-col " onSubmit={handleSubmit}>
+           <form  className="create-team-form w-[100%] my-[20%] flex flex-col " onSubmit={()=>handleSubmit}>
 
              <div className="w-[80%] px-4 py-2 flex flex-col ">
                <label htmlFor="name">Team Name:</label>
