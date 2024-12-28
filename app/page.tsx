@@ -77,9 +77,9 @@ useEffect(() => {
       console.error('Error:', error);
     }}
   };
-
+if(mongoId==null || mongoId===''|| mongoId===undefined){
   fetchData();
-
+}
  
 }, [isLoaded,userId,mongoId,user]);
 

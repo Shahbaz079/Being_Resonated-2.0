@@ -13,3 +13,20 @@ const TeamSchema=new mongoose.Schema({
 },{timestamps:true})
 
 export const Team=mongoose.models?.Team || mongoose.model("Team",TeamSchema);
+
+import { Types } from 'mongoose';
+
+interface ITeam {
+  _id?: mongoose.Schema.Types.ObjectId;
+  name: string;
+  description: string;
+  deadline?: Date;
+  members?: Types.ObjectId[];
+  leader: Types.ObjectId;
+  timage?: string;
+  createdBy: Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export default ITeam;

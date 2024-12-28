@@ -7,7 +7,7 @@ import { SessionProvider } from "next-auth/react"
 import { ClerkProvider } from "@clerk/nextjs";
 import {ToastContainer} from 'react-toastify'
 import Header from "@/components/header/header";
-
+import SubHeader from "@/components/SubHeader/SubHeader";
 
 
 
@@ -42,8 +42,8 @@ export default function RootLayout({
 
         <SessionProvider>
         <ToastContainer/>
-        <Header/>
-               
+        <Header />
+         <SubHeader/>      
         {children}
         <ToastContainer/>
         </SessionProvider>
