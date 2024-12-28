@@ -39,8 +39,8 @@ const SubHeader = () => {
   
   useEffect(() => {
      
- const fetchData = async () => {
-  if (isLoaded && user && !mongoId) {
+ const handleTeamsData=()=>{const fetchData = async () => {
+  if (isLoaded && user && mongoId) {
     try {
       const result = await fetch(`/api/currentperson?id=${mongoId}`, {
         method: 'GET',
@@ -62,8 +62,10 @@ const SubHeader = () => {
     }
   }
 }
+fetchData();
+}
 
-    fetchData();
+    handleTeamsData();
   }, [isLoaded, user, mongoId]);
  
  
