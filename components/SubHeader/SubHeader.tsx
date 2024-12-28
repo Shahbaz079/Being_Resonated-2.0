@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs'
 import { useState,useEffect } from 'react'
 import ITeam from '@/models/Team'
 import Modal from '../Modal/Modal'
+import { IUser } from '../expandableCards/card'
 const SubHeader = () => {
   const {user,isLoaded}=useUser();
   const mongoId=user?.publicMetadata.mongoId as string
@@ -35,34 +36,37 @@ const SubHeader = () => {
   const handleCloseTeamModal=()=>{
     setTeamModal(false)
   }
-   
+  
+  useEffect(() => {
+     
  const fetchData = async () => {
-    if (isLoaded && user && !mongoId) {
-      try {
-        const result = await fetch(`/api/currentperson?id=${mongoId}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-         
-        });
-        const data = await result.json();
-        setTeams(data.teams);
-
-        if (result.ok) {
-          console.log('teams retrieved successfully');
-        } else {
-         console.error('Failed to retrieve teams');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        
+  if (isLoaded && user && !mongoId) {
+    try {
+      const result = await fetch(`/api/currentperson?id=${mongoId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+       
+      });
+      const data = await result.json();
+      setTeams(data.teams);
+      console.log("teams",teams)
+  console.log("data",data);
+      if (result.ok) {
+        console.log('teams retrieved successfully');
+      } else {
+       console.error('Failed to retrieve teams');
       }
+    } catch (error) {
+      console.error('Error:', error);
+      
     }
   }
-  useEffect(() => {
+}
+
     fetchData();
   }, [isLoaded, user, mongoId]);
  
-  console.log(teams)
+ 
   
 
   return (
