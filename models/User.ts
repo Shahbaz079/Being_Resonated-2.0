@@ -6,7 +6,7 @@ const userSchema=new mongoose.Schema({
   
   email:{type:String,required:true},
   dob:{type:Date,required:false},
-
+  events:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Event"}],
   gradYear:{type:Number,required:false},
   password:{type:String,select:false},
   image:{type:String,required:false},

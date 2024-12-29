@@ -126,14 +126,23 @@ const modalCloseHandler=()=>{
                             View Profile
                           </Link>
               
-                      </div>
+                      </div> 
             }
          
             )}
             </div>
           </Modal>
+
+
         </div>
 
+        </div>
+        <div className="w-[100%] h-[50%]  flex flex-col">
+         <Link href={'/eventcreate'}>Create Event</Link>
+         
+         <button>Announcement</button>
+          <button>POST</button>
+          
         </div>
        
       </div>
