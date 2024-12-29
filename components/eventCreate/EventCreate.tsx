@@ -10,26 +10,35 @@ import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
 
 
-const CreateEvent = () => {
+const CreateEvent = ({members, teamId}: {members: IUser[] |null, teamId: string|null}) => {
      const [name, setName] = useState(''); 
      const [description, setDescription] = useState(''); 
      const [eventDate, setEventDate] = useState('');
-      const [members, setMembers] = useState<newMember[]>([]);
+     const [eventMembers,setEventMembers]=useState<IUser[] |null>(members);
+     
        const [leaders, setLeaders] = useState<newMember[]>(); 
-       const [currentTeam,setCurrentTeam]=useState();
+       const [newMembers,setNewMembers]=useState<IUser[]|null>(null);
      //  const [timage, setTimage] = useState('');
      // const [choosed, setChoosed] = useState(false);
 
-      const searchParams = useSearchParams();
-      const teamId = searchParams.get('id') as string;
+     
 
       const currentPerson=localStorage.getItem('currentUser')?JSON.parse(localStorage.getItem('currentUser') as string):null;
+
+      if(members){
+        const newMembers=[...members,currentPerson];
+        setNewMembers(newMembers);
+      }else{
+        const newMembers=[currentPerson];
+        setNewMembers(newMembers);
+      }
+      
 
            
 
         const handleSubmit = async (event:FormEvent) => { 
             event.preventDefault(); // Prepare data
-              const data = { name, description, date:eventDate, members, leaders, createdBy: currentPerson?currentPerson._id:null, teamId };
+              const data = { name, description, date:eventDate, members:eventMembers, leaders, createdBy: currentPerson?currentPerson._id:null, teamId };
         
               // Send data to the API
 
@@ -59,9 +68,12 @@ const CreateEvent = () => {
            };
 
                               const removeHandler=(id:string)=>{
-                                const newMembers=members.filter(member=>member._id.toString()!==id);
-                                setMembers(newMembers);
-                                
+                                const newMembers=eventMembers?.filter(member=>member._id.toString()!==id);
+                                if(newMembers){
+                                setEventMembers(newMembers);
+                                }else{
+                                  setEventMembers([]);
+                                }
                               }
 
                               const removeLeader=(id:string)=>{
@@ -80,7 +92,15 @@ const CreateEvent = () => {
                   }else{
                     setLeaders([member]);
                   }
-                }              
+                }  
+                
+                const addToEvent=(member:IUser)=>{
+                  if(eventMembers){
+                    setEventMembers([...eventMembers,member]);
+                  }else{
+                    setEventMembers([member]);
+                  }
+                }
 
 
     return (
@@ -90,8 +110,8 @@ const CreateEvent = () => {
            <form  className="create-team-form w-[100%] my-[20%] flex flex-col " onSubmit={handleSubmit}>
 
              <div className="w-[80%] px-4 py-2 flex flex-col ">
-               <label htmlFor="name">Team Name:</label>
-              <input type="text" id="name" className="bg-[#484444] rounded-full h-[35px] px-5" value={name} onChange={(e) =>
+               <label htmlFor="name">Event Name:</label>
+              <input type="text" id="name"  className="bg-[#484444] rounded-full h-[35px] px-5" value={name} onChange={(e) =>
                  setName(e.target.value)} required /> 
                  </div>
 
@@ -103,9 +123,9 @@ const CreateEvent = () => {
                    </div> 
 
                   {
-                    members.length>0 && (
+                    eventMembers && eventMembers.length > 0 && (
                       <div className="">Crew for the Event:
-                        {members.map(member=>(
+                        {eventMembers?.map(member=>(
                             <div className="flex flex-row" key={member._id.toString()} >
                                 <div className="">
                               {member.name  }  
@@ -134,7 +154,7 @@ const CreateEvent = () => {
 
                    <div className="w-[80%] px-4 py-2 flex flex-col "> 
                     <label htmlFor="eventDate">eventDate</label> 
-                   <input type="date" id="eventDate" value={eventDate} className="bg-[#484444] rounded-full h-[6%] px-5"
+                   <input type="date" id="eventDate" value={eventDate} className="bg-[#484444] rounded-full h-[6%] px-5" required
                    onChange={(e) => setEventDate(e.target.value)} /> 
                    </div>
 
@@ -149,8 +169,8 @@ const CreateEvent = () => {
           </div>
           
           <div className="w-[45%] overflow-y-scroll h-[80vh] rounded-[8px] border-[4px] absolute  top-[10vh] right-5 left-[50%]">
-          {members.length>0 && 
-          members.map(member=>(
+          {newMembers && newMembers?.length>0 && 
+          newMembers.map(member=>(
             <div className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer" key={member._id.toString()}>
 
               <div className="flex gap-4 flex-col  md:flex-row ">
@@ -190,7 +210,7 @@ const CreateEvent = () => {
                        
                           <button
                             
-                            
+                            onClick={()=>addToEvent(member)}
                             className="addButton px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0" 
                           
                           >
@@ -209,10 +229,4 @@ const CreateEvent = () => {
 
 
 
-
-const CreateEventWithSuspense = () => (
-   <Suspense fallback={<div>Loading...</div>}>
-     <CreateEvent /> 
-     </Suspense> )
-
-export default CreateEventWithSuspense;
+export default CreateEvent;

@@ -4,6 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Modal from "@/components/Modal/Modal";
 import Link from "next/link";
+import CreateEvent from "@/components/eventCreate/EventCreate";
+
+
 const TeamPage = () => {
   
   const [members,setMembers]=useState<IUser[]|null>([])
@@ -16,6 +19,11 @@ const [modal,setModal]=useState(false);
 
 const modalCloseHandler=()=>{
   setModal(false);
+}
+
+const [eventModal,setEventModal]=useState(false);
+const eventModalCloseHandler=()=>{
+  setEventModal(false);
 }
 
   const searchParams=useSearchParams();
@@ -137,9 +145,14 @@ const modalCloseHandler=()=>{
         </div>
 
         </div>
-        <div className="w-[100%] h-[50%]  flex flex-col">
-         <Link href={'/eventcreate'}>Create Event</Link>
+        <div className="w-[100%] h-[50%]  flex flex-col justify-center items-center">
          
+         <div className="">
+         <button onClick={()=>setEventModal(true)}>Create Event</button>
+         <Modal isOpen={eventModal} onClose={eventModalCloseHandler}>
+          <CreateEvent teamId={id} members={members} />
+         </Modal>
+         </div>
          <button>Announcement</button>
           <button>POST</button>
           
@@ -154,7 +167,7 @@ const modalCloseHandler=()=>{
       </div>
       
     </div>
-  );
+  )
 }
 
 export default TeamPage;
