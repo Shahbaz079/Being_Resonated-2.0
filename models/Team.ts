@@ -8,7 +8,7 @@ const TeamSchema=new mongoose.Schema({
   leader:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"User"},
   timage:{type:String,required:false},
   createdBy:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"User"},
-
+  events:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Event"}],
 
 },{timestamps:true})
 
@@ -31,6 +31,7 @@ interface ITeam {
   createdBy: Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
+  
 }
 
 export default ITeam;

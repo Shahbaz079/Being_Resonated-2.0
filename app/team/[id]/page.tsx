@@ -5,10 +5,32 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/Modal/Modal";
 import Link from "next/link";
 import CreateEvent from "@/components/eventCreate/EventCreate";
+import EventModal from "@/components/Modal/EventModal";
+import { Calendar, Users, Award, ChevronRight, ArrowUpRight, Sparkles, Star, MessageCircle, Share2 } from 'lucide-react';
+import mongoose from "mongoose";
+
+
+interface IEvent { 
+  _id: mongoose.Schema.Types.ObjectId; 
+  name: string;
+   leaders?: mongoose.Schema.Types.ObjectId[];
+    image: string;
+     team: mongoose.Schema.Types.ObjectId; 
+     date: Date;
+      members?: mongoose.Schema.Types.ObjectId[];
+       description: string; 
+       createdBy: mongoose.Schema.Types.ObjectId; 
+       participated?: mongoose.Schema.Types.ObjectId[]; 
+       location: string;
+        time: string; 
+        createdAt?: Date; 
+        updatedAt?: Date; 
+      } 
+      
 
 
 const TeamPage = () => {
-  
+
   const [members,setMembers]=useState<IUser[]|null>([])
   const [teamImg,setTeamImg]=useState<string|null>(null);
   const [description,setDescription]=useState<string|null>("");
@@ -16,6 +38,7 @@ const [createdBy,setCreatedBy]=useState<IUser|null>();
 const [leader,setLeader]=useState<IUser>();
 const [teamName,setTeamName]=useState<string>("")
 const [modal,setModal]=useState(false);
+const [events,setEvents]=useState<IEvent[] |null>([])
 
 const modalCloseHandler=()=>{
   setModal(false);
@@ -40,6 +63,7 @@ const eventModalCloseHandler=()=>{
         setCreatedBy(data.createdBy);
         setLeader(data.leader);
         setTeamName(data.name);
+        setEvents(data.events)
       })
 
 
@@ -149,9 +173,9 @@ const eventModalCloseHandler=()=>{
          
          <div className="">
          <button onClick={()=>setEventModal(true)}>Create Event</button>
-         <Modal isOpen={eventModal} onClose={eventModalCloseHandler}>
+         <EventModal isOpen={eventModal} onClose={eventModalCloseHandler}>
           <CreateEvent teamId={id} members={members} />
-         </Modal>
+         </EventModal>
          </div>
          <button>Announcement</button>
           <button>POST</button>
@@ -162,8 +186,34 @@ const eventModalCloseHandler=()=>{
 
 
 
-      <div className="w-[45%] h-[100%] border-white bg-lime-950 rounded-2xl">
+      <div className="w-[45%] h-[100%] border-white bg-lime-950 rounded-2xl overflow-y-scroll ">
              <h1 className="w-[90%] text-center">Upcoming Events</h1>
+
+             {events?.map((event) => (
+            <div 
+              key={event._id.toString()}
+              className="p-4 bg-gradient-to-br from-white to-purple-50 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-purple-100 group w-[90%] mt-4 mx-[4.5%]"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-lg text-purple-800 group-hover:text-purple-600 transition-colors">{event.name}</h3>
+                  <p className="text-purple-600 text-sm mt-1 flex items-center gap-2">
+                    <span className="inline-block w-2 h-2 bg-purple-400 rounded-full animate-ping" />
+                    {new Date(event.date).toLocaleDateString()} at {event.time}
+                  </p>
+                  <p className="text-purple-500 text-sm">{event.location}</p>
+                </div>
+                <button className="text-pink-600 hover:bg-pink-50 p-2 rounded-full transition-colors group-hover:rotate-45 transform duration-300">
+                  <ArrowUpRight />
+                </button>
+              </div>
+              <p className="mt-2 text-purple-700">{event.description}</p>
+              <div className="mt-3 flex items-center gap-2 text-purple-500">
+                <Users size={16} />
+                <span>{event.participated?.length==0?"0":event?.participated?.length} attending</span>
+              </div>
+            </div>
+          ))}
       </div>
       
     </div>
