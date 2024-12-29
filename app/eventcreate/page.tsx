@@ -104,12 +104,12 @@ const CreateEvent = () => {
 
                   {
                     members.length>0 && (
-                      <div className="">Event's Crew:
+                      <div className="">Crew for the Event:
                         {members.map(member=>(
                             <div className="flex flex-row" key={member._id.toString()} >
                                 <div className="">
-                              {member.name    }  
-                              {    member.gradYear}</div>
+                              {member.name  }  
+                              { member.gradYear}</div>
                               <button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeHandler(member._id.toString())}>X</button>
                             
                               <button  className= {`$ mx-10 bg-lime-600  rounded-full w-12 h-7`} onClick={()=>{
