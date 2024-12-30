@@ -69,9 +69,9 @@ useEffect(()=>{
         <p>{createdBy?.name}</p>
         <p>{team?.name}</p>
         <p>Members</p>
-        {members?.map(member=><p>{member.name}</p>)}
+        {members?.map(member=><p key={member._id.toString()}>{member.name}</p>)}
         <p>Leaders</p>
-        {leaders?.map(leader=><p>{leader.name}</p>)}
+        {leaders?.map(leader=><p key={leader._id.toString()}>{leader.name}</p>)}
         </div>
     </div>
   )
