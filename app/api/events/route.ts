@@ -79,3 +79,24 @@ export async function POST(request: NextRequest) {
     }
   }
 }
+
+
+
+export async function GET(request: NextRequest) {
+  let client: MongoClient | null = null;
+  try {
+    client = new MongoClient(uri!);
+    await client.connect();
+    const db = client.db(dbName!);
+    const events = db.collection('events');
+     const eventId = request.nextUrl.searchParams.get('id');
+    const event = await events.findOne({ _id: new ObjectId(eventId as string) });
+
+    return NextResponse.json(event);
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}
+

@@ -8,9 +8,9 @@ import CreateEvent from "@/components/eventCreate/EventCreate";
 import EventModal from "@/components/Modal/EventModal";
 import { Calendar, Users, Award, ChevronRight, ArrowUpRight, Sparkles, Star, MessageCircle, Share2 } from 'lucide-react';
 import mongoose from "mongoose";
+import { useUser } from "@clerk/nextjs";
 
-
-interface IEvent { 
+export interface IEvent { 
   _id: mongoose.Schema.Types.ObjectId; 
   name: string;
    leaders?: mongoose.Schema.Types.ObjectId[];
@@ -30,7 +30,7 @@ interface IEvent {
 
 
 const TeamPage = () => {
-
+  
   const [members,setMembers]=useState<IUser[]|null>([])
   const [teamImg,setTeamImg]=useState<string|null>(null);
   const [description,setDescription]=useState<string|null>("");
@@ -51,7 +51,11 @@ const eventModalCloseHandler=()=>{
 
   const searchParams=useSearchParams();
   const id=searchParams.get("id");
-  console.log(id)
+  console.log(id,"team id")
+
+  const {user,isLoaded}=useUser();
+  const mongoId=user?.publicMetadata.mongoId as string
+
 
 
   useEffect(()=>{
@@ -203,9 +207,9 @@ const eventModalCloseHandler=()=>{
                   </p>
                   <p className="text-purple-500 text-sm">{event.location}</p>
                 </div>
-                <button className="text-pink-600 hover:bg-pink-50 p-2 rounded-full transition-colors group-hover:rotate-45 transform duration-300">
+                <Link href={`/event/${event._id.toString()}?uid=${mongoId}`} className="text-pink-600 hover:bg-pink-50 p-2 rounded-full transition-colors group-hover:rotate-45 transform duration-300">
                   <ArrowUpRight />
-                </button>
+                </Link>
               </div>
               <p className="mt-2 text-purple-700">{event.description}</p>
               <div className="mt-3 flex items-center gap-2 text-purple-500">
