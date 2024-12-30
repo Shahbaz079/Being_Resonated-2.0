@@ -51,6 +51,13 @@ const CreateTeam = () => {
 
         const handleSubmit = async (event:FormEvent) => { 
             event.preventDefault(); // Prepare data
+
+            
+    if (!name || !description || !deadline || !members ||!leader || !id ) {
+       toast.error('Please fill in all required fields.'); 
+
+      return;}
+
               const data = { name, description, deadline, members, leader, createdBy: id }; 
               // Send data to the API
 
@@ -65,7 +72,7 @@ const CreateTeam = () => {
                     toast.success('Team created successfully!');
                     localStorage.removeItem('members');
 
-                    window.location.href = `/team/${resData?._id}?id=${resData?._id}`;
+                    window.location.href = `/`;
                     } else { 
                       toast.error('Failed to create team!');
                         redirect(`/`);

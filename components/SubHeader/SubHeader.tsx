@@ -178,8 +178,8 @@ fetchData();
             </div>
          
             <Link
-              onClick={()=>setTeamModal(false)}
-              href={`/team/${event._id}?id=${event._id}`}
+              onClick={()=>setEventModal(false)}
+              href={`/event/${event._id}?uid=${mongoId}`}
               className="addButton px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0" 
             
             >
