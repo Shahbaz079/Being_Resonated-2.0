@@ -28,7 +28,7 @@ import { MongoClient ,ObjectId} from 'mongodb';
 // Multer setup
 
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   console.log(req)
 
   const { imgUrl } = await req.json();
