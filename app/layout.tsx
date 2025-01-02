@@ -8,6 +8,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import {ToastContainer} from 'react-toastify'
 import Header from "@/components/header/header";
 import SubHeader from "@/components/SubHeader/SubHeader";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 
 
@@ -43,8 +44,10 @@ export default function RootLayout({
         <SessionProvider>
         <ToastContainer/>
         <Header />
+        <EdgeStoreProvider>
          <SubHeader/>      
         {children}
+        </EdgeStoreProvider>
         <ToastContainer/>
         </SessionProvider>
        
