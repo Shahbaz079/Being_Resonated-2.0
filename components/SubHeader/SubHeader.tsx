@@ -7,6 +7,7 @@ import ITeam from '@/models/Team'
 import Modal from '../Modal/Modal'
 import { IUser } from '../expandableCards/card'
 import { IEvent } from '@/app/team/[id]/page'
+import Image from 'next/image'
 const SubHeader = () => {
   const {user,isLoaded}=useUser();
   const mongoId=user?.publicMetadata.mongoId as string
@@ -89,7 +90,7 @@ fetchData();
 
 <div className="flex gap-4 flex-col  md:flex-row ">
               <div>
-              { team.timage ? <img
+              { team.timage ? <Image
                   
                   width={100}
                   height={100}

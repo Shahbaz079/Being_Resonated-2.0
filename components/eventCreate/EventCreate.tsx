@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
 import { useUser } from "@clerk/nextjs";
 import { Mongoose } from "mongoose";
+import Image from "next/image";
 const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: string | null }) => {
   const {user}=useUser();
   const [name, setName] = useState(''); 
@@ -158,7 +159,7 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
                     src={member.image}
                     alt={member.name}
                   /> :
-                    <img
+                    <Image
                       width={100}
                       height={100}
                       src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}

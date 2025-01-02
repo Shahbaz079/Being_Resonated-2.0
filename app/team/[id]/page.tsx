@@ -9,6 +9,7 @@ import EventModal from "@/components/Modal/EventModal";
 import { Calendar, Users, Award, ChevronRight, ArrowUpRight, Sparkles, Star, MessageCircle, Share2 } from 'lucide-react';
 import mongoose from "mongoose";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 export interface IEvent { 
   _id: mongoose.Schema.Types.ObjectId; 
@@ -88,7 +89,7 @@ const eventModalCloseHandler=()=>{
       <div className="w-[50%] h-[100%]">
         <div className="flex w-[100%] h-[30%] flex-row">
         <div className="w-[30%] h-[100%]">
-          { teamImg ? <img
+          { teamImg ? <Image
                             
                             width={200}
                             height={200}
