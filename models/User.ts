@@ -18,6 +18,7 @@ const userSchema=new mongoose.Schema({
      team: { type:mongoose.Schema.Types.ObjectId, ref: 'Team', required: true } }],
   role:{type:String,default:'user'},
   authProviderId:{type:String},
+  posts:[{typr:String,required:false}],
 
 },{timestamps:true})
 

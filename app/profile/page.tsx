@@ -51,12 +51,38 @@ const ProfilePage = () => {
 
         const fetchTeamData = async () => {
             try { 
-              const response = await fetch(`/api/team/${mId}`);
-                const data = await response.json(); 
-                setTeams(data); 
-                console.log(data);
-              } catch (error) { 
-                console.error('Error fetching team:', error); } };
+              const res = await fetch(`/api/team/${mId}`);
+
+              if (!res.ok) { throw new Error('Network response was not ok');
+            }
+
+
+
+            const contentType = res.headers.get('content-type'); 
+            if (contentType && contentType.indexOf('application/json') !== -1) { 
+              const data = await res.json();
+              setTeams(data);
+              
+              
+            
+            } else {
+               const text = await res.text(); 
+               
+               console.error('Received non-JSON response:', text); } 
+              } catch (error) { console.error('Error fetching team:', error); }
+
+          }
+
+
+
+
+
+
+
+                
+              
+              
+              
         
         
         const fetchUserData = async () => { 

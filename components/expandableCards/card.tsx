@@ -20,6 +20,7 @@ import mongoose from "mongoose";
          assignedWorks?: { work?: string; 
           completionDate: Date; 
           team: mongoose.Schema.Types.ObjectId; }[];
+          posts?: string[];
            role?: string; 
            authProviderId?: string;
             createdAt?: Date;
