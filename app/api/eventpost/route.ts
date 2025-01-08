@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
     const events = db.collection('events');
     const teams = db.collection('teams');
 
-    const { title, image, caption, createdBy, Location, time, date, eventId } = body;
+    const { title,name, image, caption, createdBy, Location, time, date, eventId } = body;
 
-    const team = await teams.findOne({ _id: new ObjectId(eventId as string) });
+    const team = await teams.findOne({ _id: new ObjectId(title as string) });
 
     if (!team) {
       return NextResponse.json({ error: 'Team not found' }, { status: 404 });
@@ -47,7 +47,8 @@ export async function POST(req: NextRequest) {
 
     
     const post = {
-      title:team.name,
+      title:name,
+      from:team.name,
       image,
       caption,
       createdBy: new ObjectId(createdBy as string),
@@ -66,7 +67,8 @@ export async function POST(req: NextRequest) {
     if (result.acknowledged) {
       await events.findOneAndUpdate(
         { _id: event._id },
-        { $set: { isLive: true } }
+        { $set: { isLive: true ,Post:result.insertedId},
+       }
       );
       return NextResponse.json({ message: 'Event Post created successfully', event: post }, { status: 201 });
     } else {

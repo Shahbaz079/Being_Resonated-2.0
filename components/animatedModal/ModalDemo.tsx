@@ -40,7 +40,7 @@ const {user}=useUser();
         if(response.url){
         const res= await fetch(`/api/eventpost`,{
           method:"POST",
-          body:JSON.stringify({title:event?.team,image:response.url,caption,createdBy:user?.publicMetadata.mongoId,Location:event?.location,time:event?.time,date:event?.date,eventId:event?._id}),
+          body:JSON.stringify({title:event?.team,name:event?.name,image:response.url,caption,createdBy:user?.publicMetadata.mongoId,location:event?.location,time:event?.time,date:event?.date,eventId:event?._id}),
         })
         if(res.ok){
           toast.success("Post created successfully")

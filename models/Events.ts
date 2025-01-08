@@ -13,6 +13,7 @@ const EventSchema=new mongoose.Schema({
   location:{type:String,required:true},
   time:{type:String,required:true},
   isLive:{type:Boolean,required:true,default:false},
+  posts:{type:mongoose.Schema.Types.ObjectId,required:false,ref:"EventPost"}
   
 
 },{timestamps:true})

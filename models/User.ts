@@ -12,10 +12,10 @@ const userSchema=new mongoose.Schema({
   image:{type:String,required:false},
   interests:[{type:String,required:false}],
   teams:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Team"}],
-  assignedWorks: [ {
-     work: { type: String, required: false },
-     completionDate:{type:Date,required:true},
-     team: { type:mongoose.Schema.Types.ObjectId, ref: 'Team', required: true } }],
+ // assignedWorks: [ {
+    // work: { type: String, required: false },
+    // completionDate:{type:Date,required:true},
+   //  team: { type:mongoose.Schema.Types.ObjectId, ref: 'Team', required: true } }],
   role:{type:String,default:'user'},
   authProviderId:{type:String},
   posts:[{type:String,required:false}],

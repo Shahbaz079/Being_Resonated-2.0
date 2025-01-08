@@ -11,6 +11,7 @@ import Link from "next/link";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { useSearchParams } from "next/navigation";
 
+import Image from "next/image";
 
 interface Team { 
   _id:ObjectId;
@@ -41,6 +42,7 @@ const ProfilePage = () => {
     //const [assignedWorks, setAssignedWorks] = useState<string[]>([]);
     const [birthDate, setBirthDate] = useState<Date>(); 
     const [gradYear, setGradYear] = useState<number>(); 
+    const [image,setimage]=useState<string>("")
 
   
     const [edit,setEdit]=useState<boolean>(false);
@@ -96,6 +98,7 @@ const ProfilePage = () => {
              // setAssignedWorks(data.assignedWorks || []); 
               setBirthDate(data.dob || "");
                setGradYear(data.gradYear || ""); 
+               setimage(data.image|| "");
               } catch (error) { 
                 console.error('Error fetching user:', error); } };
 
@@ -164,42 +167,41 @@ const ProfilePage = () => {
  
 
 
-  return (<div className="mainContainer">
+  return (<div className=" w-[90vw] h-[90vh] mx-[5vw] " >
+
+<button onClick={()=>setEdit(!edit)} className={` absolute top-[15vh] right-[10vw] w-8 h-8 bg-slate-500 rounded-full`}>
+     {!edit? <MdOutlineModeEditOutline className="w-6 h-6"/>:<div className="p-1 rounded-lg ">X</div>}
+        </button>  
     
-    <div className=" text-gray-300 cardContainer" style={{"--quantity":3} as React.CSSProperties} >
-     
-      <div style={{"--position":3} as React.CSSProperties} className="cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl  flex flex-col justify-center z-20">
+    <div className=" bg-slate-500 text-gray-300 w-[100%] h-[30%] mt-[10vh] flex flex-row justify-around  items-center  "  >
+    
 
+      <div className="w-[30%] mr-[10vw]  ">
+        <Image className="object-fill rounded-xl "  alt={name} src={image} width={300} height={300}/>
+      </div>
 
-      <button onClick={()=>setEdit(true)} className={`${edit?"hidden":""} absolute top-1 right-2 w-8 h-8 bg-slate-500 rounded-full`}>
-      <MdOutlineModeEditOutline className="w-6 h-6"/>
-        </button>       
-
-        <div className=" h-[90%] flex flex-col justify-start align-middle text-lg">
-
-          <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6]">Name: {name} </div>
-
-          <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6]">Email: {email}</div>
-
-          
-
-             {edit?(<div className="flex flex-row">
-          <label htmlFor="gradYear">Graduation Year:</label>
-          <input type="number" className="w-[50%]" onChange={(e)=>setGradYear(Number(e.target.value))} />
-          </div>):
-          <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6] flex flex-row">
-          <div className="">Graduation Year:</div>
-          <div className="">{gradYear?gradYear:<div>Not Provided </div>}</div></div>
-            
-        }
+      <div className="w-[70%] h-[100%] flex  flex-col">
+      <div className=" my-4">{name} </div>
 
 
 
-          {edit?(<div className="flex flex-row">
+
+
+   {edit?(<div className="flex flex-row">
+<label htmlFor="gradYear">Graduation Year:</label>
+<input type="number" className="w-[50%]" onChange={(e)=>setGradYear(Number(e.target.value))} />
+</div>):
+<div className="  flex flex-row">
+<div className="">Graduation Year:</div>
+<div className="">{gradYear?gradYear:<div>Not Provided </div>}</div></div>
+  
+}
+
+{edit?(<div className="flex flex-row">
           <label htmlFor="birthDate">Birth date:</label>
           <input type="date" className="w-[50%]" onChange={(e)=>setBirthDate(new Date(e.target.value))} />
           </div>):
-          <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6] flex flex-row">
+          <div className="w-[100%] flex flex-row">
           <div className="">Birth Date:</div>
           <div className="">{birthDate?birthDate.toString():<div>Not Provided </div>}</div></div>
             
@@ -208,11 +210,11 @@ const ProfilePage = () => {
 
           {
             edit?(<>
-            <div>
+            <div className="relative">
                <label htmlFor="custom-dropdown">Choose your interests:</label> 
-               <input id="custom-dropdown" value={inputValue}
+               <input id="custom-dropdown" className="border-2 rounded-lg" value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)} placeholder="Type to search..." /> 
-                {inputValue && ( <div className="dropdown">
+                {inputValue && ( <div className="dropdown absolute top-10 left-[250px] h-[15vh] overflow-y-scroll">
                    {filteredOptions.map((option, index) => (
                      <div key={index} 
                      onClick={() => { handleAddOption(option); setInputValue('');
@@ -221,10 +223,10 @@ const ProfilePage = () => {
 
                         {option} </div> ))} </div> )} 
 
-                        <div> <h3>Selected Interests:</h3>
-                         <ul> {interests.map((option, index) => ( <li key={index}> {option} <button onClick={() => handleRemoveOption(option)}>Remove</button> </li> ))} </ul> </div> </div>
+                        <div > <h3>Selected Interests:</h3>
+                         <ul> {interests.map((option, index) => ( <li key={index}> {option} <button className="ml-10 p-1 rounded-lg bg-slate-500" onClick={() => handleRemoveOption(option)}>X</button> </li> ))} </ul> </div> </div>
 
-            </>):<div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6] flex flex-row">
+            </>):<div className="w-[100%]  flex flex-row">
             <div className="">Interests:</div>
             <div className="">
               {interests.length?(<div>
@@ -237,8 +239,26 @@ const ProfilePage = () => {
           }
 
          {
-          edit?<button onClick={()=>handleUpdate()}>Update</button>:(<></>)
+          edit?<button onClick={()=>handleUpdate()} className="bg-pink-600 px-4 py-1 rounded-lg my-[5vh]">Update</button>:(<></>)
          }
+
+
+
+      </div>
+
+      
+      
+     
+      <div style={{"--position":3} as React.CSSProperties} className="hidden cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl   flex-col justify-center z-20">
+
+
+           
+
+        <div className=" h-[90%] flex flex-col justify-start align-middle text-lg">
+
+         
+
+         
 
 
 
@@ -247,51 +267,13 @@ const ProfilePage = () => {
        
       </div>
 
-      <div style={{"--position":2} as React.CSSProperties} className="cards tCard  w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#f2a4a4] to-[#848383] rounded-xl  flex flex-col justify-center z-10">
-       {teams.length?(
-        <div className="w-[90%] h-[90%] p-3 flex flex-col ">
-         {
-          teams.map((team)=>(
-            <div className="w-[100%] h-8  text-center bg-neutral-500 rounded-full py-2 my-2" key={team.name}>{team.name}</div>
-          ))
-         }
-         <Link href={`/becommunity`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
-         <Link href={`/teamcreate?id=${mId}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
-        </div>
-       ):(<>
-         <Link href={`/becommunity`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Join Teams</Link>
-         <Link href={`/teamcreate?id=${mId}`} className="w-[100%] h-8 rounded-[5px] bg-[#179883]">Create Team</Link>
-       </>)}
-        
-
-      </div>
-
-      <div style={{"--position":1} as React.CSSProperties} className="cards wCard w-[60%] mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#09b9b6] to-[#2f4a4b] rounded-xl  flex flex-col justify-center z-0">
-        <h1 className="text-center text-[#9e8e9af8] text-2xl font-semibold italic">Assigned Works</h1>
-
-        <div className="h-[75%] flex flex-col justify-start align-middle text-lg">
-
-          <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6]">Name:    {name}</div>
-
-          <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6]">Email: {email}</div>
-
-          <div className="w-[100%] rounded-full px-2 py-2 my-4  bg-gradient-to-bl from-[#525050] to-[#262752c6]">Graduation Year:{gradYear?`${gradYear}`:"Not Provided"}</div>
-
-         <div className="">
-          {
-
-          }
-         </div>
-
-        </div>
-        
-
-      </div>
+ 
+    
     </div>
 
 
 
-  <Ring/>
+  
 
 
 
