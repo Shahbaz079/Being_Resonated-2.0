@@ -1,121 +1,149 @@
-import React from 'react'
-import { EventPost } from '@/app/becommunity/page'
-import { Calendar, MapPin, Clock, ArrowUpRight } from 'lucide-react';
-import { useState } from 'react';
-import Image from 'next/image';
+'use client';
+import React, { useEffect, useState } from 'react';
+//import Modal from 'react-modal';
+import { MapPin, Clock } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 
-interface EventCardProps {
-
-  eventPosts: EventPost[];
-
+interface Event {
+  id: number;
+  title: string;
+  image: string;
+  venue: string;
+  date: string;
+  time: string;
+  description: string;
+  team:string;
 }
 
+const EventsSidebar: React.FC = () => {
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [participatedEvents, setParticipatedEvents] = useState<Set<number>>(new Set());
 
-const EventCard = ({ eventPosts = [] }: EventCardProps) => {
-  const [participatedEvents, setParticipatedEvents] = useState<number[]>([]);
+  const [events,setEvents]=useState<Event[]|null>(null);
 
-  
-  const generateGoogleCalendarLink = (event: any) => {
-    const { name, startDate, endDate, description, location } = event;
-    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-      name
-    )}&dates=${startDate}/${endDate}&details=${encodeURIComponent(
-      description
-    )}&location=${encodeURIComponent(location)}`;
-  };
+  const {isLoaded}=useUser();
 
-  
-  const handleParticipate = (eventIndex: number) => {
-    if (!participatedEvents.includes(eventIndex)) {
-      setParticipatedEvents([...participatedEvents, eventIndex]);
+  // Sample events data - replace with your actual data
+
+  useEffect(()=>{
+
+    const fetchEvents=async ()=>{
+  try {
+    const res=await fetch("/api/events?type=all",
+      {method:"GET"}
+      
+    );
+
+    const data=await res.json();
+
+    setEvents(data);
+
+  } catch (error) {
+    console.error("failed to fetch events");
+  }
     }
+
+    fetchEvents();
+  },[isLoaded])
+  
+
+  const participateInEvent = (event: Event) => {
+    setParticipatedEvents(new Set([...participatedEvents, event.id]));
   };
+
   return (
-    <div>
-      <div className="w-[90%] flex flex-col justify-center items-start ">
-            {eventPosts?.map((event, index) => (
-        <div
-          key={index}
-          className="group bg-gradient-to-r from-white to-purple-50  rounded-xl 
-                     shadow-md hover:shadow-xl transition-all duration-500 
-                     transform hover:translate-y-[-4px] hover:scale-[1.02]
-                     border-2 border-purple-100 max-w-md mx-auto
-                     border-animate
-                     w-[95%] h-[30vh]
-                     relative
-                     "
-        >
-          {/* Animated background gradients */}
-          <div className="absolute top-0 right-0 w-[100%] h-[100%] bg-gradient-to-br 
-                         from-purple-200 to-pink-200 rounded-full filter blur-2xl 
-                         opacity-20 group-hover:opacity-40 transition-all duration-700
-                         animate-pulse transform translate-x-16 -translate-y-8" />
-
-          <div className="relative">
-            <div className="w-[100%] flex flex-row">
-              <div className=" w-[40%]  h-[100%]">
-                <Image src={event?.image} alt={event?.title}
-               width={200}
-               height={200}
-                className=' object-contain '/>
-              </div>
-              <div className="">
-              <h3 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-600 
-                          bg-clip-text text-transparent group-hover:from-purple-800 
-                          group-hover:to-pink-700 transition-all duration-300
-                          transform group-hover:translate-x-2">
-              {event.title}
-            </h3>
-
-            <p className=" text-gray-800 group-hover:text-gray-900 
-                         transition-colors duration-300 leading-relaxed
-                         transform group-hover:translate-x-2 max-h-24 overflow-hidden">
-              {event.caption}
-              <MapPin size={16} className="group-hover:animate-bounce" />
-              <span>{event.location}</span>
-            </p>
+    <div className="w-80 bg-gray-900 h-screen p-4">
+      <h2 className="text-xl font-bold mb-6 text-white">Upcoming Events</h2>
+      
+      <div className="overflow-y-auto h-[calc(100vh-100px)] pr-2 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
+        {events?.map((event) => (
+          <div
+            key={event.id}
+            className="bg-[rgb(43,42,42)] rounded-lg p-3 cursor-pointer transform transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-700"
+            onClick={() => setSelectedEvent(event)}
+          >
+            <div className="flex gap-3">
+              <img
+                src={event.image}
+                alt={event.title}
+                className="w-16 h-16 object-cover rounded-lg"
+                style={{ width: '2rem', height: '2rem' }}
+              />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white font-semibold text-sm mb-1">{event.title}</h3>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-gray-400 text-xs">
+                    <MapPin size={12} />
+                    <span className="font-medium">Venue:</span>
+                    <span className="truncate">{event.venue}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-400 text-xs">
+                    <Clock size={12} />
+                    <span className="font-medium">Date:</span>
+                    <span>{new Date(event.date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-400 text-xs">
+                    <Clock size={12} />
+                    <span className="font-medium">Time:</span>
+                    <span>{event.time}</span>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="w-[100%]">
-              <div className="flex items-center  text-purple-600 
-                            transform transition-all duration-300 group-hover:translate-x-2">
-               
-              </div>
-
-            </div>
-
-            <div className="flex flex-row">
-             
-             
-            <div className="flex items-center  text-purple-600
-                            transform transition-all duration-300 group-hover:translate-x-2">
-                <Clock size={16} className="group-hover:animate-bounce" />
-                <span>{event.date.toString()}</span>
-              </div>
-              <button
-                onClick={() => handleParticipate(index)}
-                className={`px-4 py-2 rounded-lg text-white font-semibold ${
-                  participatedEvents.includes(index)
-                    ? "bg-gradient-to-r from-green-500 to-emerald-500"
-                    : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-colors"
-                }`}
-                disabled={participatedEvents.includes(index)}
-              >
-                {participatedEvents.includes(index) ? "Participated" : "Participate"}
-              </button>
-            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                participateInEvent(event);
+              }}
+              className={`w-full mt-2 flex items-center justify-center gap-2 text-xs ${participatedEvents.has(event.id) ? 'bg-purple-600' : 'bg-teal-600'} text-white px-2 py-1.5 rounded-md transition-colors relative overflow-hidden`}
+            >
+              {participatedEvents.has(event.id) ? 'Participated' : 'Participate'}
+            </button>
           </div>
+        ))}
+      </div>
 
-          {/* Hover border effect */}
-          <div className="absolute inset-0 border-2 border-transparent 
-                         group-hover:border-purple-200 rounded-xl 
-                         transition-all duration-500 pointer-events-none" />
-        </div>
-      ))}
+      {/* Event Modal */}
+    {/**  <Modal
+        isOpen={!!selectedEvent}
+        onRequestClose={() => setSelectedEvent(null)}
+        className="bg-[rgb(72,68,68)] text-white p-4 rounded-md max-w-2xl mx-auto my-8 transition-transform duration-300"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      >
+            selectedEvent && (
+          <>
+            <h2 className="text-xl font-bold">{selectedEvent.title}</h2>
+            <div className="mt-4 flex gap-4">
+              <img
+                src={selectedEvent.image}
+                alt={selectedEvent.title}
+                className="w-32 h-32 object-cover rounded-lg"
+              />
+              <div className="space-y-2">
+                <p className="text-gray-300">
+                  <span className="font-semibold">Venue:</span> {selectedEvent.venue}
+                </p>
+                <p className="text-gray-300">
+                  <span className="font-semibold">Date:</span>{' '}
+                  {new Date(selectedEvent.date).toLocaleDateString()}
+                </p>
+                <p className="text-gray-300">
+                  <span className="font-semibold">Time:</span> {selectedEvent.time}
+                </p>
+              </div>
             </div>
+            <p className="text-gray-300 mt-4">{selectedEvent.description}</p>
+            <button
+              onClick={() => participateInEvent(selectedEvent)}
+              className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors mt-4"
+            >
+              Participate
+            </button>
+          </>
+        )}
+      </Modal>  */ }
     </div>
-  )
-}
+  );
+};
 
-export default EventCard
+export default EventsSidebar;

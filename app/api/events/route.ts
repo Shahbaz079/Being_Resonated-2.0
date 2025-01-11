@@ -86,7 +86,8 @@ export async function GET(request: NextRequest) {
   let client: MongoClient | null = null;
 
   const eventId = request.nextUrl.searchParams.get('id');
-  if(!eventId){
+  const type=request.nextUrl.searchParams.get('type')
+  if(!eventId && !type){
     return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
   }
   try {
@@ -95,11 +96,15 @@ export async function GET(request: NextRequest) {
     const db = client.db(dbName!);
     const events = db.collection('events');
      
-
+            if(type!=='all') {
 
     const event = await events.findOne({ _id: new ObjectId(eventId as string) });
 
-    return NextResponse.json(event);
+    return NextResponse.json(event);}else{
+      
+      const allEvnets=await events.find({}).sort("createdAt",-1)
+      return NextResponse.json(allEvnets)
+    }
   } finally {
     if (client) {
       await client.close();

@@ -52,7 +52,7 @@ const BeCommunity = () => {
     <div className="w-[100vw] h-auto relative">
            <div className="absolute left-[5%] right-[75%] top-5  h-[60vh]  bg-[#484444] rounded-2xl">
             <h1>Upcoming Events</h1>
-            <EventCard eventPosts={eventPosts}/>
+            <EventCard />
            </div>
 
             <div className="absolute left-[28%] right-[28%] top-5 h-[100vh]  bg-[#484444] rounded-2xl">
