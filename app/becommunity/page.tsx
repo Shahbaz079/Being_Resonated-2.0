@@ -50,7 +50,7 @@ const BeCommunity = () => {
   console.log("eventposts",eventPosts)
   return (
     <div className="w-[100vw] h-auto relative">
-           <div className="absolute left-[5%] right-[75%] top-5  h-[60vh]  bg-[#484444] rounded-2xl">
+           <div className="absolute left-[5%] right-[75%] top-5  h-[60vh]  bg-[#484444] rounded-2xl overflow-y-scroll ">
             <h1>Upcoming Events</h1>
             <EventCard />
            </div>

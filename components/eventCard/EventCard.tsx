@@ -3,12 +3,15 @@ import React, { useEffect, useState } from 'react';
 //import Modal from 'react-modal';
 import { MapPin, Clock } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import { ObjectId } from 'mongoose';
+import Image from 'next/image';
+import { toast } from 'react-toastify';
 
 interface Event {
-  id: number;
+  _id: ObjectId;
   title: string;
   image: string;
-  venue: string;
+  location: string;
   date: string;
   time: string;
   description: string;
@@ -17,11 +20,14 @@ interface Event {
 
 const EventsSidebar: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [participatedEvents, setParticipatedEvents] = useState<Set<number>>(new Set());
+  const [participatedEvents, setParticipatedEvents] = useState<string[]>([]);
+  
 
   const [events,setEvents]=useState<Event[]|null>(null);
 
-  const {isLoaded}=useUser();
+  const {user,isLoaded}=useUser();
+
+  const mongoId=user?.publicMetadata?.mongoId
 
   // Sample events data - replace with your actual data
 
@@ -43,31 +49,63 @@ const EventsSidebar: React.FC = () => {
   }
     }
 
+    const fetchParticipatedEvents=async ()=>{
+      const res=await fetch(`/api/participate?id=${mongoId}`,{
+        method:'GET'
+      })
+      if(res.status==200){
+        const data=await res.json();
+         
+        setParticipatedEvents(data.participations);
+        console.log(data);
+      }else{
+        toast.error("participation fetching failed")
+      }
+    }
+    fetchParticipatedEvents();
     fetchEvents();
   },[isLoaded])
   
 
-  const participateInEvent = (event: Event) => {
-    setParticipatedEvents(new Set([...participatedEvents, event.id]));
-  };
+  const handleParticipation=(id:ObjectId)=>{
+   try {
+    const participate=async ()=>{
+      const res=await fetch(`/api/participate?id=${mongoId}&eid=${id}`,{
+        method:'PUT',
+
+      })
+      const data=await res.json();
+      if(res){
+        toast.success("Participated successfully")
+      }else{
+        toast.error("participation failed")
+      }
+    }
+    participate();
+
+   } catch (error) {
+    console.error(error);
+   }
+  }
+  
 
   return (
-    <div className="w-80 bg-gray-900 h-screen p-4">
-      <h2 className="text-xl font-bold mb-6 text-white">Upcoming Events</h2>
+    <div className="w-[100%] bg-transparent  p-4">
       
-      <div className="overflow-y-auto h-[calc(100vh-100px)] pr-2 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
+      
+      <div className=" h-[calc(100vh-100px)] space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
         {events?.map((event) => (
           <div
-            key={event.id}
+            key={event?._id?.toString()}
             className="bg-[rgb(43,42,42)] rounded-lg p-3 cursor-pointer transform transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-700"
-            onClick={() => setSelectedEvent(event)}
+            
           >
             <div className="flex gap-3">
               <img
                 src={event.image}
                 alt={event.title}
-                className="w-16 h-16 object-cover rounded-lg"
-                style={{ width: '2rem', height: '2rem' }}
+                className="w-[20px] h-[20px] object-cover rounded-lg"
+                 
               />
               <div className="flex-1 min-w-0">
                 <h3 className="text-white font-semibold text-sm mb-1">{event.title}</h3>
@@ -75,7 +113,7 @@ const EventsSidebar: React.FC = () => {
                   <div className="flex items-center gap-2 text-gray-400 text-xs">
                     <MapPin size={12} />
                     <span className="font-medium">Venue:</span>
-                    <span className="truncate">{event.venue}</span>
+                    <span className="truncate">{event.location}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-400 text-xs">
                     <Clock size={12} />
@@ -93,11 +131,14 @@ const EventsSidebar: React.FC = () => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                participateInEvent(event);
+                handleParticipation(event._id);
+                console.log(event._id)
               }}
-              className={`w-full mt-2 flex items-center justify-center gap-2 text-xs ${participatedEvents.has(event.id) ? 'bg-purple-600' : 'bg-teal-600'} text-white px-2 py-1.5 rounded-md transition-colors relative overflow-hidden`}
+              className={`w-full mt-2 flex items-center justify-center gap-2 text-xs ${participatedEvents?.includes(event?._id.toString())?'bg-purple-500':'bg-teal-600'}  
+                
+               text-white px-2 py-1.5 rounded-md transition-colors relative overflow-hidden`}
             >
-              {participatedEvents.has(event.id) ? 'Participated' : 'Participate'}
+              {participatedEvents?.includes(event?._id.toString()) ? 'Participated' : 'Participate'}
             </button>
           </div>
         ))}

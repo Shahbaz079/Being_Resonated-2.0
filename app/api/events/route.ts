@@ -102,8 +102,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(event);}else{
       
-      const allEvnets=await events.find({}).sort("createdAt",-1)
-      return NextResponse.json(allEvnets)
+      const allEvents = await events.find({}).sort({ createdAt: -1 }).toArray();
+      return NextResponse.json(allEvents)
     }
   } finally {
     if (client) {
