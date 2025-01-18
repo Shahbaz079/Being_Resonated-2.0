@@ -6,8 +6,8 @@ const UserPostSchema = new mongoose.Schema(
     caption:{type:String,required:false},
     Image: { type: String, required: true },
     likes: [{ type: mongoose.Schema.Types.ObjectId, required: false, ref: "User" }],
-    relatedTo: [{ type: String, required: true }],
-    sendTo: { type: String, required: true,options:["all","teams","interests"] },
+   // relatedTo: [{ type: String, required: true }],
+   // sendTo: { type: String, required: true,options:["all","teams","interests"] },
     createdBy: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
 
         

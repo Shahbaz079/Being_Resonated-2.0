@@ -17,85 +17,74 @@ if (!uri) {
 if (!dbName) {
   throw new Error('Invalid/Missing environment variable: "DB_NAME"');
 }
-
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) { 
+  
   let client: MongoClient | null = null;
-
-  try {
-    await connectDB();
-
+  
+  try { await connectDB(); 
     const body = await req.json();
-    if (!body) {
-      return NextResponse.json({ error: 'No data found' }, { status: 400 });
-    }
-
+    
+    if (!body) { return NextResponse.json({ error: 'No data found' }, { status: 400 }); }
+    
     client = new MongoClient(uri);
-    await client.connect();
+    
+    await client.connect(); 
+    
     const db = client.db(dbName);
-    const userposts = db.collection('userposts');
+    
+    const userposts = db.collection('userposts'); 
+    
     const users = db.collection('users');
-
-    const { name, image, caption, createdBy, sendTo, relatedTo } = body;
     
-    const user = await users.findOne({ _id: new ObjectId(createdBy as string) }) as IUser | null;
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-  
-
+    const { name, image, caption, createdBy } = body;
     
-
+    const user = await users.findOne({ _id: new ObjectId(createdBy as string) }); 
     
-    const post = {
-      name,
-      image,
-      caption,
-      createdBy: new ObjectId(createdBy as string),
-      sendTo,
-      relatedTo
-    };
-
-  
-    const result = await userposts.insertOne(post);
-
-    if (result.acknowledged) {
-       const updatedUserPosts = user.posts || []; 
-       updatedUserPosts.push(result.insertedId.toString());
-         // Update the user document with the new posts array
-          await users.updateOne( 
-            { _id: new ObjectId(createdBy as string) }, 
-            { $set: { posts: updatedUserPosts } });
-    } else {
-      throw new Error('Failed to create user post');
-    }
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-  } finally {
-    if (client) {
-      await client.close();
-    }
-  }
-}
+    if (!user) { 
+      return NextResponse.json({ error: 'User not found' }, { status: 404 }); } 
+      
+      const post = { name, image, caption, createdBy: new ObjectId(createdBy as string), };
+      
+      const result = await userposts.insertOne(post); 
+      
+      if (result.acknowledged) { 
+        const updatedUserPosts = user.posts || []; 
+        
+        updatedUserPosts.push(result.insertedId.toString()); 
+        
+        await users.updateOne({ _id: new ObjectId(createdBy as string) }, { $set: { posts: updatedUserPosts } });
+        
+        return NextResponse.json({ message: 'Post created successfully' }, { status: 201 });
+       } else { 
+        
+        throw new Error('Failed to create user post'); } }
+        
+        catch (error) {
+          
+          console.error(error);
+          
+          return NextResponse.json({ message: 'Internal server error' },
+             { status: 500 });
+             } finally { 
+              if (client) { await client.close(); } } }
 
 export async function GET(request: NextRequest) {
   let client: MongoClient | null = null;
 
-  
-  try {
-    client = new MongoClient(uri);
-    await client.connect();
-    const db = client.db(dbName);
-    const userposts = db.collection('userposts');
-
-    const allUserPosts = await userposts.find({}).sort({ createdAt: -1 }).toArray();
-
-    return NextResponse.json(allUserPosts);
-  } finally {
-    if (client) {
-      await client.close();
-    }
-  }
+  try { 
+    client = new MongoClient(uri); 
+    
+    await client.connect(); 
+    
+    const db = client.db(dbName); 
+    
+    const userposts = db.collection('userposts'); 
+    
+    const allUserPosts = await userposts.find({}).sort({ createdAt: -1 }).toArray(); 
+    
+    return NextResponse.json(allUserPosts); 
+  } catch (error) {  console.error(error);
+     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+     } finally { 
+      if (client) { await client.close(); } }
 }

@@ -10,6 +10,7 @@ import { Calendar, Users, Award, ChevronRight, ArrowUpRight, Sparkles, Star, Mes
 import mongoose from "mongoose";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import { TeamPostModal } from "@/components/Modal/TeamPostModal";
 
 export interface IEvent { 
   _id: mongoose.Schema.Types.ObjectId; 
@@ -89,7 +90,7 @@ const eventModalCloseHandler=()=>{
       <div className="w-[50%] h-[100%]">
         <div className="flex w-[100%] h-[30%] flex-row">
         <div className="w-[30%] h-[100%]">
-          { teamImg ? <Image
+          { teamImg ? <Image 
                             
                             width={200}
                             height={200}
@@ -182,8 +183,8 @@ const eventModalCloseHandler=()=>{
           <CreateEvent teamId={id} members={members} />
          </EventModal>
          </div>
-         <button>Announcement</button>
-          <button>POST</button>
+         
+          <TeamPostModal teamName={teamName} teamId={id}/>
           
         </div>
        

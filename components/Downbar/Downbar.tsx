@@ -8,9 +8,11 @@ import { useEffect,useState
 const Downbar = () => {
   const {user,isLoaded}=useUser();
   const [mongoId,setMongoId]=useState<string |null>(null);
+  const [userName,setUserName]=useState<string | null>("")
 useEffect(() => {
   if(user){
     setMongoId(user.publicMetadata.mongoId as string)
+    setUserName(user.fullName)
   }
     
 }, [isLoaded,user])
@@ -18,7 +20,7 @@ useEffect(() => {
   return (
     <div className='fixed  h-[8vh] top-[88vh] left-[20%] right-[20%] rounded-lg bg-[#549dca9a] flex flex-row justify-around items-center' >
       <Link href={`/profile?id=${mongoId}`}>User Profile</Link>
-      <UserPostModal/>
+      <UserPostModal name={userName} />
 
       <button className="">Participations</button>
 

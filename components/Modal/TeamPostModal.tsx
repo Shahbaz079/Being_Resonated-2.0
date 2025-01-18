@@ -13,10 +13,11 @@ import { motion } from "framer-motion";
 import { useEdgeStore } from "@/lib/edgestore";
 import { useState } from "react";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
-
+import { IEvent } from "@/app/team/[id]/page";
 import { useUser } from "@clerk/nextjs";
+import ITeam from "@/models/Team";
 
-export function UserPostModal({name}:{name:string | null}) {
+export function TeamPostModal({ teamName, teamId }: { teamName: string, teamId: string | null }) {
 
 const {user}=useUser();
 
@@ -24,7 +25,6 @@ const {user}=useUser();
   const { edgestore } = useEdgeStore();
   const [caption,setCaption]=useState<string>("");
  const [progress,setProgress]=useState<number>(0);
- 
   const handlePost=()=>{
 
     const post=async()=>{
@@ -39,9 +39,9 @@ const {user}=useUser();
         });
 
         if(response.url){
-        const res= await fetch(`/api/userpost`,{
+        const res= await fetch(`/api/teampost`,{
           method:"POST",
-          body:JSON.stringify({image:response.url,caption,createdBy:user?.publicMetadata.mongoId,name }),
+          body:JSON.stringify({title:teamName,image:response.url,caption,createdBy:user?.publicMetadata.mongoId,teamId:teamId}),
         })
         if(res.ok){
           toast.success("Post created successfully")
@@ -67,7 +67,7 @@ const {user}=useUser();
         <ModalBody className="overflow-y-scroll">
           <ModalContent>
             <h4 className="text-lg md:text-2xl text-neutral-600 dark:text-neutral-100 font-bold text-center mb-8">
-              Post  your thoughts to{" "}
+           {teamName } Post to{" "}
               <span className="px-1 py-0.5 rounded-md bg-gray-100 dark:bg-neutral-800 dark:border-neutral-700 border border-gray-200">
                 BeCommunity
               </span>{" "}
