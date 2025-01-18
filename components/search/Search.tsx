@@ -38,21 +38,22 @@ const SearchPage = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search users, events, teams"
+        className='cphone:w-10'
       />
       <div className='fixed top-[12%] left-[60%] bg-[#555a4a] z-[50]'>
-        
+
         <ul>
           {results.users.map((user: any) => (
             <li key={user._id}>{user.name} ({user.email})</li>
           ))}
         </ul>
-       
+
         <ul>
           {results.events.map((event: any) => (
             <li key={event._id}>{event.name}</li>
           ))}
         </ul>
-      
+
         <ul>
           {results.teams.map((team: any) => (
             <li key={team._id}>{team.name} </li>

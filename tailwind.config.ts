@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode:"class"
+  darkMode: "class"
   ,
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,12 +10,29 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        "ctab": { max: "910px" },
+        "cphone": { max: "600px" }
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
         'gradient-start': '#0795ec75', 'gradient-end': '#222e5575'
       },
+      keyframes: {
+        "skeleton": {
+          "0%": { opacity: "0%" },
+          "50%": { opacity: "100%" },
+          "100%": { opacity: "0%" }
+        }
+      },
+      animation: {
+        "skeleton": "skeleton 1.4s infinite"
+      }
+
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwind-scrollbar"),
+  ],
 } satisfies Config;
