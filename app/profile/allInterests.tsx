@@ -14,7 +14,7 @@ const AllInterests = ({ setShowAllInterests, name, interests }: PropsType) => {
         <div className="bg-gray-950 top-0 left-0 h-full w-full bg-opacity-60 fixed" onClick={() => setShowAllInterests(false)}></div>
         <div className="fixed w-[500px] top-44 left-[calc(50%-250px)] max-h-[500px] 
         bg-black rounded-2xl py-4 px-6 shadow-2xl flex flex-col cphone:w-[90%] cphone:left-[5%]">
-            <h1 className="capitalize text-3xl">{name}'s Interests</h1>
+            <h1 className="capitalize text-3xl">{name}&apos;s Interests</h1>
             <div className="flex gap-3 flex-wrap mt-4 p-2 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-blue-950 scrollbar-corner-transparent">
                 {interests.map((option, index) => <InterestTag key={index} interest={option}></InterestTag>)}
             </div>
