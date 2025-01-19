@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { boolean } from "zod";
 
 const EventPostSchema = new mongoose.Schema(
   {
@@ -10,6 +11,7 @@ const EventPostSchema = new mongoose.Schema(
     location: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
+    isEventPost:{ type:Boolean,required:true,default:true} ,
 
     createdBy: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
         

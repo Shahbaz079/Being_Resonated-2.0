@@ -6,6 +6,8 @@ import { useEffect, useState } from "react"
 import { ObjectId } from 'mongodb';
 import Downbar from "@/components/Downbar/Downbar";
 import EventCard from "@/components/eventCard/EventCard";
+import PostCard from "@/components/eventCard/PostCard";
+import { UserPost } from "@/components/eventCard/PostCard";
 
 
 export interface EventPost {
@@ -20,6 +22,17 @@ export interface EventPost {
   createdBy: ObjectId;
   createdAt?: Date; // Managed by mongoose timestamps
   updatedAt?: Date; // Managed by mongoose timestamps
+
+  
+  
+  from:string;
+
+
+  
+
+  isEventPost: boolean;
+  projectProgress: number;
+ 
 }
 
 
@@ -29,6 +42,8 @@ const BeCommunity = () => {
 
   const [eventPosts,setEventPosts]=useState<EventPost[]>([]);
 
+  const [userPosts,setUserPosts]=useState<UserPost[]>([]);
+
 
   const {user,isLoaded}=useUser();
   useEffect(() => {
@@ -36,11 +51,17 @@ const BeCommunity = () => {
       return;
     }
     const fetchPosts=async()=>{
-      const res=await fetch("/api/eventpost");
-      const data:[]=await res.json();
-      console.log("data",data)
-      setEventPosts(data);
+      const eventRes=await fetch("/api/eventpost",{method:"GET"});
+        const userRes=await fetch("/api/userpost",{method:"GET"})
+
+      const eventData:[]=await eventRes.json();
+      const userData:[]=await userRes.json();
+
+      console.log("eventdata",eventData)
+      setEventPosts(eventData);
       
+      console.log("Userpostdata",userData)
+      setUserPosts(userData);
     }
     fetchPosts();
     
@@ -59,6 +80,22 @@ const BeCommunity = () => {
               <h1>Community Posts</h1> 
 
               <div className="">
+
+               {eventPosts.map((eventPost)=>(
+                <div className="" key={eventPost._id?.toString()}>
+                  <PostCard  post={eventPost}/>
+                </div>
+                
+               ))}
+
+{userPosts.map((userPost)=>(
+                <div className="" key={userPost._id?.toString()}>
+                  <PostCard  post={userPost}/>
+                </div>
+                
+               ))}
+
+        
                 
               </div>
 
