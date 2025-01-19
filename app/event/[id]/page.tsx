@@ -7,13 +7,37 @@ import { useUser } from "@clerk/nextjs";
 import { useState, useEffect, FormEvent } from "react";
 import { IUser } from "@/components/expandableCards/card";
 import ITeam, { Team } from "@/models/Team";
-
-import Modal from "@/components/Modal/Modal"; 
-import { BiMessageSquareEdit } from "react-icons/bi";
 import { useEdgeStore } from "@/lib/edgestore";
-import { AnimatedModalDemo } from "@/components/animatedModal/ModalDemo";
 import { IEvent } from "@/app/team/[id]/page";
+import { FaLocationDot, FaMarkdown } from "react-icons/fa6";
+import { SlCalender } from "react-icons/sl";
+import { IoTimeOutline } from "react-icons/io5";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RiAttachment2 } from "react-icons/ri";
+import { HiMiniTrophy } from "react-icons/hi2";
+import { Textarea } from "@/components/ui/textarea";
+import { MdOutlineModeEditOutline } from "react-icons/md";
 
+
+interface EventUpdateType {
+  date: string;
+  description: string;
+  name: string;
+  time: string;
+  location: string;
+}
+
+const emptyEventUpdateData = {
+  date: "",
+  description: "",
+  name: "",
+  time: "",
+  location: "",
+}
 
 const EventPage = () => {
   const [name, setName] = useState('');
@@ -28,20 +52,23 @@ const EventPage = () => {
   const [location, setLocation] = useState('');
   const [showMembermodal, setShowMemberModal] = useState(false);
   const [showLeadermodal, setShowLeaderModal] = useState(false);
-  const [edit,setEdit]=useState(false);
-  const [preview,setPreview]=useState<string | null>(null)
+  const [edit, setEdit] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null)
 
   const [file, setFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [event, setEvent] = useState<IEvent | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
-  const [ progress, setProgress] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
 
-const [live,setLive]=useState<boolean>(false);
-  
-  
+  const [live, setLive] = useState<boolean>(false);
+  const [editEvent, setEditEvent] = useState<boolean>(false);
 
-  const {edgestore}=useEdgeStore();
+  const [eventUpdateData, setEventUpdateData] = useState<EventUpdateType>(emptyEventUpdateData);
+
+
+
+  const { edgestore } = useEdgeStore();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -56,27 +83,28 @@ const [live,setLive]=useState<boolean>(false);
     }
   };
 
-  const handleUpload=async()=>{
-  
-    if(file){
-   
-      const res=await edgestore.mypublicImages.upload({file,
-        onProgressChange:(progress)=>{
+  const handleUpload = async () => {
+
+    if (file) {
+
+      const res = await edgestore.mypublicImages.upload({
+        file,
+        onProgressChange: (progress) => {
           setProgress(progress);
         }
       })
 
 
 
-     const response=await fetch(`/api/upload?id=${eventId}&source=event`,{
-      method:"POST",
-      body:JSON.stringify({imgUrl:res.url})
-     })
+      const response = await fetch(`/api/upload?id=${eventId}&source=event`, {
+        method: "POST",
+        body: JSON.stringify({ imgUrl: res.url })
+      })
 
-     if(response.ok){
+      if (response.ok) {
         setUploadStatus("Image uploaded successfully")
         window.location.reload();
-     }
+      }
     }
 
   }
@@ -85,20 +113,20 @@ const [live,setLive]=useState<boolean>(false);
     setShowMemberModal(false);
   }
   const closeLeaderModal = () => {
-   setShowLeaderModal(false); 
+    setShowLeaderModal(false);
   }
 
 
- 
+
 
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
 
   const { user, isLoaded } = useUser();
   const mongoId = user?.publicMetadata.mongoId as string;
-  
+
   useEffect(() => {
-    
+
     if (uid !== mongoId) {
       redirect('/');
     }
@@ -106,10 +134,10 @@ const [live,setLive]=useState<boolean>(false);
 
 
   useEffect(() => {
-    
+
     const handleEventData = async () => {
       const res = await fetch(`/api/events?id=${eventId}`);
-     
+
       if (res.ok) {
         const data = await res.json();
         setName(data.name);
@@ -125,220 +153,180 @@ const [live,setLive]=useState<boolean>(false);
         setLive(data.isLive);
         setEvent(data)
         console.log(data);
+        setEventUpdateData({ name: data.name, date: data.date, description: data.description, location: data.location, time: data.time });
+
       } else {
         toast.error("Failed to fetch event data");
       }
     };
-    if(typeof window !== 'undefined') {
+    if (typeof window !== 'undefined') {
       setEventId(window.location.pathname.split('/')[2]);
-      console.log(eventId,"eventid")
+      console.log(eventId, "eventid")
       if (eventId) {
         handleEventData();
       }
-    
- }
-    
-  }, [isLoaded,user,eventId]);
 
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
-     e.preventDefault(); 
-     const res= await fetch(`/api/events?id=${eventId}`,{
-        method:"PUT",
-        body:JSON.stringify({name,description,date,time,location,members,leaders})
-     })
     }
 
+  }, [isLoaded, user, eventId]);
 
-  return ( 
-    !edit?
-    <div className='w-[90vw] h-auto relative left-[5vw] right-[5vw]'>
-      {live?<div className="absolute top-0 left-0 text-center rounded-lg w-[10%] bg-[#45a57a] px-4 py-2">Live</div>:null}
-      <div className="w-[100%] h-[50vh] rounded-lg flex flex-row items-center justify-around  p-4"> 
-        <div className=" w-[20vw] h-[20vh]">
-        { image ? <img
-                            
-                           className="w-[30vw] h-[30vh] rounded-lg object-contain"
-                            src={image}
-                            alt={name}
-                           // className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                           />:
-                          <img
-                            
-                            className="w-[100%] h-[100%] rounded-lg"
-                            src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                            alt={"user did'nt provide image"}
-                          //  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                          />}
-        </div>
-       
-        <div className="">
-        <h1 className="text-2xl font-bold mb-2">{name}</h1>
-        <p className="text-lg mb-2">{description}</p>
-        <p className="text-lg mb-2">{new Date(date).toLocaleDateString()}</p>
-        <p className="text-lg mb-2">Time: {time}</p>
-        <p className="text-lg mb-2">Location: {location}</p>
-        <h1>Created By:{createdBy?.name}</h1>
-        <h1>Team:{team?.name}</h1>
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const res = await fetch(`/api/events?id=${eventId}`, {
+      method: "PUT",
+      body: JSON.stringify({ name, description, date, time, location, members, leaders })
+    })
+  }
 
-        </div>
-       
-        <BiMessageSquareEdit   className="absolute top-0   right-[5%] text-4xl" onClick={()=>setEdit(!edit)} />
-      </div>
-
-      <div className="w-[100%] h-auto flex flex-row items-center "  >
-
-        <div className="w-[50%] flex flex-row items-center justify-around">
-          
-        <div className="w-[40px] h-[10px] mx-10">
-          <button onClick={()=>setShowLeaderModal(true)}>Leaders</button>
-          <Modal isOpen={showLeadermodal} onClose={closeLeaderModal}>
-            {leaders && leaders.length>0  && leaders?.map((leader) => (
-              <div key={leader?._id?.toString() || Math.random().toString()}>
-                <p>{leader.name}</p>
-              </div>
-            ))}
-            
-          </Modal>
-          </div>
-          
-          <div className="w-[40px] h-[10px] mx-10">
-          <button onClick={()=>setShowMemberModal(true)}>Members</button>
-          
-          <Modal isOpen={showMembermodal} onClose={closeMemberModal}>
-            {members &&  members?.map((member) => (
-              <div key={member?._id?.toString() || Math.random().toString()}>
-                <p>{member.name}</p>
-              </div>
-            ))}
-            
-          </Modal>
-          </div>
-
-        </div>
-          
-         <AnimatedModalDemo event={event} />
-      
-      </div>
-
-  
-      
-    </div>:
-
-         <div className='w-[90vw] h-auto relative left-[5vw] right-[5vw]'>
-         <div className="w-[100%] h-[50vh] rounded-lg flex flex-row items-center justify-around  p-4"> 
-           <div className=" w-[20vw] h-[20vh]">
-           { file ? <div className="absolute top-0 left-[10vw] flex flex-col  h-[50vh] justify-evenly items-center">
-            <img
-                               
-                             className="w-[30vw] h-[30vh] rounded-lg object-contain object-top"
-                               src={preview as string}
-                               alt={file.name}
-                              // className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                              />
-                              
-                                 <input type="file" onChange={handleFileChange} /> 
-                              <button className="bg-[#515151] px-8 py-2 rounded-lg" onClick={()=>handleUpload()}>Upload</button> 
-
-                              <div className="border rounded overflow-hidden w-[100%] h-[6px]">
-                                <div className="bg-slate-300 h-full transition-all duration-150" style={{width:`${progress}%`}}></div>
-                              </div>
-                              
-                               {uploadStatus && <p>{uploadStatus}</p>}   
-           </div>
-                              
-                              :
-                             <div className="">
-                              <img
-                               
-                               className="w-[100%] h-[100%] rounded-lg"
-                               src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                               alt={"user did'nt provide image"}
-                             //  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                             />
-
-  <input type="file" onChange={handleFileChange} /> 
-                              <button onClick={()=>{handleUpload()}}>Upload</button> 
-                              <div className="border rounded overflow-hidden w-44 h-[6px]">
-                                <div className="bg-slate-300 h-full transition-all duration-150" style={{width:`${progress}%`}}></div>
-                              </div>
-                               {uploadStatus && <p>{uploadStatus}</p>}
-                             
-                             </div>
-                             
-                             }
-
-           </div>
-          
-           <div className=" ">
-           <form className="flex flex-col justify-evenly items-left" onSubmit={handleSubmit}> 
-            <div className="my-2">
-               <label>Event Name:</label> 
-               <input type="text" name="name" value={name} onChange={(e)=>setName(e.target.value)} required />
+  return (
+    <div className="p-12 flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
+      <Card>
+        <CardHeader>
+          <div className="relative h-fit w-fit">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="opacity-0 text-2xl font-bold hover:opacity-80 absolute bg-black top-0 left-0 h-full w-full flex items-center justify-center cursor-pointer">
+                  Edit
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Event Details</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-8 mt-6">
+                  <div className="flex flex-col">
+                    <Label>Upload Image</Label>
+                    <input type="file" className="mt-4" onChange={handleFileChange}></input>
+                    <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                  </div>
                 </div>
-             
-                 <div  className="my-2"> 
-                  <div>Team:{team?.name}</div> 
-                  
-                   </div> 
-                   <div  className="my-2"> <label>Date:</label> 
-                   <input type="date" name="date" value={date} 
-                   onChange={(e)=>setDate(e.target.value)} required /> 
-                   </div>
-                    
-                       <div  className="my-2">
-                         <label>Description:</label> <textarea name="description" value={description} 
-                         onChange={(e)=>setDescription(e.target.value)} required /> 
-                         </div> 
-                         <div  className="my-2"> 
-                          <label>Location:</label>
-                           <input type="text" name="location" value={location} onChange={(e)=>setLocation(e.target.value)} required />
-                            </div>
-                   <div  className="my-2">
-                     <label>Time:</label>
-                      <input type="text" name="time" value={time} onChange={(e)=>setTime(e.target.value)} required />
-                       </div>
-                       <button type="submit">Update Event</button> 
-                       </form>
-   
-           </div>
-          
-           <BiMessageSquareEdit   className="absolute top-0   right-[5%] text-4xl" onClick={()=>setEdit(!edit)} />
-         </div>
-   
-         <div className="my-[5%] w-[100%] h-auto flex flex-row items-center"  >
-           <div className="w-[40px] h-[10px] mx-10">
-             <button onClick={()=>setShowLeaderModal(true)}>Leaders</button>
-             <Modal isOpen={showLeadermodal} onClose={closeLeaderModal}>
-               {leaders && leaders.length>0  && leaders?.map((leader) => (
-                 <div key={leader?._id?.toString() || Math.random().toString()}>
-                   <p>{leader.name}</p>
-                 </div>
-               ))}
-               
-             </Modal>
-             </div>
-             
-             <div className="w-[40px] h-[10px] mx-10">
-             <button onClick={()=>setShowMemberModal(true)}>Members</button>
-             
-             <Modal isOpen={showMembermodal} onClose={closeMemberModal}>
-               {members &&  members?.map((member) => (
-                 <div key={member?._id?.toString() || Math.random().toString()}>
-                   <p>{member.name}</p>
-                 </div>
-               ))}
-               
-             </Modal>
-             </div>
-         
-         </div>
-   
-     
-         
-       </div> 
-              
-    
+              </DialogContent>
+            </Dialog>
+            <img
+              className="w-32 h-32 rounded-lg"
+              src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+              alt={"user did'nt provide image"}
+            />
+          </div>
+          <h1 className="text-7xl mt-4 cphone:text-5xl">{name}</h1>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <SlCalender></SlCalender>
+            <p className="text-xl">Date: {date}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <IoTimeOutline></IoTimeOutline>
+            <p className="text-xl">{time}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <FaLocationDot></FaLocationDot>
+            <p className="text-xl">{location}</p>
+          </div>
+        </CardContent>
+
+        <CardFooter>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Edit</Button>
+            </DialogTrigger>
+            <DialogContent className="">
+              <DialogHeader>
+                <DialogTitle>Edit Event Details</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-8 mt-6">
+                <div>
+                  <Label>Event Name</Label>
+                  <Input value={eventUpdateData.name} onChange={(e) => setEventUpdateData({ ...eventUpdateData, name: e.target.value })}></Input>
+                </div>
+                <div>
+                  <Label>Location</Label>
+                  <Input value={eventUpdateData.location} onChange={(e) => setEventUpdateData({ ...eventUpdateData, location: e.target.value })}></Input>
+                </div>
+                <div>
+                  <Label>Time</Label>
+                  <Input value={eventUpdateData.time} onChange={(e) => setEventUpdateData({ ...eventUpdateData, time: e.target.value })}></Input>
+                </div>
+                <div className="flex flex-col">
+                  <Label>Date</Label>
+                  <input className="p-1 border-2 bg-black rounded-md mt-1" value={eventUpdateData.date} onChange={(e) => setEventUpdateData({ ...eventUpdateData, date: e.target.value })} type="date" />
+                </div>
+                <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardFooter>
+
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Description</CardTitle>
+        </CardHeader>
+
+        <CardContent>{description}</CardContent>
+
+        <CardFooter>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Edit</Button>
+            </DialogTrigger>
+            <DialogContent className="">
+              <DialogHeader>
+                <DialogTitle>Edit Event Description</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-8 mt-6">
+                <div>
+                  <Label>Edit Description</Label>
+                  <Textarea className="mt-1 h-40" value={eventUpdateData.description} onChange={(e) => setEventUpdateData({ ...eventUpdateData, description: e.target.value })}></Textarea>
+                </div>
+                <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Contact the Organisers</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-3 flex-wrap">
+            <OrganiserCard number="+91 7908529703" name="Aitijhya Modak" email="2022itb023.aitijhya@students.iiests.ac.in"></OrganiserCard>
+            <OrganiserCard number="+91 7934524701" name="Anusree Mandal" email="2022csb023.anusree@students.iiests.ac.in"></OrganiserCard>
+          </div>
+        </CardContent>
+      </Card>
+
+    </div >
   );
 }
+
+const OrganiserCard = ({ name, email, number }: { name: string, email: string, number: string }) => (
+  <div className="h-fit hover:bg-accent w-fit p-3 rounded-xl">
+    <h1 className="text-xl">{name}</h1>
+    <p className="mt-1 text-sm text-gray-400">{email}</p>
+    <p className="text-sm text-gray-400">{number}</p>
+  </div>
+)
+
+const AttachmentCard = ({ name }: { name: string }) => (
+  <div className="border-2 flex items-center text-lg gap-5 hover:bg-accent w-fit px-3 py-2 rounded-xl hover:cursor-pointer">
+    <RiAttachment2 className="mt-[2px]"></RiAttachment2>
+    <span>{name}</span>
+  </div>
+)
+
+const PrizeCard = ({ position, content }: { position: string, content: string }) => (
+  <div className="border-2 p-4 hover:bg-accent rounded-xl flex items-center w-fit max-w-[400px] gap-4">
+    <div>
+      <h1 className="text-2xl text-wrap">{position}</h1>
+      <p className="mt-2 text-gray-400">{content}</p>
+    </div>
+    <HiMiniTrophy className="h-20 w-20"></HiMiniTrophy>
+  </div>
+)
 
 export default EventPage;
