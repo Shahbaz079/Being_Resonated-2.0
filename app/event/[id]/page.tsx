@@ -295,7 +295,7 @@ const EventPage = () => {
         <CardContent>
           <div className="flex gap-3 flex-wrap">
           {leaders?.map((leader)=>(
-            <OrganiserCard number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
+            <OrganiserCard key={leader.toString()} number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
           ))}
           
            
