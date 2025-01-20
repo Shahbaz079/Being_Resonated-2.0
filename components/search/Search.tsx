@@ -3,8 +3,16 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { IUser } from '../expandableCards/card';
 
-const SearchPage = ({type,click}:{type:string,click:Function | null}) => {
+
+type ClickType = (user: IUser) => void;
+
+interface SearchPageProps { 
+  type: string; click: ClickType | null;
+ }
+
+const SearchPage= ({type,click}:SearchPageProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<any>({ users: [], events: [], teams: [] });
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
