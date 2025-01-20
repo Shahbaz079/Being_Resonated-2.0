@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
                 const user = await users.findOne({ _id: new ObjectId(member._id) });
                  if (user) {
                    const updatedTeams = user.teams || []; 
-                   updatedTeams.push(team);
+                   updatedTeams.push(result.insertedId);
                     await users.updateOne( { _id: new ObjectId(member._id) },
                      { $set: { teams: updatedTeams } } );
                      } })); } 

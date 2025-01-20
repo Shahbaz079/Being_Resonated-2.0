@@ -8,45 +8,64 @@ import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople";
 import { newMember } from "@/components/expandableCards/card";
 import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
+import Image from "next/image";
 
 
 const CreateTeam = () => {
      const [name, setName] = useState(''); 
      const [description, setDescription] = useState(''); 
      const [deadline, setDeadline] = useState('');
-      const [members, setMembers] = useState<newMember[]>([]);
-       const [leader, setLeader] = useState<newMember>(); 
-       const [currentperson,setCurrentPerson]=useState<IUser>()
+      const [members, setMembers] = useState<IUser[]>([]);
+       const [leader, setLeader] = useState<IUser>(); 
+       const [currentPerson,setCurrentPerson]=useState<IUser>()
+
+       const [similarPeople,setSimilarPeople]=useState<IUser[]>([]);
      //  const [timage, setTimage] = useState('');
      // const [choosed, setChoosed] = useState(false);
 
       const searchParams = useSearchParams();
       const id = searchParams.get('id') as string;
 
-       const loadMembers = () => { 
-        const storedUser = localStorage.getItem('currentUser');
-          const storedMembersString = localStorage.getItem('members');
-           if (storedMembersString) { 
-            const storedMembers: newMember[] = JSON.parse(storedMembersString); 
-            setMembers(storedMembers); 
-          if(storedUser){
-            setCurrentPerson(JSON.parse(storedUser));
-            const totalMembers=[...storedMembers,JSON.parse(storedUser)]
-            setMembers(totalMembers);
-          } 
-          } };
-            
-            useEffect(() => {
-               loadMembers(); 
-               // Initial load
-                const handleStorageChange = () => { 
-                  loadMembers();
-                 };
+       
+
+
+
+
+          useEffect(() => { 
+            const fetchPeople = async () => {
+    
+             try { 
+                const response = await fetch(`/api/people?id=${id}`); 
+    
+                const data = await response.json();
+                 setSimilarPeople(Array.isArray(data) ? data : []);
+                 } catch (error) { console.error('Error fetching people:', error); } };
+
+                 const fetchCurrentPerson = async () => { 
+                  try { const response = await fetch(`/api/currentperson?id=${id}`); 
+                      const data = await response.json();
+                       setCurrentPerson(data);
+                       
+                       
+                       
+                      } catch (error) { 
+                          console.error('Error fetching current person:', error); 
+                      }
+                  }
+
+               fetchCurrentPerson();
+    
+                 fetchPeople();
+    
+         
+    
                  
-                 window.addEventListener('local-storage-update', handleStorageChange);
-                  return () => {
-                     window.removeEventListener('local-storage-update', handleStorageChange);
-                     }; }, [])
+                  }, [id]);
+                  
+                  useEffect(() => {
+                     if (currentPerson && members.length === 0) {
+                       setMembers([currentPerson]); } }, [currentPerson, members])
+            
            
 
         const handleSubmit = async (event:FormEvent) => { 
@@ -120,7 +139,7 @@ const CreateTeam = () => {
                                 <div className="">
                               {member.name    }  
                               {    member.gradYear}</div>
-                              {(member._id.toString()!==currentperson?._id.toString())&&<button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeHandler(member._id.toString())}>X</button>}
+                              {(member._id.toString()!==currentPerson?._id.toString())&&<button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeHandler(member._id.toString())}>X</button>}
                             
                               <button  className= {`$ mx-10 bg-lime-600  rounded-full w-12 h-7`} onClick={()=>{
                                 setLeader(member);
@@ -159,7 +178,23 @@ const CreateTeam = () => {
           </div>
           
           <div className="w-[45%] overflow-y-scroll h-[80vh] rounded-[8px] border-[4px] absolute  top-[10vh] right-5 left-[50%]">
-          <SimPeopleWithSuspense/>
+          {
+            similarPeople.map((user)=>(
+              <div className="w-[80%] h-20 flex flex-row justify-evenly items-center" key={user._id.toString()}>
+                <div className="overflow-hidden w-20 h-20">
+                 <Image src={user.image || " "} className=""  width={200} height={200} alt={user.name} />
+
+                </div>
+                <div className="flex flex-col">
+                  <div className="">{user.name}</div>
+                  <div className="">{user.gradYear}</div>
+                </div>
+                <button className="" onClick={()=>{const newMembers=[...members,user]
+                  setMembers(newMembers);
+                }}>Add to Team</button>
+              </div>
+            ))
+          }
             </div>
            
         </div>

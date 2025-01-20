@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
           if (user) {
             const updatedEvents = user.events || [];
-            updatedEvents.push(event);
+            updatedEvents.push(result.insertedId);
             await users.updateOne(
               { _id: new ObjectId(member._id) },
               { $set: { events: updatedEvents } }
@@ -60,11 +60,11 @@ export async function POST(request: NextRequest) {
       );
 
       if (reqTeam) {
-        reqTeam.events = reqTeam.events || [];
-        reqTeam.events.push(event);
+       const updatedEvents = reqTeam.events || [];
+        updatedEvents.push(result.insertedId);
         await teams.updateOne(
           { _id: new ObjectId(team as string) },
-          { $set: { events: reqTeam.events } }
+          { $set: { events: updatedEvents } }
         );
       }
     }
