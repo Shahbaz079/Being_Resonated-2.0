@@ -9,6 +9,14 @@ export async function GET(req: NextRequest) {
   await connectDB();
   
   const searchTerm = req.nextUrl.searchParams.get('q') || '';
+ const type=req.nextUrl.searchParams.get('type');
+
+ if(type=='user'){
+  const userResults = await User.find({ name: { $regex: searchTerm, $options: 'i' } });
+  return NextResponse.json({ users: userResults });
+ }
+
+
 
   const userResults = await User.find({ name: { $regex: searchTerm, $options: 'i' } });
   const eventResults = await Event.find({ name: { $regex: searchTerm, $options: 'i' } });

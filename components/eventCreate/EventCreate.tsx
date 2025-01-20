@@ -19,17 +19,12 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
   const [time,setTime]=useState<string | null>();
   const [location,setLocation]=useState<string |null>("");
 
-  useEffect(()=>{
-    if(typeof window === "undefined"){
-      const currentPerson = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser') as string) : null;
-      setCurrentPerson(currentPerson);
-    }
-  },[])
+  
 
 
 
   const handleSubmit = async (event: FormEvent) => {
-    console.log(teamId,"currentPerson")
+    console.log(teamId,"teamId")
 
     if(!currentPerson){
       setCurrentPerson(user?.publicMetadata.mongoId as string

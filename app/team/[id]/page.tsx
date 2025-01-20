@@ -46,7 +46,7 @@ const TeamPage = () => {
   const [teamImg, setTeamImg] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>("");
   const [createdBy, setCreatedBy] = useState<IUser | null>();
-  const [leader, setLeader] = useState<IUser>();
+  const [leaders, setLeaders] = useState<IUser[]>();
   const [teamName, setTeamName] = useState<string>("")
   const [modal, setModal] = useState(false);
   const [events, setEvents] = useState<IEvent[] | null>([])
@@ -76,7 +76,7 @@ const TeamPage = () => {
         setTeamImg(data.timage);
         setDescription(data.description);
         setCreatedBy(data.createdBy);
-        setLeader(data.leader);
+        setLeaders(data.leaders);
         setTeamName(data.name);
         setEvents(data.events)
       })
@@ -117,7 +117,9 @@ const TeamPage = () => {
                 <h1 className="text-5xl ctab:text-3xl">{teamName}</h1>
                 <p className="text-xl">{description}</p>
                 <div className="flex flex-col">
-                  <h3 className="capitalize">Team Leader: {leader?.name}</h3>
+                  <div className="capitalize">Team Leader: {leaders?.map((leader)=>(
+                     <h3 key={leader._id.toString()}>{leader.name}</h3>
+                  ))}</div>
                   <h3>Created By:{createdBy?.name}</h3>
                 </div>
               </div>

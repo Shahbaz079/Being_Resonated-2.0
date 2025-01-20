@@ -294,8 +294,12 @@ const EventPage = () => {
         </CardHeader>
         <CardContent>
           <div className="flex gap-3 flex-wrap">
-            <OrganiserCard number="+91 7908529703" name="Aitijhya Modak" email="2022itb023.aitijhya@students.iiests.ac.in"></OrganiserCard>
-            <OrganiserCard number="+91 7934524701" name="Anusree Mandal" email="2022csb023.anusree@students.iiests.ac.in"></OrganiserCard>
+          {leaders?.map((leader)=>(
+            <OrganiserCard number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
+          ))}
+          
+           
+          
           </div>
         </CardContent>
       </Card>

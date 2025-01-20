@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       location,
     };
 
-    const reqTeam = await teams.findOne({ _id: new ObjectId(team) });
+    const reqTeam = await teams.findOne({ _id: new ObjectId(team as string) });
     const result = await events.insertOne(event);
 
     if (result.acknowledged) {
@@ -100,9 +100,14 @@ export async function GET(request: NextRequest) {
 
     const event = await events.findOne({ _id: new ObjectId(eventId as string) });
 
-    return NextResponse.json(event);}else{
+
+
+    return NextResponse.json(event);
+  
+  }else{
       
       const allEvents = await events.find({}).sort({ createdAt: -1 }).toArray();
+      
       return NextResponse.json(allEvents)
     }
   } finally {

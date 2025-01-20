@@ -16,24 +16,13 @@ const SubHeader = () => {
   const [teams, setTeams] = useState<ITeam[]>([]);
   const [events, setEvents] = useState<IEvent[]>([]);
 
-  useEffect(() => {
-    // Access localStorage only on the client side
-    if (typeof window !== 'undefined') {
-      const storedTeamIds = localStorage.getItem('teamIds');
-      if (storedTeamIds) {
-        setTeamIds(JSON.parse
-          (storedTeamIds));
-      }
-    }
-  },
-
-    [isLoaded]);
+  
 
 
 
   const [teamModal, setTeamModal] = useState(false);
   const [eventModal, setEventModal] = useState(false);
-  const [workModal, setWorkModal] = useState(false);
+ 
 
   const handleCloseEventModal = () => { setEventModal(false) }
   const handleOpenEventModal = () => { setEventModal(true) }
@@ -51,7 +40,7 @@ const SubHeader = () => {
       const fetchData = async () => {
         if (isLoaded && user && mongoId) {
           try {
-            const result = await fetch(`/api/currentperson?id=${mongoId}`, {
+            const result = await fetch(`/api/currentperson?id=${mongoId}&type=eandt`, {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },
 
@@ -59,10 +48,9 @@ const SubHeader = () => {
             const data = await result.json();
             setTeams(data.teams);
             setEvents(data.events);
-            localStorage.setItem("teams", JSON.stringify(data.teams));
-            localStorage.setItem('currentUser', JSON.stringify(data));
+           
             if (result.ok) {
-              console.log('teams retrieved successfully');
+              console.log('teams & events retrieved successfully');
             } else {
               console.error('Failed to retrieve teams');
             }
@@ -196,7 +184,7 @@ const SubHeader = () => {
 
 
       {/*<Link href={'/academics'}>Assigned Works</Link> */}
-      <SearchPage />
+      <SearchPage type={'all'} click={null} />
     </div>
   )
 }

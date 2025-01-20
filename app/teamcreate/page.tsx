@@ -9,6 +9,7 @@ import { newMember } from "@/components/expandableCards/card";
 import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
 import Image from "next/image";
+import SearchPage from "@/components/search/Search";
 
 
 const CreateTeam = () => {
@@ -16,7 +17,7 @@ const CreateTeam = () => {
      const [description, setDescription] = useState(''); 
      const [deadline, setDeadline] = useState('');
       const [members, setMembers] = useState<IUser[]>([]);
-       const [leader, setLeader] = useState<IUser>(); 
+       const [leaders, setLeaders] = useState<IUser[]>([]); 
        const [currentPerson,setCurrentPerson]=useState<IUser>()
 
        const [similarPeople,setSimilarPeople]=useState<IUser[]>([]);
@@ -65,6 +66,10 @@ const CreateTeam = () => {
                   useEffect(() => {
                      if (currentPerson && members.length === 0) {
                        setMembers([currentPerson]); } }, [currentPerson, members])
+
+               const click=(user:IUser)=>{const newMembers=[...members,user]
+                setMembers(newMembers);
+              }        
             
            
 
@@ -72,12 +77,12 @@ const CreateTeam = () => {
             event.preventDefault(); // Prepare data
 
             
-    if (!name || !description || !deadline || !members ||!leader || !id ) {
+    if (!name || !description || !deadline || !members ||!leaders || !id ) {
        toast.error('Please fill in all required fields.'); 
 
       return;}
 
-              const data = { name, description, deadline, members, leader, createdBy: id }; 
+              const data = { name, description, deadline, members, leaders, createdBy: id }; 
               // Send data to the API
 
               try {
@@ -89,9 +94,9 @@ const CreateTeam = () => {
                   if (response.ok) { 
                     
                     toast.success('Team created successfully!');
-                    localStorage.removeItem('members');
 
-                    window.location.href = `/`;
+                    window.location.href = `/team/${resData?._id}`;
+                    
                     } else { 
                       toast.error('Failed to create team!');
                         redirect(`/`);
@@ -108,7 +113,11 @@ const CreateTeam = () => {
                               const removeHandler=(id:string)=>{
                                 const newMembers=members.filter(member=>member._id.toString()!==id);
                                 setMembers(newMembers);
-                                localStorage.setItem('members',JSON.stringify(newMembers));
+                              
+                              }
+                              const removeLeader=(id:string)=>{
+                              const newLeaders=leaders.filter(leader=>leader._id.toString()!==id)  
+                              setLeaders(newLeaders)
                               }
 
 
@@ -142,7 +151,8 @@ const CreateTeam = () => {
                               {(member._id.toString()!==currentPerson?._id.toString())&&<button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeHandler(member._id.toString())}>X</button>}
                             
                               <button  className= {`$ mx-10 bg-lime-600  rounded-full w-12 h-7`} onClick={()=>{
-                                setLeader(member);
+                                const newLeaders=[...leaders,member]
+                                setLeaders(newLeaders);
                               
                               }}>Lead</button>
                               </div>
@@ -150,10 +160,24 @@ const CreateTeam = () => {
                         ))}
 
                         {
-                          leader && (
+                          leaders && (
                             <div>
                               <h1>Leader:</h1>
-                              <div>{leader.name}</div>
+                              <div>
+
+                              {leaders.map(leader=>(
+                            <div className="flex flex-row" key={leader._id.toString()} >
+                                <div className="">
+                              {leader.name    }  
+                              {    leader.gradYear}</div>
+                              {(leader._id.toString()!==currentPerson?._id.toString())&&<button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeLeader(leader._id.toString())}>X</button>}
+                            
+                              
+                              </div>
+                            
+                        ))}
+
+                              </div>
                             </div>
                           )
                         }
@@ -177,9 +201,14 @@ const CreateTeam = () => {
                           <button type="submit" className="mx-[20%] h-8 w-[40%] bg-slate-600 rounded-full">Create Team</button> </form>
           </div>
           
-          <div className="w-[45%] overflow-y-scroll h-[80vh] rounded-[8px] border-[4px] absolute  top-[10vh] right-5 left-[50%]">
-          {
+          <div className="w-[45%]  overflow-y-scroll h-[80vh] rounded-[8px] border-[4px] absolute  top-[10vh] right-5 left-[50%] flex flex-col ">
+            
+            
+            <SearchPage type="user" click={click}/>
+            <div className="my-10">
+                        {
             similarPeople.map((user)=>(
+              
               <div className="w-[80%] h-20 flex flex-row justify-evenly items-center" key={user._id.toString()}>
                 <div className="overflow-hidden w-20 h-20">
                  <Image src={user.image || " "} className=""  width={200} height={200} alt={user.name} />
@@ -189,12 +218,14 @@ const CreateTeam = () => {
                   <div className="">{user.name}</div>
                   <div className="">{user.gradYear}</div>
                 </div>
-                <button className="" onClick={()=>{const newMembers=[...members,user]
-                  setMembers(newMembers);
-                }}>Add to Team</button>
+                <button className="" onClick={()=>click(user)}>Add to Team</button>
               </div>
+              
             ))
           }
+          </div>
+
+          
             </div>
            
         </div>
