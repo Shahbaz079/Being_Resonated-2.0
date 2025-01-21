@@ -189,7 +189,7 @@ const ProfilePage = () => {
             </div>
 
             <p className="mt-5 cphone:text-[12px]">Lorem ipsum dolor adipisicing elit. Comtium cumque odit assumenda ab a, facilis temporibus, dolore impedit tempora laborum! Exercitationem nihil deserunt asperiores blanditiis quod, placeat culpa facilis delectus voluptatum odit sapiente, dolore modi veritatis vitae debitis ducimus rem at consequuntur aliquam. Animi!</p>
-            <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3">Create Team</Link>
+            <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-7">Create Team</Link>
           </div>
 
           <div style={{ "--position": 3 } as React.CSSProperties} className="hidden cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl   flex-col justify-center z-20">
@@ -213,7 +213,7 @@ const ProfilePageWithSuspense = () => (
 
 const LoadSkeleton = () => (
   <div className="h-fit mt-[10vh] flex ctab:flex-col ctab:items-center justify-center p-5 gap-20 ctab:gap-0 ctab:p-0 relative overflow-hidden">
-    <div className="Shine absolute h-full w-full bg-[#121212] mix-blend-screen animate-skeleton "></div>
+    <div className="Shine absolute h-full w-full bg-black mix-blend-screen animate-skeleton"></div>
     <div className="rounded-full h-[230px] w-[230px] bg-[#252424]"></div>
     <div className="ctab:w-full max-w-[60%] w-[60%] h-[100%] ctab:max-w-full ctab:flex ctab:flex-col ctab:items-center ctab:mt-5">
       <div className="bg-[#252424] h-16 rounded-xl w-full"></div>

@@ -8,37 +8,45 @@ import { IUser } from "@/components/expandableCards/card";
 import { useUser } from "@clerk/nextjs";
 import { Mongoose } from "mongoose";
 import Image from "next/image";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+
 const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: string | null }) => {
-  const {user}=useUser();
-  const [name, setName] = useState(''); 
-  const [description, setDescription] = useState(''); 
+  const { user } = useUser();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventMembers, setEventMembers] = useState<IUser[] | null>(members);
   const [leaders, setLeaders] = useState<newMember[] | null>([]);
-  const [currentPerson, setCurrentPerson] = useState<IUser | string |null>();
-  const [time,setTime]=useState<string | null>();
-  const [location,setLocation]=useState<string |null>("");
+  const [currentPerson, setCurrentPerson] = useState<IUser | string | null>();
+  const [time, setTime] = useState<string | null>();
+  const [location, setLocation] = useState<string | null>("");
 
-  
+
 
 
 
   const handleSubmit = async (event: FormEvent) => {
-    console.log(teamId,"teamId")
+    console.log(teamId, "teamId")
 
-    if(!currentPerson){
+    if (!currentPerson) {
       setCurrentPerson(user?.publicMetadata.mongoId as string
-)    }
+      )
+    }
     event.preventDefault(); // Prepare data
 
-    if (!name || !description || !eventDate || !eventMembers ||!leaders || !currentPerson || !teamId || !time || !location) { toast.error('Please fill in all required fields.'); 
-      return;}
+    if (!name || !description || !eventDate || !eventMembers || !leaders || !currentPerson || !teamId || !time || !location) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
 
-    
-  
-    
 
-    const data = { name, description, date: eventDate, members: eventMembers, leaders, createdBy: currentPerson, team:teamId,time,location };
+
+
+
+    const data = { name, description, date: eventDate, members: eventMembers, leaders, createdBy: currentPerson, team: teamId, time, location };
 
     // Send data to the API
     try {
@@ -47,7 +55,7 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      const resData: IUser | null = await response.json(); 
+      const resData: IUser | null = await response.json();
       // Handle response
       if (response.ok) {
         toast.success('Event created successfully!');
@@ -98,52 +106,57 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
   return (
     <div className="flex flex-row relative w-[100vw] ">
       <div className="absolute left-5 h-[80vh] w-[45vw]">
-        <form className="create-team-form w-[100%] my-[20%] flex flex-col" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-3 items-center mt-20  max-w-[500px]" onSubmit={handleSubmit}>
           <div className="w-[80%] px-4 py-2 flex flex-col ">
-            <label htmlFor="name">Event Name:</label>
-            <input type="text" id="name" className="bg-[#484444] rounded-full h-[35px] px-5" value={name} onChange={(e) => setName(e.target.value)} required /> 
+            <Label htmlFor="name">Event Name:</Label>
+            <Input type="text" id="name" className="mt-2" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
-          <div className="w-[80%] px-4 py-2 flex flex-col "> 
-            <label htmlFor="description">Description</label>
-            <textarea id="description" value={description} className="bg-[#484444] rounded-full h-[6%] px-5" onChange={(e) => setDescription(e.target.value)} required /> 
-          </div> 
-          <div className="w-[80%] px-4 py-2 flex flex-col "> 
-            <label htmlFor="time">Time</label>
-            <input type="string" id="time"  className="bg-[#484444] rounded-full h-[35px] px-5" value={time || ''} onChange={(e) => setTime(e.target.value.toString())} required/>
-          </div> 
-          <div className="w-[80%] px-4 py-2 flex flex-col "> 
-            <label htmlFor="location">Location</label>
-           <input type="string" className="bg-[#484444] rounded-full h-[35px] px-5" value={location || ''} onChange={(e) => setLocation(e.target.value)} required />
-          </div> 
+          <div className="w-[80%] px-4 py-2 flex flex-col ">
+            <Label htmlFor="description">Description</Label>
+            <Textarea id="description" className="mt-2" value={description} onChange={(e) => setDescription(e.target.value)} required />
+          </div>
+          <div className="w-[80%] px-4 py-2 flex flex-col ">
+            <Label htmlFor="time">Time</Label>
+            <Input type="string" id="time" className="mt-2" value={time || ''} onChange={(e) => setTime(e.target.value.toString())} required />
+          </div>
+          <div className="w-[80%] px-4 py-2 flex flex-col ">
+            <Label htmlFor="location">Location</Label>
+            <Input type="string" className="mt-2" value={location || ''} onChange={(e) => setLocation(e.target.value)} required />
+          </div>
+          <div className="w-[80%] px-4 py-2 flex flex-col ">
+            <Label htmlFor="eventDate">Event Date</Label>
+            <Input type="date" id="eventDate" className="mt-2" value={eventDate} required onChange={(e) => setEventDate(e.target.value)} />
+          </div>
+
           {eventMembers && eventMembers.length > 0 && (
-            <div className="">Crew for the Event:
+            <div className="">
+              <h1 className="text-yellow-600 font-semibold mt-3 text-2xl mb-3">Crew for the Event:</h1>
+
               {eventMembers?.map(member => (
-                <div className="flex flex-row" key={member._id.toString()} >
-                  <div className="">
-                    {member.name}  
-                    {member.gradYear}
+                <div className="flex flex-col gap-10 text-black" key={member._id.toString()} >
+
+                  <div className="flex border-2 w-fit gap-2 border-red-900 bg-red-300 items-center rounded-2xl px-2 py-1">
+                    <span className="capitalize">{member.name}</span>
+                    <button className="rounded-full text-red-800 font-bold" onClick={() => removeHandler(member._id.toString())}>X</button>
+                    <button className={`text-green-700 font-bold`} onClick={() => addLeaders(member)}>Lead</button>
                   </div>
-                  <button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={() => removeHandler(member._id.toString())}>X</button>
-                  <button className={`mx-10 bg-lime-600 rounded-full w-12 h-7`} onClick={() => addLeaders(member)}>Lead</button>
+
                 </div>
               ))}
               {leaders && leaders.map((leader) => (
                 <div key={leader._id.toString()}>
                   <h1>Leader:</h1>
-                  <div>{leader.name} <span onClick={() => removeLeader(leader._id.toString())}>X</span></div>   
+                  <div>{leader.name} <span onClick={() => removeLeader(leader._id.toString())}>X</span></div>
                 </div>
               ))}
             </div>
           )}
-          <div className="w-[80%] px-4 py-2 flex flex-col "> 
-            <label htmlFor="eventDate">Event Date</label> 
-            <input type="date" id="eventDate" value={eventDate} className="bg-[#484444] rounded-full h-[6%] px-5" required onChange={(e) => setEventDate(e.target.value)} /> 
-          </div>
-          <button type="submit" className="mx-[20%] h-8 w-[40%] bg-slate-600 rounded-full">Create Event</button>
+
+          <Button type="submit" className="mt-3">Create Event</Button>
         </form>
       </div>
       <div className="w-[45%] overflow-y-scroll h-[80vh] rounded-[8px] border-[4px] absolute top-[10vh] right-5 left-[50%]">
-        {members && members.length > 0 && 
+        {members && members.length > 0 &&
           members.map(member => (
             <div className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer" key={member._id.toString()}>
               <div className="flex gap-4 flex-col md:flex-row">
@@ -176,7 +189,7 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
               >
                 Add To Event
               </button>
-            </div> 
+            </div>
           ))
         }
       </div>
