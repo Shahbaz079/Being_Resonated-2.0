@@ -21,6 +21,7 @@ import { RiAttachment2 } from "react-icons/ri";
 import { HiMiniTrophy } from "react-icons/hi2";
 import { Textarea } from "@/components/ui/textarea";
 import { MdOutlineModeEditOutline } from "react-icons/md";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 interface EventUpdateType {
@@ -256,53 +257,45 @@ const EventPage = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </CardFooter>
 
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Description</CardTitle>
-        </CardHeader>
-
-        <CardContent>{description}</CardContent>
-
-        <CardFooter>
           <Dialog>
             <DialogTrigger asChild>
-              <Button>Edit</Button>
+              <Button className="ml-4">Manage Participants</Button>
             </DialogTrigger>
-            <DialogContent className="">
+            <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit Event Description</DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-8 mt-6">
-                <div>
-                  <Label>Edit Description</Label>
-                  <Textarea className="mt-1 h-40" value={eventUpdateData.description} onChange={(e) => setEventUpdateData({ ...eventUpdateData, description: e.target.value })}></Textarea>
-                </div>
-                <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
-              </div>
+                <DialogTitle>Participants and Requests</DialogTitle></DialogHeader>
             </DialogContent>
           </Dialog>
         </CardFooter>
+
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Contact the Organisers</CardTitle>
+          <Tabs defaultValue="Description">
+            <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
+              <TabsTrigger value="Description" className="mt-1 text-lg">Description</TabsTrigger>
+              <TabsTrigger value="Organisers" className="text-lg">Organisers</TabsTrigger>
+              <TabsTrigger value="Posts" className="text-lg">Posts</TabsTrigger>
+              <TabsTrigger value="EventMembers" className="text-lg">Event Members</TabsTrigger>
+            </TabsList>
+            <TabsContent value="Description" className="mt-7 p-3">{description}</TabsContent>
+            <TabsContent value="Organisers" className="mt-7">
+              <div className="flex gap-3 flex-wrap">
+                {leaders?.map((leader) => (
+                  <OrganiserCard key={leader.toString()} number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="Posts">//posts</TabsContent>
+            <TabsContent value="Members"></TabsContent>
+          </Tabs>
         </CardHeader>
-        <CardContent>
-          <div className="flex gap-3 flex-wrap">
-          {leaders?.map((leader)=>(
-            <OrganiserCard key={leader.toString()} number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
-          ))}
-          
-           
-          
-          </div>
-        </CardContent>
+
       </Card>
+
+
 
     </div >
   );
