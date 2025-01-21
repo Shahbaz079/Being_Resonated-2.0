@@ -288,7 +288,7 @@ const EventPage = () => {
                 ))}
               </div>
             </TabsContent>
-            <TabsContent value="Posts">//posts</TabsContent>
+            <TabsContent value="Posts">here posts</TabsContent>
             <TabsContent value="Members"></TabsContent>
           </Tabs>
         </CardHeader>
