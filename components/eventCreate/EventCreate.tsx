@@ -105,9 +105,8 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
 
   return (
     <div className="h-full w-full overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-blue-600 px-4 py-2">
-      <Input name="searchBar" placeholder="Search members here.." className="mb-5 h-12"></Input>
 
-      <div className="mt-10 flex flex-col items-center rounded-xl px-4 max-h-48 overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-black">
+      <div className="mt-4 flex flex-col items-center rounded-xl px-4 max-h-48 overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-black">
         {members?.map((member) => <MemberCard addToEvent={addToEvent} member={member} key={member._id.toString()}></MemberCard>)}
       </div>
 
