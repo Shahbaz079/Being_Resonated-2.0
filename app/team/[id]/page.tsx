@@ -177,10 +177,22 @@ const TeamPage = () => {
       </div >
 
       <div className="flex">
-        <Button onClick={() => setEventModal(true)} className="ml-10 cphone:mx-auto">Create Event</Button>
-        <EventModal isOpen={eventModal} onClose={eventModalCloseHandler}>
-          <CreateEvent teamId={id} members={members} />
-        </EventModal>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="ml-10 cphone:mx-auto">Create Event</Button>
+          </DialogTrigger>
+          <DialogContent className="max-h-[600px] max-w-[700px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl">Create Event</DialogTitle>
+            </DialogHeader>
+
+            <div className="flex overflow-hidden h-[500px]">
+              <CreateEvent teamId={id} members={members}></CreateEvent>
+            </div>
+
+          </DialogContent>
+        </Dialog>
+
       </div>
 
     </div >
