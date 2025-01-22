@@ -130,8 +130,6 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
               ))}
             </div>
 
-
-
             {leaders?.length !== 0 &&
               <div className="mt-5">
                 <h1 className="text-yellow-600 text-lg">Leaders for the Event:</h1>

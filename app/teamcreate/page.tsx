@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useState,Suspense } from "react";
+import { FormEvent, useEffect, useState, Suspense } from "react";
 
 import { useSearchParams } from "next/navigation";
 import { redirect } from "next/navigation";
@@ -10,226 +10,235 @@ import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
 import Image from "next/image";
 import SearchPage from "@/components/search/Search";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 
 const CreateTeam = () => {
-     const [name, setName] = useState(''); 
-     const [description, setDescription] = useState(''); 
-     const [deadline, setDeadline] = useState('');
-      const [members, setMembers] = useState<IUser[]>([]);
-       const [leaders, setLeaders] = useState<IUser[]>([]); 
-       const [currentPerson,setCurrentPerson]=useState<IUser>()
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [members, setMembers] = useState<IUser[]>([]);
+  const [leaders, setLeaders] = useState<IUser[]>([]);
+  const [currentPerson, setCurrentPerson] = useState<IUser>()
 
-       const [similarPeople,setSimilarPeople]=useState<IUser[]>([]);
-     //  const [timage, setTimage] = useState('');
-     // const [choosed, setChoosed] = useState(false);
+  const [similarPeople, setSimilarPeople] = useState<IUser[]>([]);
+  //  const [timage, setTimage] = useState('');
+  // const [choosed, setChoosed] = useState(false);
 
-      const searchParams = useSearchParams();
-      const id = searchParams.get('id') as string;
-
-       
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id') as string;
 
 
 
 
-          useEffect(() => { 
-            const fetchPeople = async () => {
-    
-             try { 
-                const response = await fetch(`/api/people?id=${id}`); 
-    
-                const data = await response.json();
-                 setSimilarPeople(Array.isArray(data) ? data : []);
-                 } catch (error) { console.error('Error fetching people:', error); } };
-
-                 const fetchCurrentPerson = async () => { 
-                  try { const response = await fetch(`/api/currentperson?id=${id}`); 
-                      const data = await response.json();
-                       setCurrentPerson(data);
-                       
-                       
-                       
-                      } catch (error) { 
-                          console.error('Error fetching current person:', error); 
-                      }
-                  }
-
-               fetchCurrentPerson();
-    
-                 fetchPeople();
-    
-         
-    
-                 
-                  }, [id]);
-                  
-                  useEffect(() => {
-                     if (currentPerson && members.length === 0) {
-                       setMembers([currentPerson]); } }, [currentPerson, members])
-
-               const click=(user:IUser)=>{const newMembers=[...members,user]
-                setMembers(newMembers);
-              }        
-            
-           
-
-        const handleSubmit = async (event:FormEvent) => { 
-            event.preventDefault(); // Prepare data
-
-            
-    if (!name || !description || !deadline || !members ||!leaders || !id ) {
-       toast.error('Please fill in all required fields.'); 
-
-      return;}
-
-              const data = { name, description, deadline, members, leaders, createdBy: id }; 
-              // Send data to the API
-
-              try {
-                const response = await fetch(`/api/team`, { method: 'POST', 
-                  headers: { 'Content-Type': 'application/json' }, 
-                  body: JSON.stringify(data), });
-                  const resData:IUser |null=await response.json(); 
-                  // Handle response
-                  if (response.ok) { 
-                    
-                    toast.success('Team created successfully!');
-
-                    window.location.href = `/team/${resData?._id}`;
-                    
-                    } else { 
-                      toast.error('Failed to create team!');
-                        redirect(`/`);
-                        }
-              } catch (error) {
-                console.error('Error creating team:', error);
-              
-                
-              }
-             
-
-           };
-
-                              const removeHandler=(id:string)=>{
-                                const newMembers=members.filter(member=>member._id.toString()!==id);
-                                setMembers(newMembers);
-                              
-                              }
-                              const removeLeader=(id:string)=>{
-                              const newLeaders=leaders.filter(leader=>leader._id.toString()!==id)  
-                              setLeaders(newLeaders)
-                              }
 
 
-    return (
-        <div className="flex flex-row relative w-[100vw] ">
+  useEffect(() => {
+    const fetchPeople = async () => {
 
-          <div className="absolute left-5  h-[80vh] w-[45vw]">
-           <form  className="create-team-form w-[100%] my-[20%] flex flex-col " onSubmit={handleSubmit}>
+      try {
+        const response = await fetch(`/api/people?id=${id}`);
 
-             <div className="w-[80%] px-4 py-2 flex flex-col ">
-               <label htmlFor="name">Team Name:</label>
-              <input type="text" id="name" className="bg-[#484444] rounded-full h-[35px] px-5" value={name} onChange={(e) =>
-                 setName(e.target.value)} required /> 
-                 </div>
+        const data = await response.json();
+        setSimilarPeople(Array.isArray(data) ? data : []);
+      } catch (error) { console.error('Error fetching people:', error); }
+    };
 
-
-                  <div className="w-[80%] px-4 py-2 flex flex-col "> 
-                    <label htmlFor="description">Description</label>
-                   <textarea id="description" value={description} className="bg-[#484444] rounded-full h-[6%] px-5"
-                   onChange={(e) => setDescription(e.target.value)} required /> 
-                   </div> 
-
-                  {
-                    members.length>0 && (
-                      <div className="">Your Crew:
-                        {members.map(member=>(
-                            <div className="flex flex-row" key={member._id.toString()} >
-                                <div className="">
-                              {member.name    }  
-                              {    member.gradYear}</div>
-                              {(member._id.toString()!==currentPerson?._id.toString())&&<button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeHandler(member._id.toString())}>X</button>}
-                            
-                              <button  className= {`$ mx-10 bg-lime-600  rounded-full w-12 h-7`} onClick={()=>{
-                                const newLeaders=[...leaders,member]
-                                setLeaders(newLeaders);
-                              
-                              }}>Lead</button>
-                              </div>
-                            
-                        ))}
-
-                        {
-                          leaders && (
-                            <div>
-                              <h1>Leader:</h1>
-                              <div>
-
-                              {leaders.map(leader=>(
-                            <div className="flex flex-row" key={leader._id.toString()} >
-                                <div className="">
-                              {leader.name    }  
-                              {    leader.gradYear}</div>
-                              {(leader._id.toString()!==currentPerson?._id.toString())&&<button className="mx-10 bg-red-500 rounded-full w-7 h-7" onClick={()=>removeLeader(leader._id.toString())}>X</button>}
-                            
-                              
-                              </div>
-                            
-                        ))}
-
-                              </div>
-                            </div>
-                          )
-                        }
-                      </div>
-                    )
-                  }
-
-                   <div className="w-[80%] px-4 py-2 flex flex-col "> 
-                    <label htmlFor="deadline">Deadline</label> 
-                   <input type="date" id="deadline" value={deadline} className="bg-[#484444] rounded-full h-[6%] px-5"
-                   onChange={(e) => setDeadline(e.target.value)} /> 
-                   </div>
+    const fetchCurrentPerson = async () => {
+      try {
+        const response = await fetch(`/api/currentperson?id=${id}`);
+        const data = await response.json();
+        setCurrentPerson(data);
 
 
-                   
-                     
-                     
+
+      } catch (error) {
+        console.error('Error fetching current person:', error);
+      }
+    }
+
+    fetchCurrentPerson();
+
+    fetchPeople();
 
 
-                       
-                          <button type="submit" className="mx-[20%] h-8 w-[40%] bg-slate-600 rounded-full">Create Team</button> </form>
-          </div>
-          
-          <div className="w-[45%]  overflow-y-scroll h-[80vh] rounded-[8px] border-[4px] absolute  top-[10vh] right-5 left-[50%] flex flex-col ">
-            
-            
-            <SearchPage type="user" click={click}/>
-            <div className="my-10">
-                        {
-            similarPeople.map((user)=>(
-              
-              <div className="w-[80%] h-20 flex flex-row justify-evenly items-center" key={user._id.toString()}>
-                <div className="overflow-hidden w-20 h-20">
-                 <Image src={user.image || " "} className=""  width={200} height={200} alt={user.name} />
 
+
+  }, [id]);
+
+  useEffect(() => {
+    if (currentPerson && members.length === 0) {
+      setMembers([currentPerson]);
+    }
+  }, [currentPerson, members])
+
+  const click = (user: IUser) => {
+    const newMembers = [...members, user]
+    setMembers(newMembers);
+  }
+
+
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault(); // Prepare data
+
+
+    if (!name || !description || !deadline || !members || !leaders || !id) {
+      toast.error('Please fill in all required fields.');
+
+      return;
+    }
+
+    const data = { name, description, deadline, members, leaders, createdBy: id };
+    // Send data to the API
+
+    try {
+      const response = await fetch(`/api/team`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const resData: IUser | null = await response.json();
+      // Handle response
+      if (response.ok) {
+
+        toast.success('Team created successfully!');
+
+        window.location.href = `/team/${resData?._id}`;
+
+      } else {
+        toast.error('Failed to create team!');
+        redirect(`/`);
+      }
+    } catch (error) {
+      console.error('Error creating team:', error);
+
+
+    }
+
+
+  };
+
+  const removeHandler = (id: string) => {
+    const newMembers = members.filter(member => member._id.toString() !== id);
+    setMembers(newMembers);
+
+  }
+  const removeLeader = (id: string) => {
+    const newLeaders = leaders.filter(leader => leader._id.toString() !== id)
+    setLeaders(newLeaders)
+  }
+
+
+  return (
+    <div className="w-full mt-8 p-3">
+      <h1 className="text-3xl text-center">Create Team</h1>
+
+      <div className="mt-10 max-w-[500px] mx-auto">
+        <SearchPage type="user" click={click} />
+      </div>
+
+
+      <div className="mt-10 flex flex-col max-w-[500px] mx-auto relative">
+
+
+        <div className="border-2 rounded-xl p-2 max-h-48 overflow-hidden max-w-[500px]">
+          <h1 className="text-lg text-center">Users with similar interests</h1>
+          <div className="flex flex-col p-3 max-h-48 overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-blue-500">
+            {
+              similarPeople.map((user) => (
+                <div className="p-2 w-full flex items-center gap-5 hover:bg-accent cursor-pointer" key={user._id.toString()} onClick={() => click(user)}>
+                  <div className="w-10 h-10 rounded-full">
+                    <Image src={user.image || " "} className="w-10 h-10 rounded-full" width={200} height={200} alt={user.name} />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="capitalize text-xl">{user.name}</div>
+                    <div className="">{user.gradYear}</div>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <div className="">{user.name}</div>
-                  <div className="">{user.gradYear}</div>
-                </div>
-                <button className="" onClick={()=>click(user)}>Add to Team</button>
-              </div>
-              
-            ))
-          }
+              ))
+            }
           </div>
-
-          
-            </div>
-           
         </div>
-    );
+
+
+
+      </div>
+
+      <div className="mx-auto mt-8 h-fit max-w-[500px]">
+
+        <form className="w-full flex flex-col gap-5 p-2" onSubmit={handleSubmit}>
+
+          {
+            members.length > 0 && (
+              <div className="">
+                <h1 className="text-rose-600 font-semibold text-lg mb-3">Crew for the Team:</h1>
+                <div className="flex gap-3 flex-wrap">
+                  {members.map(member => (
+                    <div className="flex w-fit gap-2 border-2 text-black bg-red-300 border-red-900 items-center rounded-2xl px-2 py-1" key={member._id.toString()} >
+                      <span className="capitalize"> {member.name}</span>
+                      <button onClick={() => {
+                        const newLeaders = [...leaders, member]
+                        setLeaders(newLeaders);
+                      }} className="text-green-700 font-bold">Lead</button>
+                      {(member._id.toString() !== currentPerson?._id.toString()) && <button className="text-red-700 font-bold w-fit" onClick={() => removeHandler(member._id.toString())}>X</button>}
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            )
+          }
+
+          {
+            leaders.length !== 0 && (
+              <div className="">
+                <h1 className="text-yellow-600 text-lg">Leaders:</h1>
+                <div className="flex gap-3 flex-wrap">
+                  {leaders.map(leader => (
+                    <div className="flex gap-2 w-full" key={leader._id.toString()} >
+                      <div className="mt-3 bg-orange-400 text-black px-2 py-1 w-fit rounded-2xl flex gap-2 items-center border-2 border-red-600">
+                        <span className="capitalize">{leader.name}</span>
+                        {(leader._id.toString() !== currentPerson?._id.toString()) && <button className="text-red-700 font-bold w-fit" onClick={() => removeLeader(leader._id.toString())}>X</button>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
+          <div className="mt-5">
+            <Label htmlFor="name">Team Name:</Label>
+            <Input className="mt-1" type="text" id="name" value={name} onChange={(e) =>
+              setName(e.target.value)} required />
+          </div>
+
+
+          <div className="">
+            <Label htmlFor="description">Description</Label>
+            <Textarea className="mt-1" id="description" value={description}
+              onChange={(e) => setDescription(e.target.value)} required />
+          </div>
+
+          <div className="">
+            <Label htmlFor="deadline">Deadline</Label>
+            <Input className="mt-1" type="date" id="deadline" value={deadline}
+              onChange={(e) => setDeadline(e.target.value)} />
+          </div>
+
+
+
+          <Button type="submit" className="mx-auto  mt-5 w-fit">Create Team</Button> </form>
+      </div >
+
+
+
+    </div >
+  );
 }
 
 
@@ -237,8 +246,8 @@ const CreateTeam = () => {
 
 
 const CreateTeamWithSuspense = () => (
-   <Suspense fallback={<div>Loading...</div>}>
-     <CreateTeam /> 
-     </Suspense> )
+  <Suspense fallback={<div>Loading...</div>}>
+    <CreateTeam />
+  </Suspense>)
 
 export default CreateTeamWithSuspense;
