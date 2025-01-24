@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     const db = client.db(dbName);
     const eventposts = db.collection('eventposts');
 
-    const allEventpost = await eventposts.find({}).sort({ createdAt: -1 }).toArray();
+    const allEventpost = await eventposts.find({}).sort({date: -1 }).toArray();
 
     return NextResponse.json(allEventpost);
   } finally {

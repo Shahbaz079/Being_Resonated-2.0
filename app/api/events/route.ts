@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
   
   }else{
       
-      const allEvents = await events.find({}).sort({ createdAt: -1 }).toArray();
+      const allEvents = await events.find({}).sort({createdAt:1}).toArray();
       
       return NextResponse.json(allEvents)
     }

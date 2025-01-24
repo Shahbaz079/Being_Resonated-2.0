@@ -22,6 +22,7 @@ import { HiMiniTrophy } from "react-icons/hi2";
 import { Textarea } from "@/components/ui/textarea";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ObjectId } from "mongoose";
 
 
 interface EventUpdateType {
@@ -113,14 +114,21 @@ const EventPage = () => {
 
   }
 
-
-
+  
 
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
 
   const { user, isLoaded } = useUser();
   const mongoId = user?.publicMetadata.mongoId as string;
+
+  
+
+  const isLeader = leaders?.some((leader) => leader._id.toString() === mongoId);
+  const isVolunteer = members?.some((member) => member._id.toString() === mongoId);
+
+
+
 
   useEffect(() => {
 
@@ -198,12 +206,12 @@ const EventPage = () => {
     setRequests(updatedRequests);
 
     const updateParticipants=async()=>{
-       const res=await fetch(`/api/events?id=${eventId}`,{
+       const res=await fetch(`/api/participate?eid=${eventId}&id=${mongoId}`,{
         method:"PUT",
         headers:{
           'Content-Type': 'application/json'
         },
-        body:JSON.stringify({participated:updatedParticipants,requests:updatedRequests})
+       
        })
 
        const data=res.json();
@@ -263,11 +271,40 @@ const EventPage = () => {
     updateParticipants();
   }
 
+  
+    const handleParticipation=(id:string)=>{
+     try {
+      
+      const participate=async ()=>{
+        const res=await fetch(`/api/events?type=participate&id=${id}`,{
+          method:'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body:JSON.stringify({userId:mongoId}),
+  
+        })
+        const data=await res.json();
+        if(res){
+          toast.success("Request sent successfully")
+        }else{
+          toast.error("Request failed")
+        }
+      }
+      participate();
+  
+     } catch (error) {
+      console.error(error);
+     }
+    }
+    
+
   return (
     <div className="p-12 flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
       <Card>
         <CardHeader>
           <div className="relative h-fit w-fit">
+          {isLeader &&
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="opacity-0 text-2xl font-bold hover:opacity-80 absolute bg-black top-0 left-0 h-full w-full flex items-center justify-center cursor-pointer">
@@ -287,6 +324,7 @@ const EventPage = () => {
                 </div>
               </DialogContent>
             </Dialog>
+                  }
             <img
               className="w-32 h-32 rounded-lg"
               src={image || 'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
@@ -312,6 +350,7 @@ const EventPage = () => {
         </CardContent>
 
         <CardFooter>
+          { isLeader && <>
           <Dialog>
             <DialogTrigger asChild>
               <Button>Edit</Button>
@@ -396,6 +435,9 @@ const EventPage = () => {
                 
             </DialogContent>
           </Dialog>
+          </>
+        }
+        <Button onClick={()=>handleParticipation(eventId!)}  variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Participate</Button>
         </CardFooter>
 
       </Card>

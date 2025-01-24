@@ -7,6 +7,7 @@ import { ObjectId } from 'mongoose';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
+import { IEvent } from '@/app/team/[id]/page';
 
 interface Event {
   _id: ObjectId;
@@ -25,7 +26,7 @@ const EventCard = ({uId}:{uId:string}) => {
   const [requestedEvents, setRequestedEvents] = useState<string[]>([]);
   
 
-  const [events,setEvents]=useState<Event[]|null>(null);
+  const [events,setEvents]=useState<IEvent[]|null>(null);
 
   const {user,isLoaded}=useUser();
 
@@ -38,7 +39,12 @@ const EventCard = ({uId}:{uId:string}) => {
     const fetchEvents=async ()=>{
   try {
     const res=await fetch("/api/events?type=all",
-      {method:"GET"}
+      {method:"GET",
+        headers: {
+          'Content-Type': 'application/json'
+        }
+        
+      }
       
     );
 
@@ -73,6 +79,8 @@ const EventCard = ({uId}:{uId:string}) => {
 
   const handleParticipation=(id:ObjectId)=>{
    try {
+    const updatedRequestedEvents=requestedEvents?[...requestedEvents,id.toString()]:[id.toString()];
+    setRequestedEvents(updatedRequestedEvents);
     const participate=async ()=>{
       const res=await fetch(`/api/events?type=participate&id=${id}`,{
         method:'PUT',

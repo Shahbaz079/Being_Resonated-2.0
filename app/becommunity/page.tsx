@@ -8,6 +8,8 @@ import Downbar from "@/components/Downbar/Downbar";
 import EventCard from "@/components/eventCard/EventCard";
 import PostCard from "@/components/eventCard/PostCard";
 import { UserPost } from "@/components/eventCard/PostCard";
+;
+import SubHeader from "@/components/SubHeader/SubHeader"
 
 
 export interface EventPost {
@@ -70,8 +72,10 @@ const BeCommunity = () => {
 
 
   console.log("eventposts",eventPosts)
-  return (
-    <div className="w-[100vw] h-auto relative">
+  return (<>
+    
+      <SubHeader/>
+      <div className="w-[100vw] top-24 h-auto relative">
            <div className="absolute left-[5%] right-[75%] top-5  h-[60vh]  bg-[#484444] rounded-2xl overflow-y-scroll ">
             <h1>Upcoming Events</h1>
             <EventCard uId={mongoId as string}/>
@@ -108,6 +112,7 @@ const BeCommunity = () => {
               </div>
               <Downbar/>
     </div>
+    </>
   )
 }
 

@@ -9,6 +9,8 @@ import { IUser } from '../expandableCards/card'
 import { IEvent } from '@/app/team/[id]/page'
 import Image from 'next/image'
 import SearchPage from '../search/Search'
+
+
 const SubHeader = () => {
   const { user, isLoaded } = useUser();
   const mongoId = user?.publicMetadata.mongoId as string
@@ -189,4 +191,4 @@ const SubHeader = () => {
   )
 }
 
-export default SubHeader
+export default SubHeader;
