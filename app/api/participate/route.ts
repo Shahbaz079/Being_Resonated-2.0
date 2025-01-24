@@ -1,6 +1,6 @@
 
 
-"use Server"
+"use server"
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 
