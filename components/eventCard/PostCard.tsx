@@ -113,14 +113,14 @@ console.log(post);
           <Heart size={20} fill={liked ? 'red' : 'none'} stroke={liked ? 'red' : 'currentColor'} />
           <span>Like</span>
         </button>
-        <button onClick={handleComment} className="flex items-center gap-2 text-gray-500 hover:text-blue-500">
+       {/**  <button onClick={handleComment} className="flex items-center gap-2 text-gray-500 hover:text-blue-500">
           <MessageCircle size={20} />
           <span>Comment</span>
         </button>
         <button onClick={handleShare} className="flex items-center gap-2 text-gray-500 hover:text-blue-500">
           <Share2 size={20} />
           <span>Share</span>
-        </button>
+        </button>   */}
       </div>
       {showCommentBox && (
         <div className="pt-4">
