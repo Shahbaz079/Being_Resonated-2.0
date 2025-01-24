@@ -1,3 +1,5 @@
+'use server'
+
 import { MongoClient, ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/config/db';
@@ -23,15 +25,15 @@ export async function POST(req: NextRequest) {
   let client: MongoClient | null = null;
 
   try {
-    await connectDB();
+   
 
     const body = await req.json();
     if (!body) {
       return NextResponse.json({ error: 'No data found' }, { status: 400 });
     }
-
+    
     client = new MongoClient(uri);
-    await client.connect();
+    await connectDB();
     const db = client.db(dbName);
     const eventposts = db.collection('eventposts');
     const events = db.collection('events');
@@ -56,6 +58,8 @@ export async function POST(req: NextRequest) {
       Location,
       time,
       date,
+      createdAt: new Date(), 
+      updatedAt: new Date() 
     };
 
     const event = await events.findOne({ _id: new ObjectId(eventId as string) });

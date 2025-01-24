@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import { IUser } from '@/components/expandableCards/card';
+import connectDB from '@/config/db';
 
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     const { name, description, date, members, leaders, image, createdBy, team, time, location } = await request.json();
     client = new MongoClient(uri!);
-    await client.connect();
+    await connectDB();
     const db = client.db(dbName!);
     const events = db.collection('events');
     const teams = db.collection('teams');
@@ -37,6 +38,8 @@ export async function POST(request: NextRequest) {
       createdBy: new ObjectId(createdBy as string),
       time,
       location,
+      createdAt: new Date(), 
+      updatedAt: new Date() 
     };
 
     const reqTeam = await teams.findOne({ _id: new ObjectId(team as string) });
@@ -164,7 +167,7 @@ export async function GET(request: NextRequest) {
   
   }else{
       
-      const allEvents = await events.find({}).sort({createdAt:1}).toArray();
+      const allEvents = await events.find({}).sort({createdAt:-1}).toArray();
       
       return NextResponse.json(allEvents)
     }

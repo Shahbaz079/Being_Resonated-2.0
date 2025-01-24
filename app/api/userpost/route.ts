@@ -43,7 +43,10 @@ export async function POST(req: NextRequest) {
     if (!user) { 
       return NextResponse.json({ error: 'User not found' }, { status: 404 }); } 
       
-      const post = { name, image, caption, createdBy: new ObjectId(createdBy as string), };
+      const post = { name, image, caption, createdBy: new ObjectId(createdBy as string), 
+        createdAt: new Date(), 
+        updatedAt: new Date() 
+      };
       
       const result = await userposts.insertOne(post); 
       

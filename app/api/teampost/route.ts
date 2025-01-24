@@ -56,6 +56,8 @@ export async function POST(req: NextRequest) {
       from:teamId,
       image,
       caption,
+      createdAt: new Date(), 
+      updatedAt: new Date() ,
       createdBy: new ObjectId(createdBy as string),
   
       
