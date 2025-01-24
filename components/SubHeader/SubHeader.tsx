@@ -186,4 +186,4 @@ const SubHeader = () => {
   )
 }
 
-export default SubHeader
+export default SubHeader;

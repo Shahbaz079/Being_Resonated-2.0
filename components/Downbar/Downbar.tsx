@@ -45,7 +45,7 @@ const Downbar = () => {
             </button>
           </TooltipTrigger>
           <TooltipContent className="bg-gray-800 border-cyan-600 text-cyan-100">
-            <p>Participations</p>
+            <p>My Participations</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
