@@ -86,7 +86,7 @@ const BeCommunity = () => {
             <EventCard uId={mongoId as string}/>
            </div>
 
-            <div className="absolute left-[28%] right-[28%] top-5 h-auto gap-1  bg-[#484444] rounded-2xl">
+            <div className="absolute left-[28%] right-[28%] top-5 h-auto gap-1  ">
               <h1>Community Posts</h1> 
 
               <div className="">

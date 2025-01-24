@@ -82,10 +82,20 @@ export async function GET(request: NextRequest) {
     const db = client.db(dbName); 
     
     const userposts = db.collection('userposts'); 
+    const users=db.collection('users')
     
     const allUserPosts = await userposts.find({}).sort({ createdAt: -1 }).toArray(); 
+
     
-    return NextResponse.json(allUserPosts); 
+    const finalPosts = await Promise.all(
+      allUserPosts.map(async (post) => {
+        const { createdBy } = post;
+        const user = await users.findOne({ _id: createdBy }, { projection: { name: 1, image: 1 } });
+        return { ...post, user };
+      })
+    );
+    
+    return NextResponse.json(finalPosts); 
   } catch (error) {  console.error(error);
      return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
      } finally { 
