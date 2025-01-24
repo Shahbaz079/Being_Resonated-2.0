@@ -32,21 +32,21 @@ const Home = () => {
   console.log("userId", userId)
   console.log("mongoId", mongoId)
 
-  // useEffect(() => {
-  //   if (refreshInterval) {
-  //     clearInterval(refreshInterval);
-  //   }
+  useEffect(() => {
+    if (refreshInterval) {
+      clearInterval(refreshInterval);
+    }
 
-  //   const newInterval = setInterval(() => {
-  //     onNextClick()
-  //   }, 5000);
+    const newInterval = setInterval(() => {
+      onNextClick()
+    }, 5000);
 
-  //   setRefreshInterval(newInterval);
+    setRefreshInterval(newInterval);
 
-  //   return () => {
-  //     clearInterval(newInterval);
-  //   };
-  // }, [itemActive]);
+    return () => {
+      clearInterval(newInterval);
+    };
+  }, [itemActive]);
 
   useEffect(() => {
     if (!isLoaded) {
