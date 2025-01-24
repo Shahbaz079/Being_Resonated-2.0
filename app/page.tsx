@@ -9,8 +9,9 @@ import { toast } from "react-toastify";
 
 import { useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
+import "./page.styles.css";
 
-
+const imageArray = ["/images/img1.jpg", "/images/img2.jpg", "/images/img3.jpg", "/images/img4.jpg", "/images/img5.jpg",]
 
 const Home = () => {
 
@@ -20,23 +21,38 @@ const Home = () => {
 
   //console.log(sessionId,getToken)
   const [mongoId, setMongoId] = useState(user?.publicMetadata?.mongoId as string)
+  const [itemActive, setItemActive] = useState<number>(0);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const itemsLength = 5;
 
   useEffect(() => {
     setMongoId(user?.publicMetadata?.mongoId as string)
   }, [isLoaded, userId, user])
 
-
-
   console.log("userId", userId)
   console.log("mongoId", mongoId)
+
+  // useEffect(() => {
+  //   if (refreshInterval) {
+  //     clearInterval(refreshInterval);
+  //   }
+
+  //   const newInterval = setInterval(() => {
+  //     onNextClick()
+  //   }, 5000);
+
+  //   setRefreshInterval(newInterval);
+
+  //   return () => {
+  //     clearInterval(newInterval);
+  //   };
+  // }, [itemActive]);
 
   useEffect(() => {
     if (!isLoaded) {
       return
     }
     const fetchData = async () => {
-
-
 
       if (userId && (!mongoId || mongoId === '' || mongoId === undefined)) {
         try {
@@ -126,23 +142,149 @@ const Home = () => {
     }
   }, [user?.imageUrl, isLoaded]);
 
+  const onNextClick = () => {
+    setItemActive((prev) => (prev + 1) % itemsLength);
+  }
+
+  const onPrevClick = function () {
+    setItemActive((prev) => (prev - 1 + itemsLength) % itemsLength);
+  }
+
+  useEffect(() => {
+    const thumbnailActive = document.querySelector('.thumbnail .item.active');
+    if (thumbnailActive) {
+      const rect = thumbnailActive.getBoundingClientRect();
+      if (rect.left < 0 || rect.right > window.innerWidth) {
+        thumbnailActive.scrollIntoView({ behavior: 'smooth', inline: 'nearest' });
+      }
+    }
+  }, [itemActive]);
+
   if (!isLoaded) return <div>Loading...</div>
 
   return (
-    <div className="py-4 w-full">
-      <div className="w-[80vw] h-[2%] flex flex-row justify-around mx-[10vw]">
+    <div className="">
 
-        <Link href={`/becommunity?id=${mongoId}`} className="shadow-[inset_0_0_0_2px_#616467] text-gray-400 px-[5%] py-[2%] rounded-full tracking-widest  font-bold bg-transparent 
-        
-        hover:bg-[#616467] hover:text-white  transition duration-200">BeCommunity</Link>
+      {/* 
         <Link href="/" className="shadow-[inset_0_0_0_2px_#616467]  px-[5%] py-[2%]  rounded-full tracking-widest text-gray-400  font-bold bg-transparent hover:bg-[#616467] hover:text-white  transition duration-200">Home</Link>
-        <Link href="/academics" className="shadow-[inset_0_0_0_2px_#616467] text-gray-400 px-[5%] py-[2%]  rounded-full tracking-widest  font-bold bg-transparent hover:bg-[#616467] hover:text-white  transition duration-200">Academics</Link>
-      </div>
+      */}
 
-      <div className=" bg-slate-500 text-right text-white p-4">
-        {mongoId}
+      <header>
+        <div className="logo text-xl text-red-950 font-extrabold">LOGO</div>
+        <ul className="menu text-xl ctab:text-sm text-red-700" >
+          <li className="font-bold bg-gray-300 p-2 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-50">
+            <Link href={`/becommunity?id=${mongoId}`}>BeCommunity</Link>
+          </li>
+          <li className="font-bold bg-gray-300 p-2 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-50">
+            <Link href="/academics">Academics</Link>
+          </li>
+        </ul>
+      </header>
+
+
+
+      <div className="slider">
+        <div className="list">
+          <div className={`item ${itemActive === 0 ? 'active' : ''}`} >
+            <img src="/images/img1.jpg" />
+            <div className="content rounded-xl p-4 glass">
+              <h2 className="leading-none">BEing Resonated</h2>
+              <p>
+                An application where students of BE College can form communities, access academic resources, and participate in events by creating teams.
+              </p>
+            </div>
+          </div>
+          <div className={`item ${itemActive === 1 ? 'active' : ''}`} >
+            <img src="/images/img2.jpg" />
+            <div className="content rounded-xl p-4 glass">
+              <h2 className="leading-1">BEcommunity</h2>
+              <p className="mb-5">
+                A community where members can view posts from other users, like, share, and comment on them, as well as receive notifications about events occurring on campus.
+              </p>
+              <Link href={`/becommunity?id=${mongoId}`} className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">Browse BeCommunity</Link>
+            </div>
+          </div>
+          <div className={`item ${itemActive === 2 ? 'active' : ''}`} >
+            <img src="/images/img3.jpg" />
+            <div className="content rounded-xl p-4 glass w-fit">
+              <h2 className="leading-1">Academics</h2>
+              <p className="mb-5">
+                Browse our extensive collection of academic resources across all departments and semesters.
+              </p>
+              <Link href="/academics" className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">Browse Academics</Link>
+            </div>
+          </div>
+
+          <div className={`item ${itemActive === 3 ? 'active' : ''}`} >
+            <img src="/images/img4.jpg" />
+            <div className="content rounded-xl p-4 glass">
+              <h2 className="leading-none">Join our Team</h2>
+              <p className="mb-5">
+                Contribute to Being Resonated by joining our team.
+              </p>
+              <Link href="/jointeam" className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">Join Team</Link>
+            </div>
+          </div>
+
+          <div className={`item ${itemActive === 4 ? 'active' : ''}`} >
+            <img src="/images/img5.jpg" />
+            <div className="content glass rounded-xl p-4">
+              <h2 className="leading-1">About Us</h2>
+              <p className="mb-5">
+                Get to know our team and contribute to its members.
+              </p>
+              <Link href="/aboutus" className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">About Us</Link>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div className="arrows">
+          <button id="prev" className="mr-1" onClick={onPrevClick}>{'<'}</button>
+          <button id="next" onClick={onNextClick}>{'>'}</button>
+        </div>
+
+        <div className="thumbnail">
+
+          <div onClick={() => setItemActive(0)} className={`cursor-pointer item ${itemActive === 0 ? "active" : ""}`}>
+            <img src="/images/img1.jpg" />
+            <div className="content">
+              Name Slider
+            </div>
+          </div>
+
+          <div onClick={() => setItemActive(1)} className={`cursor-pointer item ${itemActive === 1 ? "active" : ""}`}>
+            <img src="/images/img2.jpg" />
+            <div className="content">
+              Name Slider
+            </div>
+          </div>
+
+          <div onClick={() => setItemActive(2)} className={`cursor-pointer item ${itemActive === 2 ? "active" : ""}`}>
+            <img src="/images/img3.jpg" />
+            <div className="content">
+              Name Slider
+            </div>
+          </div>
+
+          <div onClick={() => setItemActive(3)} className={`cursor-pointer item ${itemActive === 3 ? "active" : ""}`}>
+            <img src="/images/img4.jpg" />
+            <div className="content">
+              Name Slider
+            </div>
+          </div>
+
+          <div onClick={() => setItemActive(4)} className={`cursor-pointer item ${itemActive === 4 ? "active" : ""}`}>
+            <img src="/images/img5.jpg" />
+            <div className="content">
+              Name Slider
+            </div>
+
+          </div>
+        </div>
       </div>
-    </div>
+    </div >
   )
 }
 

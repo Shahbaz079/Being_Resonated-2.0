@@ -5,7 +5,7 @@ import "./styles/globals.css";
 import "./styles/profilepage.css"
 import { SessionProvider } from "next-auth/react"
 import { ClerkProvider } from "@clerk/nextjs";
-import {ToastContainer} from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import Header from "@/components/header/header";
 import SubHeader from "@/components/SubHeader/SubHeader";
 import { EdgeStoreProvider } from "@/lib/edgestore";
@@ -35,24 +35,22 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en" className="dark">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <html lang="en" className="dark">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <SessionProvider>
+            <ToastContainer />
 
+            <EdgeStoreProvider>
 
-        <SessionProvider>
-        <ToastContainer/>
-        <Header />
-        <EdgeStoreProvider>
-         <SubHeader/>      
-        {children}
-        </EdgeStoreProvider>
-        <ToastContainer/>
-        </SessionProvider>
-       
-      </body>
-    </html>
+              {children}
+            </EdgeStoreProvider>
+            <ToastContainer />
+          </SessionProvider>
+
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
