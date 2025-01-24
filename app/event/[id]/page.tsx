@@ -46,13 +46,14 @@ const EventPage = () => {
   const [date, setDate] = useState('');
   const [members, setMembers] = useState<IUser[] | null>([]);
   const [leaders, setLeaders] = useState<IUser[] | null>([]);
+  const [participants,setParticipants]=useState<IUser[] | null>([]);
+  const [requests,setRequests]=useState<IUser[] | null>();  
   const [image, setImage] = useState('');
   const [createdBy, setCreatedBy] = useState<IUser | null>();
   const [team, setTeam] = useState<ITeam | null>();
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
-  const [showMembermodal, setShowMemberModal] = useState(false);
-  const [showLeadermodal, setShowLeaderModal] = useState(false);
+
   const [edit, setEdit] = useState(false);
   const [preview, setPreview] = useState<string | null>(null)
 
@@ -81,6 +82,8 @@ const EventPage = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+
+  
     }
   };
 
@@ -110,13 +113,6 @@ const EventPage = () => {
 
   }
 
-  const closeMemberModal = () => {
-    setShowMemberModal(false);
-  }
-  const closeLeaderModal = () => {
-    setShowLeaderModal(false);
-  }
-
 
 
 
@@ -133,11 +129,26 @@ const EventPage = () => {
     }
   }, [isLoaded]);
 
+  useEffect(()=>{
+    if (typeof window !== 'undefined') {
+      setEventId(window.location.pathname.split('/')[2]);
+      console.log(eventId, "eventid")
+     
+
+    }
+  },[isLoaded])
+
 
   useEffect(() => {
 
     const handleEventData = async () => {
-      const res = await fetch(`/api/events?id=${eventId}`);
+      const res = await fetch(`/api/events?id=${eventId}`,{
+        method:"GET",
+        headers: {
+          'Content-Type': 'application/json'
+        }
+
+      });
 
       if (res.ok) {
         const data = await res.json();
@@ -152,6 +163,8 @@ const EventPage = () => {
         setLocation(data.location);
         setTeam(data.team);
         setLive(data.isLive);
+        setRequests(data.requests);
+        setParticipants(data.participated);
         setEvent(data)
         console.log(data);
         setEventUpdateData({ name: data.name, date: data.date, description: data.description, location: data.location, time: data.time });
@@ -160,14 +173,11 @@ const EventPage = () => {
         toast.error("Failed to fetch event data");
       }
     };
-    if (typeof window !== 'undefined') {
-      setEventId(window.location.pathname.split('/')[2]);
-      console.log(eventId, "eventid")
-      if (eventId) {
-        handleEventData();
-      }
 
+    if (eventId) {
+      handleEventData();
     }
+    
 
   }, [isLoaded, user, eventId]);
 
@@ -177,6 +187,80 @@ const EventPage = () => {
       method: "PUT",
       body: JSON.stringify({ name, description, date, time, location, members, leaders })
     })
+  }
+
+  const acceptRequestHandler=(newParticipant:IUser)=>{
+  
+    const updatedParticipants=participants?[...participants,newParticipant]:[newParticipant];
+    setParticipants(updatedParticipants);
+    
+    const updatedRequests=requests?.filter((request)=>request._id.toString()!==newParticipant._id.toString())
+    setRequests(updatedRequests);
+
+    const updateParticipants=async()=>{
+       const res=await fetch(`/api/events?id=${eventId}`,{
+        method:"PUT",
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({participated:updatedParticipants,requests:updatedRequests})
+       })
+
+       const data=res.json();
+       if(res.ok){
+        toast.success("Participant added successfully");
+       }
+    }
+    updateParticipants();
+  }
+
+  const removeParticipantHandler=(newParticipant:IUser)=>{
+  
+    
+    
+    const updatedParticipants=participants?.filter((participant)=>participant._id.toString()!==newParticipant._id.toString())
+    setParticipants(updatedParticipants || []);
+
+    const updateParticipants=async()=>{
+       const res=await fetch(`/api/events?id=${eventId}`,{
+        method:"PUT",
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({participated:updatedParticipants})
+       })
+
+       const data=res.json();
+       if(res.ok){
+        toast.success("Participant Removed successfully");
+       }
+    }
+    updateParticipants();
+  }
+
+  
+  const removeAcceptHandler=(newParticipant:IUser)=>{
+  
+    
+    
+    const updatedRequests=requests?.filter((request)=>request._id.toString()!==newParticipant._id.toString())
+    setRequests(updatedRequests || []);
+
+    const updateParticipants=async()=>{
+       const res=await fetch(`/api/events?id=${eventId}`,{
+        method:"PUT",
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({requests:updatedRequests})
+       })
+
+       const data=res.json();
+       if(res.ok){
+        toast.success("Participant Removed successfully");
+       }
+    }
+    updateParticipants();
   }
 
   return (
@@ -198,15 +282,15 @@ const EventPage = () => {
                   <div className="flex flex-col">
                     <Label>Upload Image</Label>
                     <input type="file" className="mt-4" onChange={handleFileChange}></input>
-                    <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                    <Button onClick={()=>handleUpload()}  variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
                   </div>
                 </div>
               </DialogContent>
             </Dialog>
             <img
               className="w-32 h-32 rounded-lg"
-              src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-              alt={"user did'nt provide image"}
+              src={image || 'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+              alt={name || "user did'nt provide image"}
             />
           </div>
           <h1 className="text-7xl mt-4 cphone:text-5xl">{name}</h1>
@@ -265,6 +349,51 @@ const EventPage = () => {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Participants and Requests</DialogTitle></DialogHeader>
+                <DialogFooter>
+                  <div className="max-h-[80vh] ">
+                  <div className="flex flex-col w-[40vw] max-h-[60vh]">
+                  <h2>Requests</h2>
+                <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
+                  {requests?.map((participant)=>(
+                    <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
+                      <div className="px-2 mx-2">
+                        <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+
+                      <div className="flex flex-col px-2 mx-2">
+                           <div className="">{participant.name}</div>
+                           <div className="">{participant?.gradYear}</div>
+                      </div>
+                      
+                      <button onClick={()=>acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
+                      <button onClick={()=>removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
+                    </div>
+                  ))}
+                </div>
+                  </div>
+
+
+                  <div className="flex flex-col w-[40vw] h-[60vh]">
+                  <h2>Participants</h2>
+                  <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
+                  {participants?.map((participant)=>(
+                    <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
+                      <div className="px-2 mx-2">
+                        <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+
+                      <div className="flex flex-col px-2 mx-2">
+                           <div className="">{participant.name}</div>
+                           <div className="">{participant?.gradYear}</div>
+                      </div>
+                     
+                      <button className="px-2 mx-2 bg-red-500 py-2 rounded-full" onClick={()=>removeParticipantHandler(participant)}>X</button>
+                    </div>
+                  ))}
+                </div>
+                  </div>
+            
+                  </div>
+                </DialogFooter>
+                
             </DialogContent>
           </Dialog>
         </CardFooter>

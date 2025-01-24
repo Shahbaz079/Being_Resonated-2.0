@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
     const post = {
       title:name,
       from:team.name,
+      
       image,
       caption,
       createdBy: new ObjectId(createdBy as string),
