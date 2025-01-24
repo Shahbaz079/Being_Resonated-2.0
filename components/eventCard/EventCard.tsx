@@ -6,10 +6,11 @@ import { useUser } from '@clerk/nextjs';
 import { ObjectId } from 'mongoose';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
+import { redirect } from 'next/navigation';
 
 interface Event {
   _id: ObjectId;
-  title: string;
+  name: string;
   image: string;
   location: string;
   date: string;
@@ -18,16 +19,17 @@ interface Event {
   team:string;
 }
 
-const EventsSidebar: React.FC = () => {
+const EventCard = ({uId}:{uId:string}) => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [participatedEvents, setParticipatedEvents] = useState<string[]>([]);
+  const [requestedEvents, setRequestedEvents] = useState<string[]>([]);
   
 
   const [events,setEvents]=useState<Event[]|null>(null);
 
   const {user,isLoaded}=useUser();
 
-  const mongoId=user?.publicMetadata?.mongoId
+  
 
   // Sample events data - replace with your actual data
 
@@ -50,14 +52,16 @@ const EventsSidebar: React.FC = () => {
     }
 
     const fetchParticipatedEvents=async ()=>{
-      const res=await fetch(`/api/participate?id=${mongoId}`,{
-        method:'GET'
+      const res=await fetch(`/api/participate?id=${uId}`,{
+        method:'GET',
+        
       })
-      if(res.status==200){
+      if(res.ok){
         const data=await res.json();
          
         setParticipatedEvents(data.participations);
-        console.log(data);
+        setRequestedEvents(data.eventRequests);
+        
       }else{
         toast.error("participation fetching failed")
       }
@@ -70,15 +74,19 @@ const EventsSidebar: React.FC = () => {
   const handleParticipation=(id:ObjectId)=>{
    try {
     const participate=async ()=>{
-      const res=await fetch(`/api/participate?id=${mongoId}&eid=${id}`,{
+      const res=await fetch(`/api/events?type=participate&id=${id}`,{
         method:'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({userId:uId}),
 
       })
       const data=await res.json();
       if(res){
-        toast.success("Participated successfully")
+        toast.success("Request sent successfully")
       }else{
-        toast.error("participation failed")
+        toast.error("Request failed")
       }
     }
     participate();
@@ -101,14 +109,16 @@ const EventsSidebar: React.FC = () => {
             
           >
             <div className="flex gap-3">
-              <img
+              <img onClick={()=>redirect(`/event/${event._id.toString()}?uid=${uId}`)}
                 src={event.image}
-                alt={event.title}
-                className="w-[20px] h-[20px] object-cover rounded-lg"
+                alt={event.name}
+                className="w-[60px] h-[60px] object-cover rounded-lg"
                  
               />
               <div className="flex-1 min-w-0">
-                <h3 className="text-white font-semibold text-sm mb-1">{event.title}</h3>
+                <h3 className="text-white font-semibold text-sm mb-1"
+                onClick={()=>redirect(`/event/${event._id.toString()}?uid=${uId}`)}
+                >{event?.name}</h3>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-gray-400 text-xs">
                     <MapPin size={12} />
@@ -138,7 +148,7 @@ const EventsSidebar: React.FC = () => {
                 
                text-white px-2 py-1.5 rounded-md transition-colors relative overflow-hidden`}
             >
-              {participatedEvents?.includes(event?._id.toString()) ? 'Participated' : 'Participate'}
+              {participatedEvents?.includes(event?._id.toString()) ? 'Participated' : requestedEvents?.includes(event?._id.toString())?'Requested':'Participate'}
             </button>
           </div>
         ))}
@@ -187,4 +197,4 @@ const EventsSidebar: React.FC = () => {
   );
 };
 
-export default EventsSidebar;
+export default EventCard;

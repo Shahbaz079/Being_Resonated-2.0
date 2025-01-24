@@ -59,11 +59,16 @@ export async function GET(req:NextRequest){
     const db = client.db(dbName!);
     const users = db.collection('users');
 
-    const user = await users.findOne( { _id: new ObjectId(id) }, { projection: { participations: 1 } } );
+    const user = await users.findOne( { _id: new ObjectId(id) }, { projection: { participations: 1 ,requestEvents:1} } );
     
     if (!user) { return NextResponse.json({ error: 'User not found' }, { status: 404 }); }
+
+    const resultData={
+      participations:user.participations || [],
+      eventRequests:user.requestEvents || []
+    }
     
-    return NextResponse.json({ participations: user.participations || [] }, { status: 200})
+    return NextResponse.json(resultData, { status: 200})
   } catch (error) {
     return NextResponse.json({ error: 'An error occurred' }, { status: 500 });
   } finally {

@@ -10,6 +10,7 @@ const EventSchema=new mongoose.Schema({
   discription:{type:String,required:true},
   createdBy:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"User"},
   partricipated:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"User"}],
+  requests:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"User"}],
   location:{type:String,required:true},
   time:{type:String,required:true},
   isLive:{type:Boolean,required:true,default:false},

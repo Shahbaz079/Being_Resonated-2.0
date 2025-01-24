@@ -46,6 +46,7 @@ const BeCommunity = () => {
 
 
   const {user,isLoaded}=useUser();
+  const mongoId=user?.publicMetadata?.mongoId
   useEffect(() => {
     if(!isLoaded || typeof window === "undefined"){
       return;
@@ -73,7 +74,7 @@ const BeCommunity = () => {
     <div className="w-[100vw] h-auto relative">
            <div className="absolute left-[5%] right-[75%] top-5  h-[60vh]  bg-[#484444] rounded-2xl overflow-y-scroll ">
             <h1>Upcoming Events</h1>
-            <EventCard />
+            <EventCard uId={mongoId as string}/>
            </div>
 
             <div className="absolute left-[28%] right-[28%] top-5 h-auto gap-1  bg-[#484444] rounded-2xl">
