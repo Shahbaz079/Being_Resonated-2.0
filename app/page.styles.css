@@ -53,10 +53,22 @@ header .menu {
     transition: .5s;
 }
 
+@keyframes bg-animation {
+    0% {
+        object-position: left top;
+    }
+
+    100% {
+        object-position: right bottom;
+    }
+}
+
 .slider .list .item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
+    animation: bg-animation 30s infinite alternate;
 }
 
 .slider .list .item::after {
@@ -218,4 +230,18 @@ header .menu {
     background-image: linear-gradient(120deg,
             rgba(255, 255, 255, .3),
             rgba(0, 0, 0, .2));
+}
+
+.banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("/images/img20.jpg");
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+
+    mask-image: url("/images/img6.gif");
+    mask-size: cover;
+    mask-position: center;
 }
