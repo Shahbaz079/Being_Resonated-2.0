@@ -10,8 +10,6 @@ import Header from "@/components/header/header";
 import SubHeader from "@/components/SubHeader/SubHeader";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 
-
-
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -41,9 +39,7 @@ export default function RootLayout({
         >
           <SessionProvider>
             <ToastContainer />
-
             <EdgeStoreProvider>
-
               {children}
             </EdgeStoreProvider>
             <ToastContainer />
