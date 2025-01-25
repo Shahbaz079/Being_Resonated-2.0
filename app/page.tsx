@@ -157,11 +157,11 @@ const Home = () => {
 
       <header>
         <div className="logo text-xl text-red-950 font-extrabold">LOGO</div>
-        <ul className="menu text-xl ctab:text-sm text-red-700" >
-          <li className="font-bold bg-gray-300 p-2 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-50">
+        <ul className="menu text-xl ctab:text-sm text-cyan-100" >
+          <li className="font-semibold  p-1 rounded-xl cursor-pointer hover:scale-105 transition-transform duration-50">
             <Link href={`/becommunity?id=${mongoId}`}>BeCommunity</Link>
           </li>
-          <li className="font-bold bg-gray-300 p-2 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-50">
+          <li className="font-semibold p-1 rounded-xl cursor-pointer hover:scale-105 transition-transform duration-50">
             <Link href="/academics">Academics</Link>
           </li>
         </ul>
@@ -220,52 +220,52 @@ const SliderComponent = ({ mongoId }: { mongoId: string }) => {
         <div className={`item ${itemActive === 0 ? 'active' : ''}`} >
           <img src="/images/img1.jpg" width={"3000px"} />
           <div className="content rounded-xl p-4 glass">
-            <h2 className="leading-none">BEing Resonated</h2>
+            <h2 className="leading-none text-orange-500 font-semibold">BEing Resonated</h2>
             <p>
               An application where students of BE College can form communities, access academic resources, and participate in events by creating teams.
             </p>
           </div>
         </div>
         <div className={`item ${itemActive === 1 ? 'active' : ''}`} >
-          <img src="/images/img14.jpg" width={"3000px"} />
+          <img src="/images/img25.jpg" width={"3000px"} />
           <div className="content rounded-xl p-4 glass">
-            <h2 className="leading-1">BEcommunity</h2>
+            <h2 className="leading-1 text-orange-500 font-semibold">BEcommunity</h2>
             <p className="mb-5">
               A community where members can view posts from other users, like, share, and comment on them, as well as receive notifications about events occurring on campus.
             </p>
-            <Link href={`/becommunity?id=${mongoId}`} className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">Browse BeCommunity</Link>
+            <Link href={`/becommunity?id=${mongoId}`} className="ml-[-3px] text-lg border-4 px-2 py-1 text-cyan-100 hover:bg-gray-500">Browse BeCommunity</Link>
           </div>
         </div>
         <div className={`item ${itemActive === 2 ? 'active' : ''}`} >
           <img src="/images/img8.jpg" width={"3000px"} />
           <div className="content rounded-xl p-4 glass w-fit">
-            <h2 className="leading-1">Academics</h2>
+            <h2 className="leading-1 text-orange-500 font-semibold">Academics</h2>
             <p className="mb-5">
               Browse our extensive collection of academic resources across all departments and semesters.
             </p>
-            <Link href="/academics" className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">Browse Academics</Link>
+            <Link href="/academics" className="ml-[-3px] text-lg border-4 px-2 py-1 text-cyan-100 hover:bg-gray-500">Browse Academics</Link>
           </div>
         </div>
 
         <div className={`item ${itemActive === 3 ? 'active' : ''}`} >
           <img src="/images/img10.jpg" width={"3000px"} />
           <div className="content rounded-xl p-4 glass">
-            <h2 className="leading-none">Join our Team</h2>
+            <h2 className="leading-none text-orange-500 font-semibold">Join our Team</h2>
             <p className="mb-5">
               Contribute to Being Resonated by joining our team.
             </p>
-            <Link href="/jointeam" className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">Join Team</Link>
+            <Link href="/jointeam" className="ml-[-3px] text-lg border-4 px-2 py-1 text-cyan-100 hover:bg-gray-500">Join Team</Link>
           </div>
         </div>
 
         <div className={`item ${itemActive === 4 ? 'active' : ''}`} >
           <img src="/images/img13.jpg" width={"3000px"} />
           <div className="content glass rounded-xl p-4">
-            <h2 className="leading-1">About Us</h2>
+            <h2 className="leading-1 text-orange-500 font-semibold">About Us</h2>
             <p className="mb-5">
               Get to know our team and contribute to its members.
             </p>
-            <Link href="/aboutus" className="ml-[-3px] text-lg border-2 px-2 py-1 rounded-xl bg-gray-200 text-black hover:bg-gray-400">About Us</Link>
+            <Link href="/aboutus" className="ml-[-3px] text-lg border-4 px-2 py-1 text-cyan-100 hover:bg-gray-500">About Us</Link>
           </div>
         </div>
 
@@ -281,38 +281,22 @@ const SliderComponent = ({ mongoId }: { mongoId: string }) => {
 
         <div onClick={() => setItemActive(0)} className={`cursor-pointer item ${itemActive === 0 ? "active" : ""}`}>
           <img src="/images/img1.jpg" />
-          <div className="content">
-            Home
-          </div>
         </div>
 
         <div onClick={() => setItemActive(1)} className={`cursor-pointer item ${itemActive === 1 ? "active" : ""}`}>
-          <img src="/images/img14.jpg" />
-          <div className="content">
-            BEcommunity
-          </div>
+          <img src="/images/img25.jpg" />
         </div>
 
         <div onClick={() => setItemActive(2)} className={`cursor-pointer item ${itemActive === 2 ? "active" : ""}`}>
           <img src="/images/img8.jpg" />
-          <div className="content">
-            Academics
-          </div>
         </div>
 
         <div onClick={() => setItemActive(3)} className={`cursor-pointer item ${itemActive === 3 ? "active" : ""}`}>
           <img src="/images/img10.jpg" />
-          <div className="content">
-            Join Team
-          </div>
         </div>
 
         <div onClick={() => setItemActive(4)} className={`cursor-pointer item ${itemActive === 4 ? "active" : ""}`}>
           <img src="/images/img13.jpg" />
-          <div className="content">
-            About Us
-          </div>
-
         </div>
       </div>
     </div>
