@@ -59,26 +59,18 @@ const ProfilePage = () => {
 
   const fetchTeamData = async () => {
     try {
-      const res = await fetch(`/api/team/${mId}`);
-
-      if (!res.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-
-
-      const contentType = res.headers.get('content-type');
-      if (contentType && contentType.indexOf('application/json') !== -1) {
+      const res = await fetch(`/api/team/${mId}`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+ 
+      if (res.ok) {
         const data = await res.json();
         setTeams(data);
 
-
-
-      } else {
-        const text = await res.text();
-
-        console.error('Received non-JSON response:', text);
-      }
+      } 
     } catch (error) { console.error('Error fetching team:', error); }
 
   }

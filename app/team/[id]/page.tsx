@@ -37,6 +37,7 @@ export interface IEvent {
   description: string;
   createdBy: mongoose.Schema.Types.ObjectId;
   participated?: mongoose.Schema.Types.ObjectId[];
+  requests?: mongoose.Schema.Types.ObjectId[];
   location: string;
   time: string;
   createdAt?: Date;

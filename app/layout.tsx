@@ -40,6 +40,7 @@ export default function RootLayout({
           <SessionProvider>
             <ToastContainer />
             <EdgeStoreProvider>
+              <Header/>
               {children}
             </EdgeStoreProvider>
             <ToastContainer />

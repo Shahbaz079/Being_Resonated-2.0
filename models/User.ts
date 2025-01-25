@@ -19,7 +19,8 @@ const userSchema=new mongoose.Schema({
   role:{type:String,default:'user'},
   authProviderId:{type:String},
   posts:[{type:String,required:false}],
-  participations:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Events"}]
+  participations:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Events"}],
+  eventRequests:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Events"}]
 
 },{timestamps:true})
 

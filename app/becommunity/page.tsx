@@ -8,6 +8,8 @@ import Downbar from "@/components/Downbar/Downbar";
 import EventCard from "@/components/eventCard/EventCard";
 import PostCard from "@/components/eventCard/PostCard";
 import { UserPost } from "@/components/eventCard/PostCard";
+;
+import SubHeader from "@/components/SubHeader/SubHeader"
 
 
 export interface EventPost {
@@ -46,6 +48,7 @@ const BeCommunity = () => {
 
 
   const {user,isLoaded}=useUser();
+  const mongoId=user?.publicMetadata?.mongoId
   useEffect(() => {
     if(!isLoaded || typeof window === "undefined"){
       return;
@@ -67,16 +70,23 @@ const BeCommunity = () => {
     
   }, [isLoaded]);
 
+  useEffect(() => {
+    const finalPosts=[...eventPosts,...userPosts];
+    finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
+  },[])
+
 
   console.log("eventposts",eventPosts)
-  return (
-    <div className="w-[100vw] h-auto relative">
+  return (<>
+    
+      <SubHeader/>
+      <div className="w-[100vw] top-24 h-auto relative">
            <div className="absolute left-[5%] right-[75%] top-5  h-[60vh]  bg-[#484444] rounded-2xl overflow-y-scroll ">
             <h1>Upcoming Events</h1>
-            <EventCard />
+            <EventCard uId={mongoId as string}/>
            </div>
 
-            <div className="absolute left-[28%] right-[28%] top-5 h-auto gap-1  bg-[#484444] rounded-2xl">
+            <div className="absolute left-[28%] right-[28%] top-5 h-auto gap-1  ">
               <h1>Community Posts</h1> 
 
               <div className="">
@@ -107,6 +117,7 @@ const BeCommunity = () => {
               </div>
               <Downbar/>
     </div>
+    </>
   )
 }
 
