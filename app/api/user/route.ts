@@ -1,4 +1,4 @@
-"use server";
+"use server"
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId, WithId } from 'mongodb';
 import { IUser } from '@/components/expandableCards/card';

@@ -25,7 +25,7 @@ const Header = () => {
 const mongoId=user?.publicMetadata.mongoId as string
 console.log(mongoId)
   return (
-    <header className="relative top-0 left-[5vw]  right-[8vw] w-[90vw] bg-[#555a4a] h-[8vh] my-4 rounded-full items-center text-white flex flex-row justify-between ">
+    <header className=" fixed top-0 left-[5vw]  right-[8vw]  h-[8vh] my-4 rounded-full items-center text-white flex flex-row justify-between ">
       <div className="mx-10">
         
       </div>
@@ -34,7 +34,7 @@ console.log(mongoId)
               <SignInButton />
             </SignedOut>
             <SignedIn>
-              <UserButton />
+              <UserButton  />
              </SignedIn>
           </div>
            

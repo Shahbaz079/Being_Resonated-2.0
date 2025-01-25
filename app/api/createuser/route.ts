@@ -1,3 +1,4 @@
+'use server'
 
 import connectDB from '@/config/db';
 

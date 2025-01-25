@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
         members: members.map((member: { _id: string }) => new ObjectId(member._id)),
         leaders: leaders.map((leader: { _id: string }) => new ObjectId(leader._id)),
            timage,
+           createdAt: new Date(), 
+           updatedAt: new Date() ,
            createdBy:new ObjectId(createdBy) }; 
           const result = await teams.insertOne(team);
            if (result.acknowledged) { 
