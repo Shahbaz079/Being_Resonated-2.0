@@ -18,11 +18,11 @@ const Home = () => {
   const { isLoaded } = useSession();
   const { userId } = useAuth();
   const { user } = useUser();
-  const [animationOver, setAnimationOver] = useState<Boolean>(false);
+  const [animationOver, setAnimationOver] = useState<boolean>(false);
 
   //console.log(sessionId,getToken)
   const [mongoId, setMongoId] = useState(user?.publicMetadata?.mongoId as string)
-  const [isFirstVisit, setIsFirstVisit] = useState<Boolean>(false);
+  const [isFirstVisit, setIsFirstVisit] = useState<boolean>(false);
 
   useEffect(() => {
     const visited = localStorage.getItem('hasVisited');
