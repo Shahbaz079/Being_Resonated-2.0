@@ -63,7 +63,7 @@ const SimPeople = () => {
 }
 
 const SimPeopleWithSuspense = () => (
-    <SimPeople />
+    <Suspense fallback={<div>Loding</div>}> <SimPeople /></Suspense>
 )
 
 export default SimPeopleWithSuspense;
