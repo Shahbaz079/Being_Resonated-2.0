@@ -81,7 +81,7 @@ const SubHeader = () => {
       <div className="mx-[5%]">
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <button onClick={() => handleOpenTeamModal()}>
                 <Users className="w-6 h-6" />
               </button>
@@ -106,7 +106,7 @@ const SubHeader = () => {
                       width={100}
                       height={100}
                       src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                      alt={"team did'nt provide image"}
+                      alt={"team didn't provide image"}
                     />}
                 </div>
                 <div className="">
@@ -132,7 +132,7 @@ const SubHeader = () => {
       <div className="mx-[5%]">
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <button onClick={() => handleOpenEventModal()}>
                 <Calendar className="w-6 h-6" />
               </button>
@@ -157,7 +157,7 @@ const SubHeader = () => {
                       width={100}
                       height={100}
                       src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                      alt={"team did'nt provide image"}
+                      alt={"event didn't provide image"}
                     />}
                 </div>
                 <div className="">
