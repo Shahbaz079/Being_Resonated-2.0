@@ -11,7 +11,7 @@ interface Department {
 const departments: Department[] = [
   { name: "Computer Science and Engineering", path: "https://drive.google.com/drive/folders/1mW1vdLMHqwk8xxuSzBCG-nOvKlW0S3PG?usp=sharing" },
   { name: "Information Technology", path: "/resources/information-technology" },
-  { name: "Electronics and Telecommunications", path: "/resources/electronics" },
+  { name: "Electronics Telecommunications", path: "/resources/electronics" },
   { name: "Electrical Engineering", path: "/resources/electrical" },
   { name: "Mechanical", path: "/resources/mechanical" },
   { name: "Civil", path: "/resources/civil" },
@@ -68,7 +68,7 @@ const AcademicsPage = () => {
               className={`transform transition-all duration-500 hover:scale-105 ${isMounted ? "animate__animated animate__fadeInUp" : ""}`}
               style={{ animationDelay: `${index * 0.2}s`, width: '40%' }}
             >
-              <div className="bg-gray-800 border-4 border-cyan-600 rounded-full p-2 h-full flex flex-col shadow-lg hover:shadow-2xl cursor-pointer hover:bg-gray-700 transition-colors duration-300 dark:bg-gray-700 dark:border-cyan-500">
+              <div className="bg-gray-800 border-2 border-cyan-600 rounded-full p-2 h-full flex flex-col shadow-lg hover:shadow-2xl cursor-pointer hover:bg-gray-700 transition-colors duration-300 dark:bg-gray-700 dark:border-cyan-500">
                 <h2 className="text-xl font-light text-cyan-300 text-center hover:text-cyan-200 transition-colors duration-300" style={{ fontFamily: 'Arial' }}>
                   {dept.name}
                 </h2>
