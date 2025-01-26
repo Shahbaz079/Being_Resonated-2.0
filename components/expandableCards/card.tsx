@@ -7,42 +7,43 @@ import mongoose from "mongoose";
 
 
 
- export interface IUser {
-  _id:mongoose.Schema.Types.ObjectId,
-   name: string;
-    email: string;
-     dob?: Date; 
-     gradYear?: number;
-      password?: string;
-       image?: string;
-        interests?: string[]; 
-        teams?: mongoose.Schema.Types.ObjectId[];
-         assignedWorks?: { work?: string; 
-          completionDate: Date; 
-          team: mongoose.Schema.Types.ObjectId; }[];
-          posts?: string[];
-           role?: string; 
-           authProviderId?: string;
-            createdAt?: Date;
-             updatedAt?: Date;}
-         
-             export type IUserArray = IUser[];
+export interface IUser {
+  _id: mongoose.Schema.Types.ObjectId,
+  name: string;
+  email: string;
+  dob?: Date;
+  gradYear?: number;
+  password?: string;
+  image?: string;
+  interests?: string[];
+  teams?: mongoose.Schema.Types.ObjectId[];
+  assignedWorks?: {
+    work?: string;
+    completionDate: Date;
+    team: mongoose.Schema.Types.ObjectId;
+  }[];
+  posts?: string[];
+  role?: string;
+  authProviderId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
-             interface ExpandableCardDemoProps { users: IUserArray; cUser: IUser|null; }
+export type IUserArray = IUser[];
 
-           export  interface newMember {
-              _id:mongoose.Schema.Types.ObjectId,
-              image?: string;
-              name: string;
-              gradYear?: number;
-             }
+interface ExpandableCardDemoProps { users: IUserArray; cUser: IUser | null; }
 
-export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
+export interface newMember {
+  _id: mongoose.Schema.Types.ObjectId,
+  image?: string;
+  name: string;
+  gradYear?: number;
+}
+
+export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps) {
   const [active, setActive] = useState<IUser | boolean | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
-  
-
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -65,60 +66,61 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
 
   const [cInterests, setCInterests] = useState<string[]>([]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (active && typeof active === "object" && cUser) {
-       const commonInterests =(cUser?.interests && active.interests)? active.interests.filter((interest) => cUser.interests?.includes(interest) ?? false): [];
-       
-       setCInterests(commonInterests); } },
-        [active, cUser]);
+      const commonInterests = (cUser?.interests && active.interests) ? active.interests.filter((interest) => cUser.interests?.includes(interest) ?? false) : [];
+
+      setCInterests(commonInterests);
+    }
+  },
+    [active, cUser]);
 
 
-         
-
-          
-          const addTeamHandler = (user:IUser) => {
-           const newMember: newMember = {
-              _id: user._id,
-              name: user.name,
-              gradYear: user.gradYear,
-              image: user.image,}
-
-             const storedMembersString = localStorage.getItem('members');
-
-             let membersArray: newMember[] = []; 
-             
-             if (storedMembersString) { 
-              membersArray = JSON.parse(storedMembersString);
-             }
-
-             if (!newMember) { 
-              alert('No member selected!'); 
-              return;}
-             
-             const memberExists = membersArray.some(member => member._id === newMember._id); 
-
-             if (memberExists) { 
-              alert('Member already exists!'); 
-              return; } 
-
-             membersArray.push(newMember); 
-             
-             localStorage.setItem('members', JSON.stringify(membersArray));
-             
-             window.dispatchEvent(new Event('local-storage-update'));
-
-           
-             
-             console.log('New member added to local storage'); 
-            }
 
 
-            
-            
-  
+
+  const addTeamHandler = (user: IUser) => {
+    const newMember: newMember = {
+      _id: user._id,
+      name: user.name,
+      gradYear: user.gradYear,
+      image: user.image,
+    }
+
+    const storedMembersString = localStorage.getItem('members');
+
+    let membersArray: newMember[] = [];
+
+    if (storedMembersString) {
+      membersArray = JSON.parse(storedMembersString);
+    }
+
+    if (!newMember) {
+      alert('No member selected!');
+      return;
+    }
+
+    const memberExists = membersArray.some(member => member._id === newMember._id);
+
+    if (memberExists) {
+      alert('Member already exists!');
+      return;
+    }
+
+    membersArray.push(newMember);
+
+    localStorage.setItem('members', JSON.stringify(membersArray));
+
+    window.dispatchEvent(new Event('local-storage-update'));
+
+
+
+    console.log('New member added to local storage');
+  }
+
   return (
     <>
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {active && typeof active === "object" && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -217,61 +219,47 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps ) {
             </motion.div>
           </div>
         ) : null}
-      </AnimatePresence>
-      <ul className="max-w-2xl mx-auto w-full gap-4">
+      </AnimatePresence> */}
+      <ul className="w-full gap-4">
         {users?.map((card) => (
-          <motion.div
-            layoutId={`card-${card.name}-${id}`}
+          <div
             key={`card-${card.name}-${id}`}
-            onClick={() => setActive(card)}
-            className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer"
+            className="transform transition-transform duration-200 hover:scale-[1.02] border-2 border-cyan-900 p-4 flex w-full flex-col hover:bg-gray-700 md:flex-row justify-between items-center rounded-xl cursor-pointer"
           >
-             <div className="flex gap-4 flex-col  md:flex-row ">
-              <motion.div layoutId={`image-${card.name}-${id}`}>
-              { card.image ? <Image
-                  
-                  width={100}
-                  height={100}
-                  src={card.image}
-                  alt={card.name}
-                 // className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                 />:
-                <Image
-                  
-                  width={100}
-                  height={100}
-                  src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                  alt={"user did'nt provide image"}
-                //  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                />}
-              </motion.div>
+            <div className="flex gap-4 ">
+              <div>
+                {card.image ?
+                  <img
+                    src={card.image}
+                    alt={card.name}
+                    className="h-12 w-12 rounded-full object-cover object-top"
+                  /> :
+                  <img
+                    src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                    alt={"user did'nt provide image"}
+                    className="h-12 w-12 rounded-full object-cover object-top"
+                  />}
+              </div>
+
               <div className="">
-                <motion.h3
-                  layoutId={`title-${card.name}-${id}`}
-                  className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left"
-                >
+                <h3 className="font-medium text-cyan-200 text-center">
                   {card.name}
-                </motion.h3>
-                <motion.p
-                  layoutId={`description-${card.name}-${id}`}
-                  className="text-neutral-600 dark:text-neutral-400 text-center md:text-left"
-                >
+                </h3>
+
+                <p className="text-cyan-600">
                   {card.gradYear}
-                </motion.p>
+                </p>
               </div>
             </div>
-         
-            <motion.button
-              layoutId={`button-${card.name}-${id}`}
-             
-              className="addButton px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0" 
-              onClick={()=>addTeamHandler(card)}
+
+            <button className="border-2 w-fit  border-cyan-700 px-3 py-1 rounded-lg"
+              onClick={() => addTeamHandler(card)}
             >
               Add to Team
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
         ))}
-      </ul>
+      </ul >
     </>
   );
 }

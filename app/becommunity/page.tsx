@@ -10,6 +10,9 @@ import PostCard from "@/components/eventCard/PostCard";
 import { UserPost } from "@/components/eventCard/PostCard";
 ;
 import SubHeader from "@/components/SubHeader/SubHeader"
+import "./becommunity.css";
+import { IoIosSend } from "react-icons/io";
+import { FaImage } from "react-icons/fa";
 
 
 export interface EventPost {
@@ -25,16 +28,16 @@ export interface EventPost {
   createdAt?: Date; // Managed by mongoose timestamps
   updatedAt?: Date; // Managed by mongoose timestamps
 
-  
-  
-  from:string;
 
 
-  
+  from: string;
+
+
+
 
   isEventPost: boolean;
   projectProgress: number;
- 
+
 }
 
 
@@ -42,83 +45,109 @@ export interface EventPost {
 
 const BeCommunity = () => {
 
-  const [eventPosts,setEventPosts]=useState<EventPost[]>([]);
+  const [eventPosts, setEventPosts] = useState<EventPost[]>([]);
+  const [userPosts, setUserPosts] = useState<UserPost[]>([]);
+  const [render, setRender] = useState<"posts" | "events" | "users">("posts");
 
-  const [userPosts,setUserPosts]=useState<UserPost[]>([]);
 
-
-  const {user,isLoaded}=useUser();
-  const mongoId=user?.publicMetadata?.mongoId
+  const { user, isLoaded } = useUser();
+  const mongoId = user?.publicMetadata?.mongoId
   useEffect(() => {
-    if(!isLoaded || typeof window === "undefined"){
+    if (!isLoaded || typeof window === "undefined") {
       return;
     }
-    const fetchPosts=async()=>{
-      const eventRes=await fetch("/api/eventpost",{method:"GET"});
-        const userRes=await fetch("/api/userpost",{method:"GET"})
+    const fetchPosts = async () => {
+      const eventRes = await fetch("/api/eventpost", { method: "GET" });
+      const userRes = await fetch("/api/userpost", { method: "GET" })
 
-      const eventData:[]=await eventRes.json();
-      const userData:[]=await userRes.json();
+      const eventData: [] = await eventRes.json();
+      const userData: [] = await userRes.json();
 
-      console.log("eventdata",eventData)
+      console.log("eventdata", eventData)
       setEventPosts(eventData);
-      
-      console.log("Userpostdata",userData)
+
+      console.log("Userpostdata", userData)
       setUserPosts(userData);
     }
     fetchPosts();
-    
+
   }, [isLoaded]);
 
   useEffect(() => {
-    const finalPosts=[...eventPosts,...userPosts];
+    const finalPosts = [...eventPosts, ...userPosts];
     finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
-  },[])
+  }, [])
 
 
-  console.log("eventposts",eventPosts)
-  return (<>
-    
-      <SubHeader/>
-      <div className="w-[100vw] top-24 h-auto relative">
-           <div className="absolute left-[5%] right-[75%] top-5  h-[60vh]  bg-[#484444] rounded-2xl overflow-y-scroll ">
-            <h1>Upcoming Events</h1>
-            <EventCard uId={mongoId as string}/>
-           </div>
+  console.log("eventposts", eventPosts)
+  return (<div className="bg relative">
 
-            <div className="absolute left-[28%] right-[28%] top-5 h-auto gap-1  ">
-              <h1>Community Posts</h1> 
+    <SubHeader />
 
-              <div className="">
+    <div className="relative border-2 border-red-500">
 
-               {eventPosts.map((eventPost)=>(
-                <div className="" key={eventPost._id?.toString()}>
-                  <PostCard  post={eventPost}/>
-                </div>
-                
-               ))}
+      <div className="tabglass tabs mt-32 flex text-xl gap-20 border-2 w-fit mx-auto px-3 rounded-lg justify-center">
 
-{userPosts.map((userPost)=>(
-                <div className="" key={userPost._id?.toString()}>
-                  <PostCard  post={userPost}/>
-                </div>
-                
-               ))}
+        <span onClick={() => setRender("events")} className={`${render === "events" ? "active" : ""} relative px-2 pt-3 pb-3 cursor-pointer tab`}>Events
+          <div className="absolute anbd"></div>
+        </span>
+        <span onClick={() => setRender("posts")} className={`${render === "posts" ? "active" : ""}  relative px-2 pt-3 pb-3 cursor-pointer tab`}>Posts
+          <div className="absolute anbd"></div>
+        </span>
+        <span onClick={() => setRender("users")} className={`${render === "users" ? "active" : ""}  relative px-2 pt-3 pb-3 cursor-pointer tab`}>Users
+          <div className="absolute anbd"></div>
+        </span>
 
-        
-                
+      </div>
+
+      <div className="h-fit justify-between grid p-5">
+        <div className="glass rounded-2xl h-fit mt-3">
+          <h1 className="text-center p-3 text-cyan-200 font-semibold text-lg">Upcoming Events</h1>
+          <EventCard uId={mongoId as string} />
+        </div>
+
+        <div className="posts mt-3">
+          <div className="">
+            <WhatsOnYourMind></WhatsOnYourMind>
+            {eventPosts.map((eventPost) => (
+              <div className="" key={eventPost._id?.toString()}>
+                <PostCard post={eventPost} />
               </div>
 
+            ))}
+            {userPosts.map((userPost) => (
+              <div className="" key={userPost._id?.toString()}>
+                <PostCard post={userPost} />
               </div>
+            ))}
+          </div>
+        </div>
 
-              <div className="absolute left-[75%] right-[5%] overflow-y-scroll top-5 h-[70vh] bg-[#484444] rounded-2xl">
-            <SimPeopleWithSuspense/>
+        <div className="h-fit mt-3 glass rounded-2xl">
+          <SimPeopleWithSuspense />
+        </div>
 
-              </div>
-              <Downbar/>
+      </div>
     </div>
-    </>
+
+    <Downbar />
+  </div>
   )
 }
+
+const WhatsOnYourMind = () => {
+  return (<div className="glass rounded-xl w-full p-4 max-w-2xl mx-auto mb-10 h-fit flex flex-col gap-5">
+    <textarea placeholder="What's on your mind ?" className="placeholder:opacity-80 text-cyan-300 rounded-[2rem] py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
+    <div className="flex justify-between p-2">
+      <FaImage className="cursor-pointer w-7 h-7 ml-2 fill-cyan-500 hover:fill-cyan-300"></FaImage>
+      <button className="hover:border-cyan-400 hover:text-cyan-200 p-2 w-fit flex gap-3 items-center self-end px-5 border-2 border-cyan-600 rounded-lg">
+        <IoIosSend className="fill-cyan-600 mt-[1px]"></IoIosSend>
+        <span className="text-cyan-400 text-lg">Post</span>
+      </button>
+    </div>
+
+  </div >)
+}
+
 
 export default BeCommunity

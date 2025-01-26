@@ -1,0 +1,8 @@
+.glass {
+    background-color: transparent;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    background-image: linear-gradient(120deg,
+            rgba(255, 255, 255, .12),
+            rgba(255, 255, 255, .12));
+}
