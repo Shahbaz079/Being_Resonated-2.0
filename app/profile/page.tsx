@@ -15,6 +15,9 @@ import { SlOptions } from "react-icons/sl"
 import Image from "next/image";
 import Form from "./form";
 import AllInterests from "./allInterests";
+import { Card, CardHeader } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
 
 interface Team {
   _id: ObjectId;
@@ -59,18 +62,18 @@ const ProfilePage = () => {
 
   const fetchTeamData = async () => {
     try {
-      const res = await fetch(`/api/team/${mId}`,{
+      const res = await fetch(`/api/team/${mId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         }
       });
- 
+
       if (res.ok) {
         const data = await res.json();
         setTeams(data);
 
-      } 
+      }
     } catch (error) { console.error('Error fetching team:', error); }
 
   }
@@ -181,7 +184,7 @@ const ProfilePage = () => {
             </div>
 
             <p className="mt-5 cphone:text-[12px]">Lorem ipsum dolor adipisicing elit. Comtium cumque odit assumenda ab a, facilis temporibus, dolore impedit tempora laborum! Exercitationem nihil deserunt asperiores blanditiis quod, placeat culpa facilis delectus voluptatum odit sapiente, dolore modi veritatis vitae debitis ducimus rem at consequuntur aliquam. Animi!</p>
-            <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-7">Create Team</Link>
+            <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-20">Create Team</Link>
           </div>
 
           <div style={{ "--position": 3 } as React.CSSProperties} className="hidden cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl   flex-col justify-center z-20">
@@ -190,6 +193,28 @@ const ProfilePage = () => {
           </div>
         </div>
       )}
+
+      <Card className="glass">
+        <CardHeader>
+          <Tabs defaultValue="Posts">
+            <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
+              <TabsTrigger value="Posts" className="text-lg">Posts</TabsTrigger>
+              <TabsTrigger value="Participations" className="text-lg">Participations</TabsTrigger>
+            </TabsList>
+            <TabsContent value="Posts">
+              <div>
+                <WhatsOnYourMind></WhatsOnYourMind>
+              </div>
+            </TabsContent>
+            <TabsContent value="Members">
+              <div>
+                {/* render participations here */}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardHeader>
+
+      </Card>
 
       {edit ? <Form setEdit={setEdit} handleUpdate={handleUpdate} currentGradYear={gradYear} currentInterests={interests}></Form> : null}
       {showAllInterests ? <AllInterests interests={interests} name={name} setShowAllInterests={setShowAllInterests}></AllInterests> : null}
@@ -227,6 +252,8 @@ const ShowMoreInterestTag = ({ setShowAllInterests }: { setShowAllInterests: Dis
     <SlOptions className="mt-[7px]"></SlOptions>
   </div>
 )
+
+
 
 
 
