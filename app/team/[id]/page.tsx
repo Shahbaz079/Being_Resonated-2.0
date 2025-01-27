@@ -20,10 +20,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { IoMdInformationCircleOutline } from "react-icons/io";
+import { IoIosSend, IoMdInformationCircleOutline } from "react-icons/io";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DialogHeader } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useEdgeStore } from "@/lib/edgestore";
+import { FaImage } from "react-icons/fa";
+import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDropZone";
+import { toast } from "react-toastify";
+import "./teams.css"
+import SubHeader from "@/components/SubHeader/SubHeader";
 
 
 export interface IEvent {
@@ -94,10 +100,11 @@ const TeamPage = () => {
   }, [])
 
   return (
-    <div>
-      <div className="p-5  px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
+    <div className="bg min-h-screen">
+      <SubHeader></SubHeader>
+      <div className="mt-24 p-5  px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
         <div className="ctab:order-2 w-full">
-          <Card className="p-3 items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
+          <Card className="p-3 bg-transparent items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
             <div className="flex gap-6 ctab:flex-col">
               <div className="h-40 w-40 mx-auto">
                 {teamImg ? <Image
@@ -151,7 +158,11 @@ const TeamPage = () => {
                 <TabsTrigger value="posts" className="text-lg">Posts</TabsTrigger>
               </TabsList>
               <TabsContent value="members"><TeamMembersCard members={members}></TeamMembersCard></TabsContent>
-              <TabsContent value="posts">Change your password here.</TabsContent>
+              <TabsContent value="posts">
+                <div>
+                  <WhatsOnYourMind></WhatsOnYourMind>
+                </div>
+              </TabsContent>
             </Tabs>
           </div>
 
@@ -202,7 +213,7 @@ const TeamPage = () => {
 
 const UpcomingEventsCard = ({ events, mongoId }: { events: IEvent[] | null, mongoId: string }) => {
   return (
-    <Card className="max-w-[500px] ctab:p-0 w-fit max-h-[800px]">
+    <Card className="bg-transparent max-w-[500px] ctab:p-0 w-fit max-h-[800px]">
       <CardHeader>
         <CardTitle className="text-xl">Upcoming Events</CardTitle>
       </CardHeader>
@@ -227,7 +238,7 @@ const UpcomingEventsCard = ({ events, mongoId }: { events: IEvent[] | null, mong
 
 const EventCard = ({ event, mongoId }: { event: IEvent, mongoId: string }) => {
   return (
-    <div className="border-2 w-[300px] cphone:w-[210px] rounded-xl p-3">
+    <div className="bg-transparent border-2 w-[300px] cphone:w-[210px] rounded-xl p-3">
       <h1 className="text-purple-300 font-semibold text-2xl">{event.name}</h1>
       <p className="mt-3 text-lg">{new Date(event.date).toLocaleDateString()} at {event.time}</p>
       <p>SNT Building</p>
@@ -265,5 +276,81 @@ const MemberCard = ({ member }: { member: IUser }) => {
   </Card>)
 }
 
+const WhatsOnYourMind = () => {
+  const [file, setFile] = useState<File>();
+  const { edgestore } = useEdgeStore();
+  const [caption, setCaption] = useState<string>("");
+  const [progress, setProgress] = useState<number>(0);
+  const { user, isLoaded } = useUser();
+  const [mongoId, setMongoId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>("")
+
+  useEffect(() => {
+    if (user) {
+      setMongoId(user.publicMetadata.mongoId as string)
+      setUserName(user.fullName)
+    }
+  }, [isLoaded, user])
+
+  const handlePost = () => {
+    console.log("clicked");
+
+    const post = async () => {
+      if (file) {
+        const response = await edgestore.mypublicImages.upload({
+          file,
+          onProgressChange: (progress) => {
+            setProgress(progress);
+          },
+        });
+
+        if (response.url) {
+          const res = await fetch(`/api/userpost`, {
+            method: "POST",
+            body: JSON.stringify({ image: response.url, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+          })
+          if (res.ok) {
+            toast.success("Posted successfully")
+          }
+        }
+      }
+    }
+
+    console.log("before");
+
+    post();
+    console.log("posted");
+  }
+
+  return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
+    <textarea value={caption} onChange={(e: any) => setCaption(e.target.value)} placeholder="What's on your mind ?" className="placeholder:opacity-80 text-cyan-300 rounded-[2rem] py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
+    <div className="flex justify-between p-2">
+      <div className="flex">
+        <Dialog>
+          <DialogTrigger asChild>
+            <FaImage className="cursor-pointer w-7 h-7 ml-2 fill-cyan-500 hover:fill-cyan-300"></FaImage>
+          </DialogTrigger>
+          <DialogContent className="bg-slate-950 opacity-75">
+            <DialogTitle>Select Image</DialogTitle>
+            <div className="flex justify-center">
+              <SingleImageDropzone width={200}
+                height={200}
+                value={file}
+                onChange={(file) => {
+                  setFile(file);
+                }}></SingleImageDropzone>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+      </div>
+      <button onClick={handlePost} className="hover:border-cyan-400 hover:text-cyan-200 p-2 w-fit flex gap-3 items-center self-end px-5 border-2 border-cyan-600 rounded-lg">
+        <IoIosSend className="fill-cyan-600 mt-[1px]"></IoIosSend>
+        <span className="text-cyan-400 text-lg">Post</span>
+      </button>
+    </div>
+
+  </div >)
+}
 
 export default TeamPage;
