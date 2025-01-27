@@ -44,6 +44,7 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps) {
   const [active, setActive] = useState<IUser | boolean | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
+  const [cInterests, setCInterests] = useState<string[]>([]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -64,12 +65,9 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps) {
 
   useOutsideClick(ref, () => setActive(null));
 
-  const [cInterests, setCInterests] = useState<string[]>([]);
-
   useEffect(() => {
     if (active && typeof active === "object" && cUser) {
       const commonInterests = (cUser?.interests && active.interests) ? active.interests.filter((interest) => cUser.interests?.includes(interest) ?? false) : [];
-
       setCInterests(commonInterests);
     }
   },
