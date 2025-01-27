@@ -75,7 +75,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   };
   console.log(post);
   return (
-    <div className="glass max-w-2xl mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
+    <div className="glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
 
       {'user' in post &&
         <div className="flex items-start gap-5" onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}>

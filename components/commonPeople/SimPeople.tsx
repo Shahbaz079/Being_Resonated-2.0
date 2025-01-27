@@ -25,8 +25,6 @@ const SimPeople = () => {
 
         fetchPeople();
 
-
-
         const fetchCurrentPerson = async () => {
             try {
                 const response = await fetch(`/api/currentperson?id=${id}`);
@@ -45,7 +43,7 @@ const SimPeople = () => {
             <h1 className="text-center p-3 font-semibold text-cyan-200 text-md">Users</h1>
 
             <div className="mt-2 mx-4 hover:opacity-90 border-2 text-center bg-teal-600 rounded-lg flex">
-                <Link href={`/profile?id=${id}`} className="text-white w-full text-center px-2 py-1">Update Personal details</Link>
+                <Link href={`/profile?id=${id}`} className="text-white w-full text-sm text-center px-2 py-1">Update Personal details</Link>
             </div>
             <div className="text-cyan-200 mt-5">
                 {
