@@ -22,7 +22,7 @@ const SubHeader = () => {
 
   const [teamModal, setTeamModal] = useState(false);
   const [eventModal, setEventModal] = useState(false);
- 
+
   const handleCloseEventModal = () => { setEventModal(false) }
   const handleOpenEventModal = () => { setEventModal(true) }
 
@@ -45,7 +45,7 @@ const SubHeader = () => {
             const data = await result.json();
             setTeams(data.teams);
             setEvents(data.events);
-           
+
             if (result.ok) {
               console.log('teams & events retrieved successfully');
             } else {
@@ -63,7 +63,7 @@ const SubHeader = () => {
   }, [isLoaded, user, mongoId]);
 
   return (
-    <div className='absolute top-0 left-[5vw] right-[8vw] w-[50vw] bg-[#555a4a] h-[8vh] my-4 rounded-full items-center text-white flex flex-row justify-between px-4'>
+    <div className='absolute top-0 left-[4%] w-[92%] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] my-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
@@ -71,7 +71,7 @@ const SubHeader = () => {
               <Home className="w-6 h-6" />
             </Link>
           </TooltipTrigger>
-          
+
           <TooltipContent side="bottom" align="center">
             <p>Home</p>
           </TooltipContent>
@@ -153,7 +153,7 @@ const SubHeader = () => {
                     src={event.image}
                     alt={event.name}
                   /> :
-                  <img
+                    <img
                       width={100}
                       height={100}
                       src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}

@@ -1,0 +1,5 @@
+.bg {
+    background: radial-gradient(#0a0a2c, #000000);
+    background-size: 100% 1000px;
+    background-repeat: repeat-y;
+}

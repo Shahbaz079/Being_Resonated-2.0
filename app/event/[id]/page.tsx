@@ -23,6 +23,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ObjectId } from "mongoose";
+import "./event.css"
+import SubHeader from "@/components/SubHeader/SubHeader";
+import { FaImage, FaInfoCircle } from "react-icons/fa";
+import { IoIosSend } from "react-icons/io";
+import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDropZone";
 
 
 interface EventUpdateType {
@@ -47,8 +52,8 @@ const EventPage = () => {
   const [date, setDate] = useState('');
   const [members, setMembers] = useState<IUser[] | null>([]);
   const [leaders, setLeaders] = useState<IUser[] | null>([]);
-  const [participants,setParticipants]=useState<IUser[] | null>([]);
-  const [requests,setRequests]=useState<IUser[] | null>();  
+  const [participants, setParticipants] = useState<IUser[] | null>([]);
+  const [requests, setRequests] = useState<IUser[] | null>();
   const [image, setImage] = useState('');
   const [createdBy, setCreatedBy] = useState<IUser | null>();
   const [team, setTeam] = useState<ITeam | null>();
@@ -84,7 +89,7 @@ const EventPage = () => {
       };
       reader.readAsDataURL(file);
 
-  
+
     }
   };
 
@@ -114,7 +119,7 @@ const EventPage = () => {
 
   }
 
-  
+
 
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
@@ -122,7 +127,7 @@ const EventPage = () => {
   const { user, isLoaded } = useUser();
   const mongoId = user?.publicMetadata.mongoId as string;
 
-  
+
 
   const isLeader = leaders?.some((leader) => leader._id.toString() === mongoId);
   const isVolunteer = members?.some((member) => member._id.toString() === mongoId);
@@ -137,21 +142,21 @@ const EventPage = () => {
     }
   }, [isLoaded]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       setEventId(window.location.pathname.split('/')[2]);
       console.log(eventId, "eventid")
-     
+
 
     }
-  },[isLoaded])
+  }, [isLoaded])
 
 
   useEffect(() => {
 
     const handleEventData = async () => {
-      const res = await fetch(`/api/events?id=${eventId}`,{
-        method:"GET",
+      const res = await fetch(`/api/events?id=${eventId}`, {
+        method: "GET",
         headers: {
           'Content-Type': 'application/json'
         }
@@ -185,7 +190,7 @@ const EventPage = () => {
     if (eventId) {
       handleEventData();
     }
-    
+
 
   }, [isLoaded, user, eventId]);
 
@@ -197,141 +202,153 @@ const EventPage = () => {
     })
   }
 
-  const acceptRequestHandler=(newParticipant:IUser)=>{
-  
-    const updatedParticipants=participants?[...participants,newParticipant]:[newParticipant];
+  const acceptRequestHandler = (newParticipant: IUser) => {
+
+    const updatedParticipants = participants ? [...participants, newParticipant] : [newParticipant];
     setParticipants(updatedParticipants);
-    
-    const updatedRequests=requests?.filter((request)=>request._id.toString()!==newParticipant._id.toString())
+
+    const updatedRequests = requests?.filter((request) => request._id.toString() !== newParticipant._id.toString())
     setRequests(updatedRequests);
 
-    const updateParticipants=async()=>{
-       const res=await fetch(`/api/participate?eid=${eventId}&id=${mongoId}`,{
-        method:"PUT",
-        headers:{
+    const updateParticipants = async () => {
+      const res = await fetch(`/api/participate?eid=${eventId}&id=${mongoId}`, {
+        method: "PUT",
+        headers: {
           'Content-Type': 'application/json'
         },
-       
-       })
 
-       const data=res.json();
-       if(res.ok){
+      })
+
+      const data = res.json();
+      if (res.ok) {
         toast.success("Participant added successfully");
-       }
+      }
     }
     updateParticipants();
   }
 
-  const removeParticipantHandler=(newParticipant:IUser)=>{
-  
-    
-    
-    const updatedParticipants=participants?.filter((participant)=>participant._id.toString()!==newParticipant._id.toString())
+  const removeParticipantHandler = (newParticipant: IUser) => {
+
+
+
+    const updatedParticipants = participants?.filter((participant) => participant._id.toString() !== newParticipant._id.toString())
     setParticipants(updatedParticipants || []);
 
-    const updateParticipants=async()=>{
-       const res=await fetch(`/api/events?id=${eventId}`,{
-        method:"PUT",
-        headers:{
+    const updateParticipants = async () => {
+      const res = await fetch(`/api/events?id=${eventId}`, {
+        method: "PUT",
+        headers: {
           'Content-Type': 'application/json'
         },
-        body:JSON.stringify({participated:updatedParticipants})
-       })
+        body: JSON.stringify({ participated: updatedParticipants })
+      })
 
-       const data=res.json();
-       if(res.ok){
+      const data = res.json();
+      if (res.ok) {
         toast.success("Participant Removed successfully");
-       }
+      }
     }
     updateParticipants();
   }
 
-  
-  const removeAcceptHandler=(newParticipant:IUser)=>{
-  
-    
-    
-    const updatedRequests=requests?.filter((request)=>request._id.toString()!==newParticipant._id.toString())
+
+  const removeAcceptHandler = (newParticipant: IUser) => {
+
+
+
+    const updatedRequests = requests?.filter((request) => request._id.toString() !== newParticipant._id.toString())
     setRequests(updatedRequests || []);
 
-    const updateParticipants=async()=>{
-       const res=await fetch(`/api/events?id=${eventId}`,{
-        method:"PUT",
-        headers:{
+    const updateParticipants = async () => {
+      const res = await fetch(`/api/events?id=${eventId}`, {
+        method: "PUT",
+        headers: {
           'Content-Type': 'application/json'
         },
-        body:JSON.stringify({requests:updatedRequests})
-       })
+        body: JSON.stringify({ requests: updatedRequests })
+      })
 
-       const data=res.json();
-       if(res.ok){
+      const data = res.json();
+      if (res.ok) {
         toast.success("Participant Removed successfully");
-       }
+      }
     }
     updateParticipants();
   }
 
-  
-    const handleParticipation=(id:string)=>{
-     try {
-      
-      const participate=async ()=>{
-        const res=await fetch(`/api/events?type=participate&id=${id}`,{
-          method:'PUT',
+
+  const handleParticipation = (id: string) => {
+    try {
+
+      const participate = async () => {
+        const res = await fetch(`/api/events?type=participate&id=${id}`, {
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
           },
-          body:JSON.stringify({userId:mongoId}),
-  
+          body: JSON.stringify({ userId: mongoId }),
+
         })
-        const data=await res.json();
-        if(res){
+        const data = await res.json();
+        if (res) {
           toast.success("Request sent successfully")
-        }else{
+        } else {
           toast.error("Request failed")
         }
       }
       participate();
-  
-     } catch (error) {
+
+    } catch (error) {
       console.error(error);
-     }
     }
-    
+  }
+
 
   return (
-    <div className="p-12 flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
-      <Card>
+    <div className="p-12 bg min-h-screen flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
+
+      <SubHeader></SubHeader>
+      <Card className="glass mt-20">
         <CardHeader>
           <div className="relative h-fit w-fit">
-          {isLeader &&
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="opacity-0 text-2xl font-bold hover:opacity-80 absolute bg-black top-0 left-0 h-full w-full flex items-center justify-center cursor-pointer">
-                  Edit
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit Event Details</DialogTitle>
-                </DialogHeader>
-                <div className="flex flex-col gap-8 mt-6">
-                  <div className="flex flex-col">
-                    <Label>Upload Image</Label>
-                    <input type="file" className="mt-4" onChange={handleFileChange}></input>
-                    <Button onClick={()=>handleUpload()}  variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+            {isLeader &&
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="opacity-0 text-2xl font-bold hover:opacity-80 absolute bg-black top-0 left-0 h-full w-full flex items-center justify-center cursor-pointer">
+                    Edit
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Event Details</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex flex-col gap-8 mt-6">
+                    <div className="flex flex-col">
+                      <Label>Upload Image</Label>
+                      <input type="file" className="mt-4" onChange={handleFileChange}></input>
+                      <Button onClick={() => handleUpload()} variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                    </div>
                   </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-                  }
+                </DialogContent>
+              </Dialog>
+            }
             <img
               className="w-32 h-32 rounded-lg"
               src={image || 'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
               alt={name || "user did'nt provide image"}
             />
           </div>
-          <h1 className="text-7xl mt-4 cphone:text-5xl">{name}</h1>
+          <h1 className="text-7xl mt-4 cphone:text-5xl text-cyan-200">{name}</h1>
+          <Dialog>
+            <DialogTrigger asChild><FaInfoCircle className="w-5 h-5 mt-4 cursor-pointer fill-cyan-200 hover:opacity-70"></FaInfoCircle></DialogTrigger>
+            <DialogContent className="bg-slate-950 opacity-90">
+              <DialogHeader>
+                <DialogTitle>Description</DialogTitle>
+              </DialogHeader>
+              <p>{description}</p>
+            </DialogContent>
+          </Dialog>
+
         </CardHeader>
 
         <CardContent>
@@ -350,108 +367,106 @@ const EventPage = () => {
         </CardContent>
 
         <CardFooter>
-          { isLeader && <>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Edit</Button>
-            </DialogTrigger>
-            <DialogContent className="">
-              <DialogHeader>
-                <DialogTitle>Edit Event Details</DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-8 mt-6">
-                <div>
-                  <Label>Event Name</Label>
-                  <Input value={eventUpdateData.name} onChange={(e) => setEventUpdateData({ ...eventUpdateData, name: e.target.value })}></Input>
+          {isLeader && <>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Edit</Button>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Edit Event Details</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-8 mt-6">
+                  <div>
+                    <Label>Event Name</Label>
+                    <Input value={eventUpdateData.name} onChange={(e) => setEventUpdateData({ ...eventUpdateData, name: e.target.value })}></Input>
+                  </div>
+                  <div>
+                    <Label>Location</Label>
+                    <Input value={eventUpdateData.location} onChange={(e) => setEventUpdateData({ ...eventUpdateData, location: e.target.value })}></Input>
+                  </div>
+                  <div>
+                    <Label>Time</Label>
+                    <Input value={eventUpdateData.time} onChange={(e) => setEventUpdateData({ ...eventUpdateData, time: e.target.value })}></Input>
+                  </div>
+                  <div className="flex flex-col">
+                    <Label>Date</Label>
+                    <input className="p-1 border-2 bg-black rounded-md mt-1" value={eventUpdateData.date} onChange={(e) => setEventUpdateData({ ...eventUpdateData, date: e.target.value })} type="date" />
+                  </div>
+                  <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
                 </div>
-                <div>
-                  <Label>Location</Label>
-                  <Input value={eventUpdateData.location} onChange={(e) => setEventUpdateData({ ...eventUpdateData, location: e.target.value })}></Input>
-                </div>
-                <div>
-                  <Label>Time</Label>
-                  <Input value={eventUpdateData.time} onChange={(e) => setEventUpdateData({ ...eventUpdateData, time: e.target.value })}></Input>
-                </div>
-                <div className="flex flex-col">
-                  <Label>Date</Label>
-                  <input className="p-1 border-2 bg-black rounded-md mt-1" value={eventUpdateData.date} onChange={(e) => setEventUpdateData({ ...eventUpdateData, date: e.target.value })} type="date" />
-                </div>
-                <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="ml-4">Manage Participants</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Participants and Requests</DialogTitle></DialogHeader>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="ml-4">Manage Participants</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Participants and Requests</DialogTitle></DialogHeader>
                 <DialogFooter>
                   <div className="max-h-[80vh] ">
-                  <div className="flex flex-col w-[40vw] max-h-[60vh]">
-                  <h2>Requests</h2>
-                <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
-                  {requests?.map((participant)=>(
-                    <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
-                      <div className="px-2 mx-2">
-                        <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+                    <div className="flex flex-col w-[40vw] max-h-[60vh]">
+                      <h2>Requests</h2>
+                      <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
+                        {requests?.map((participant) => (
+                          <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
+                            <div className="px-2 mx-2">
+                              <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
 
-                      <div className="flex flex-col px-2 mx-2">
-                           <div className="">{participant.name}</div>
-                           <div className="">{participant?.gradYear}</div>
+                            <div className="flex flex-col px-2 mx-2">
+                              <div className="">{participant.name}</div>
+                              <div className="">{participant?.gradYear}</div>
+                            </div>
+
+                            <button onClick={() => acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
+                            <button onClick={() => removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
+                          </div>
+                        ))}
                       </div>
-                      
-                      <button onClick={()=>acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
-                      <button onClick={()=>removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
                     </div>
-                  ))}
-                </div>
-                  </div>
 
 
-                  <div className="flex flex-col w-[40vw] h-[60vh]">
-                  <h2>Participants</h2>
-                  <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
-                  {participants?.map((participant)=>(
-                    <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
-                      <div className="px-2 mx-2">
-                        <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+                    <div className="flex flex-col w-[40vw] h-[60vh]">
+                      <h2>Participants</h2>
+                      <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
+                        {participants?.map((participant) => (
+                          <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
+                            <div className="px-2 mx-2">
+                              <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
 
-                      <div className="flex flex-col px-2 mx-2">
-                           <div className="">{participant.name}</div>
-                           <div className="">{participant?.gradYear}</div>
+                            <div className="flex flex-col px-2 mx-2">
+                              <div className="">{participant.name}</div>
+                              <div className="">{participant?.gradYear}</div>
+                            </div>
+
+                            <button className="px-2 mx-2 bg-red-500 py-2 rounded-full" onClick={() => removeParticipantHandler(participant)}>X</button>
+                          </div>
+                        ))}
                       </div>
-                     
-                      <button className="px-2 mx-2 bg-red-500 py-2 rounded-full" onClick={()=>removeParticipantHandler(participant)}>X</button>
                     </div>
-                  ))}
-                </div>
-                  </div>
-            
+
                   </div>
                 </DialogFooter>
-                
-            </DialogContent>
-          </Dialog>
+
+              </DialogContent>
+            </Dialog>
           </>
-        }
-        <Button onClick={()=>handleParticipation(eventId!)}  variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Participate</Button>
+          }
+          <Button onClick={() => handleParticipation(eventId!)} variant={"default"} className="ml-4 bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Participate</Button>
         </CardFooter>
 
       </Card>
 
-      <Card>
+      <Card className="glass">
         <CardHeader>
-          <Tabs defaultValue="Description">
+          <Tabs defaultValue="Organisers">
             <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
-              <TabsTrigger value="Description" className="mt-1 text-lg">Description</TabsTrigger>
               <TabsTrigger value="Organisers" className="text-lg">Organisers</TabsTrigger>
               <TabsTrigger value="Posts" className="text-lg">Posts</TabsTrigger>
-              <TabsTrigger value="EventMembers" className="text-lg">Event Members</TabsTrigger>
+              <TabsTrigger value="EventMembers" className="text-lg">Volunteeers</TabsTrigger>
             </TabsList>
-            <TabsContent value="Description" className="mt-7 p-3">{description}</TabsContent>
             <TabsContent value="Organisers" className="mt-7">
               <div className="flex gap-3 flex-wrap">
                 {leaders?.map((leader) => (
@@ -459,7 +474,11 @@ const EventPage = () => {
                 ))}
               </div>
             </TabsContent>
-            <TabsContent value="Posts">here posts</TabsContent>
+            <TabsContent value="Posts">
+              <div>
+                <WhatsOnYourMind></WhatsOnYourMind>
+              </div>
+            </TabsContent>
             <TabsContent value="Members"></TabsContent>
           </Tabs>
         </CardHeader>
@@ -476,7 +495,6 @@ const OrganiserCard = ({ name, email, number }: { name: string, email: string, n
   <div className="h-fit hover:bg-accent w-fit p-3 rounded-xl">
     <h1 className="text-xl">{name}</h1>
     <p className="mt-1 text-sm text-gray-400">{email}</p>
-    <p className="text-sm text-gray-400">{number}</p>
   </div>
 )
 
@@ -496,5 +514,82 @@ const PrizeCard = ({ position, content }: { position: string, content: string })
     <HiMiniTrophy className="h-20 w-20"></HiMiniTrophy>
   </div>
 )
+
+const WhatsOnYourMind = () => {
+  const [file, setFile] = useState<File>();
+  const { edgestore } = useEdgeStore();
+  const [caption, setCaption] = useState<string>("");
+  const [progress, setProgress] = useState<number>(0);
+  const { user, isLoaded } = useUser();
+  const [mongoId, setMongoId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>("")
+
+  useEffect(() => {
+    if (user) {
+      setMongoId(user.publicMetadata.mongoId as string)
+      setUserName(user.fullName)
+    }
+  }, [isLoaded, user])
+
+  const handlePost = () => {
+    console.log("clicked");
+
+    const post = async () => {
+      if (file) {
+        const response = await edgestore.mypublicImages.upload({
+          file,
+          onProgressChange: (progress) => {
+            setProgress(progress);
+          },
+        });
+
+        if (response.url) {
+          const res = await fetch(`/api/userpost`, {
+            method: "POST",
+            body: JSON.stringify({ image: response.url, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+          })
+          if (res.ok) {
+            toast.success("Posted successfully")
+          }
+        }
+      }
+    }
+
+    console.log("before");
+
+    post();
+    console.log("posted");
+  }
+
+  return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
+    <textarea value={caption} onChange={(e: any) => setCaption(e.target.value)} placeholder="What's on your mind ?" className="placeholder:opacity-80 text-cyan-300 rounded-[2rem] py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
+    <div className="flex justify-between p-2">
+      <div className="flex">
+        <Dialog>
+          <DialogTrigger asChild>
+            <FaImage className="cursor-pointer w-7 h-7 ml-2 fill-cyan-500 hover:fill-cyan-300"></FaImage>
+          </DialogTrigger>
+          <DialogContent className="bg-slate-950 opacity-75">
+            <DialogTitle>Select Image</DialogTitle>
+            <div className="flex justify-center">
+              <SingleImageDropzone width={200}
+                height={200}
+                value={file}
+                onChange={(file) => {
+                  setFile(file);
+                }}></SingleImageDropzone>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+      </div>
+      <button onClick={handlePost} className="hover:border-cyan-400 hover:text-cyan-200 p-2 w-fit flex gap-3 items-center self-end px-5 border-2 border-cyan-600 rounded-lg">
+        <IoIosSend className="fill-cyan-600 mt-[1px]"></IoIosSend>
+        <span className="text-cyan-400 text-lg">Post</span>
+      </button>
+    </div>
+
+  </div >)
+}
 
 export default EventPage;

@@ -16,6 +16,15 @@ export default {
 				},
 				cphone: {
 					max: '600px'
+				},
+				cbecom: {
+					max: "1150px"
+				},
+				cbecomn: {
+					min: "1150px"
+				},
+				becomphone: {
+					max: "405px"
 				}
 			},
 			colors: {

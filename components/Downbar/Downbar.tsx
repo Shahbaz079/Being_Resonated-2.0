@@ -36,7 +36,7 @@ const Downbar = () => {
           </TooltipContent>
         </Tooltip>
 
-        <UserPostModal name={userName} />
+        {/* <UserPostModal name={userName} /> */}
 
         <Tooltip>
           <TooltipTrigger asChild>

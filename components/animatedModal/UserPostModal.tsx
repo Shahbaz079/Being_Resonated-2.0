@@ -16,18 +16,18 @@ import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 
 import { useUser } from "@clerk/nextjs";
 
-export function UserPostModal({name}:{name:string | null}) {
+export function UserPostModal({ name }: { name: string | null }) {
 
-const {user}=useUser();
+  const { user } = useUser();
 
   const [file, setFile] = useState<File>();
   const { edgestore } = useEdgeStore();
-  const [caption,setCaption]=useState<string>("");
- const [progress,setProgress]=useState<number>(0);
- 
-  const handlePost=()=>{
+  const [caption, setCaption] = useState<string>("");
+  const [progress, setProgress] = useState<number>(0);
 
-    const post=async()=>{
+  const handlePost = () => {
+
+    const post = async () => {
 
       if (file) {
         const response = await edgestore.mypublicImages.upload({
@@ -38,21 +38,21 @@ const {user}=useUser();
           },
         });
 
-        if(response.url){
-        const res= await fetch(`/api/userpost`,{
-          method:"POST",
-          body:JSON.stringify({image:response.url,caption,createdBy:user?.publicMetadata.mongoId,name }),
-        })
-        if(res.ok){
-          toast.success("Post created successfully")
+        if (response.url) {
+          const res = await fetch(`/api/userpost`, {
+            method: "POST",
+            body: JSON.stringify({ image: response.url, caption, createdBy: user?.publicMetadata.mongoId, name }),
+          })
+          if (res.ok) {
+            toast.success("Post created successfully")
+          }
         }
       }
     }
+    post();
   }
-  post();
-}
 
-  
+
   return (
     <div className="py-40  flex items-center justify-center">
       <Modal >
@@ -74,45 +74,45 @@ const {user}=useUser();
               now!
             </h4>
             <div className="flex justify-center items-center">
-              
-                <motion.div
-                  
-                  style={{
-                    rotate: Math.random() * 20 - 10,
-                  }}
-                  whileHover={{
-                    scale: 1.1,
-                    rotate: 0,
-                    zIndex: 100,
-                  }}
-                  whileTap={{
-                    scale: 1.1,
-                    rotate: 0,
-                    zIndex: 100,
-                  }}
-                  className="rounded-xl -mr-4 mt-4 p-1 bg-white dark:bg-neutral-800 dark:border-neutral-700 border border-neutral-100 flex-shrink-0 overflow-hidden"
-                >
-                  <SingleImageDropzone
-                 width={200}
-                height={200}
-                value={file}
-                onChange={(file) => {
+
+              <motion.div
+
+                style={{
+                  rotate: Math.random() * 20 - 10,
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  rotate: 0,
+                  zIndex: 100,
+                }}
+                whileTap={{
+                  scale: 1.1,
+                  rotate: 0,
+                  zIndex: 100,
+                }}
+                className="rounded-xl -mr-4 mt-4 p-1 bg-white dark:bg-neutral-800 dark:border-neutral-700 border border-neutral-100 flex-shrink-0 overflow-hidden"
+              >
+                <SingleImageDropzone
+                  width={200}
+                  height={200}
+                  value={file}
+                  onChange={(file) => {
                     setFile(file);
-        }}
-      />
-                </motion.div>
-              
+                  }}
+                />
+              </motion.div>
+
             </div>
             <div className="pt-5 flex flex-wrap   items-start justify-start max-w-sm mx-auto">
               <label htmlFor="caption">Caption:</label>
-              <textarea  id="caption" className="w-[100%] h-5 border rounded-lg overflow-y-scroll"  value={caption} onChange={(e) => setCaption(e.target.value)} />
+              <textarea id="caption" className="w-[100%] h-5 border rounded-lg overflow-y-scroll" value={caption} onChange={(e) => setCaption(e.target.value)} />
             </div>
           </ModalContent>
           <ModalFooter className="gap-4">
             <button className="px-2 py-1 bg-gray-200 text-black dark:bg-black dark:border-black dark:text-white border border-gray-300 rounded-md text-sm w-28">
               Cancel
             </button>
-            <button onClick={()=>handlePost()} className="bg-black text-white dark:bg-white dark:text-black text-sm px-2 py-1 rounded-md border border-black w-28">
+            <button onClick={() => handlePost()} className="bg-black text-white dark:bg-white dark:text-black text-sm px-2 py-1 rounded-md border border-black w-28">
               Post now
             </button>
           </ModalFooter>

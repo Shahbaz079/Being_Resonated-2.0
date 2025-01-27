@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
 import { IEvent } from '@/app/team/[id]/page';
+import "./EventCard.styles.css"
 
 interface Event {
   _id: ObjectId;
@@ -17,115 +18,108 @@ interface Event {
   date: string;
   time: string;
   description: string;
-  team:string;
+  team: string;
 }
 
-const EventCard = ({uId}:{uId:string}) => {
+const EventCard = ({ uId }: { uId: string }) => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [participatedEvents, setParticipatedEvents] = useState<string[]>([]);
   const [requestedEvents, setRequestedEvents] = useState<string[]>([]);
-  
 
-  const [events,setEvents]=useState<IEvent[]|null>(null);
 
-  const {user,isLoaded}=useUser();
+  const [events, setEvents] = useState<IEvent[] | null>(null);
 
-  
+  const { user, isLoaded } = useUser();
 
-  // Sample events data - replace with your actual data
+  useEffect(() => {
 
-  useEffect(()=>{
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch("/api/events?type=all",
+          {
+            method: "GET",
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
 
-    const fetchEvents=async ()=>{
-  try {
-    const res=await fetch("/api/events?type=all",
-      {method:"GET",
-        headers: {
-          'Content-Type': 'application/json'
-        }
-        
+        const data = await res.json();
+
+        setEvents(data);
+
+      } catch (error) {
+        console.error("failed to fetch events");
       }
-      
-    );
-
-    const data=await res.json();
-
-    setEvents(data);
-
-  } catch (error) {
-    console.error("failed to fetch events");
-  }
     }
 
-    const fetchParticipatedEvents=async ()=>{
-      const res=await fetch(`/api/participate?id=${uId}`,{
-        method:'GET',
-        
+    const fetchParticipatedEvents = async () => {
+      const res = await fetch(`/api/participate?id=${uId}`, {
+        method: 'GET',
+
       })
-      if(res.ok){
-        const data=await res.json();
-         
+      if (res.ok) {
+        const data = await res.json();
+
         setParticipatedEvents(data.participations);
         setRequestedEvents(data.eventRequests);
-        
-      }else{
+
+      } else {
         toast.error("participation fetching failed")
       }
     }
     fetchParticipatedEvents();
     fetchEvents();
-  },[isLoaded])
-  
+  }, [isLoaded])
 
-  const handleParticipation=(id:ObjectId)=>{
-   try {
-    const updatedRequestedEvents=requestedEvents?[...requestedEvents,id.toString()]:[id.toString()];
-    setRequestedEvents(updatedRequestedEvents);
-    const participate=async ()=>{
-      const res=await fetch(`/api/events?type=participate&id=${id}`,{
-        method:'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body:JSON.stringify({userId:uId}),
 
-      })
-      const data=await res.json();
-      if(res){
-        toast.success("Request sent successfully")
-      }else{
-        toast.error("Request failed")
+  const handleParticipation = (id: ObjectId) => {
+    try {
+      const updatedRequestedEvents = requestedEvents ? [...requestedEvents, id.toString()] : [id.toString()];
+      setRequestedEvents(updatedRequestedEvents);
+      const participate = async () => {
+        const res = await fetch(`/api/events?type=participate&id=${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: uId }),
+
+        })
+        const data = await res.json();
+        if (res) {
+          toast.success("Request sent successfully")
+        } else {
+          toast.error("Request failed")
+        }
       }
-    }
-    participate();
+      participate();
 
-   } catch (error) {
-    console.error(error);
-   }
+    } catch (error) {
+      console.error(error);
+    }
   }
-  
 
   return (
-    <div className="w-[100%] bg-transparent  p-4">
-      
-      
-      <div className=" h-[calc(100vh-100px)] space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
+    <div className="w-full p-4">
+
+      <div className=" h-fit space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
         {events?.map((event) => (
           <div
             key={event?._id?.toString()}
-            className="bg-[rgb(43,42,42)] rounded-lg p-3 cursor-pointer transform transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-700"
-            
+            className="rounded-lg p-3 cursor-pointer transform transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-700"
+
           >
             <div className="flex gap-3">
-              <img onClick={()=>redirect(`/event/${event._id.toString()}?uid=${uId}`)}
+              <img onClick={() => redirect(`/event/${event._id.toString()}?uid=${uId}`)}
                 src={event.image}
                 alt={event.name}
                 className="w-[60px] h-[60px] object-cover rounded-lg"
-                 
+
               />
               <div className="flex-1 min-w-0">
                 <h3 className="text-white font-semibold text-sm mb-1"
-                onClick={()=>redirect(`/event/${event._id.toString()}?uid=${uId}`)}
+                  onClick={() => redirect(`/event/${event._id.toString()}?uid=${uId}`)}
                 >{event?.name}</h3>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-gray-400 text-xs">
@@ -152,18 +146,18 @@ const EventCard = ({uId}:{uId:string}) => {
                 handleParticipation(event._id);
                 console.log(event._id)
               }}
-              className={`w-full mt-2 flex items-center justify-center gap-2 text-xs ${participatedEvents?.includes(event?._id.toString())?'bg-purple-500':'bg-teal-600'}  
+              className={`w-full mt-2 flex items-center justify-center gap-2 text-xs ${participatedEvents?.includes(event?._id.toString()) ? 'bg-purple-500' : 'bg-teal-600'}  
                 
                text-white px-2 py-1.5 rounded-md transition-colors relative overflow-hidden`}
             >
-              {participatedEvents?.includes(event?._id.toString()) ? 'Participated' : requestedEvents?.includes(event?._id.toString())?'Requested':'Participate'}
+              {participatedEvents?.includes(event?._id.toString()) ? 'Participated' : requestedEvents?.includes(event?._id.toString()) ? 'Requested' : 'Participate'}
             </button>
           </div>
         ))}
       </div>
 
       {/* Event Modal */}
-    {/**  <Modal
+      {/**  <Modal
         isOpen={!!selectedEvent}
         onRequestClose={() => setSelectedEvent(null)}
         className="bg-[rgb(72,68,68)] text-white p-4 rounded-md max-w-2xl mx-auto my-8 transition-transform duration-300"

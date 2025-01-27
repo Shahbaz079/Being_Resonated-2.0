@@ -1,0 +1,41 @@
+.bg {
+    background: radial-gradient(#0a0a2c, #000000);
+    background-size: 100% 1000px;
+    background-repeat: repeat-y;
+}
+
+.tabs {
+    background-color: transparent;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    background-image: linear-gradient(120deg,
+            rgba(1, 1, 15, 0.4),
+            rgba(1, 1, 15, 0.4));
+}
+
+@keyframes border-open {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+.active .anbd {
+    border-bottom: 1px solid cyan;
+    width: 0px;
+    bottom: 0;
+    left: 0;
+    animation: border-open 200ms forwards;
+}
+
+.glass {
+    background-color: transparent;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    background-image: linear-gradient(120deg,
+            rgba(255, 255, 255, .12),
+            rgba(255, 255, 255, .12));
+}
