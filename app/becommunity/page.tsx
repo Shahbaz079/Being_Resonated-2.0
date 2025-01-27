@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDropZone";
 import { Divide } from "lucide-react";
+import Layout from "@/components/customLayouts/Layout";
 
 
 export interface EventPost {
@@ -74,13 +75,16 @@ const BeCommunity = () => {
 
 
   console.log("eventposts", eventPosts)
-  return (<div className="bg relative min-h-screen border-2">
 
-    <SubHeader />
+  return (
+    <Layout>
+  <div className="bg relative min-h-screen border-2">
+
+   
 
     <div className="relative">
 
-      <div className="cbecomn:hidden tabglass cphone:text-base cphone:gap-12 tabs mt-32 flex text-xl gap-20 border-2 w-fit mx-auto px-3 rounded-lg justify-center">
+      <div className="cbecomn:hidden tabglass cphone:text-base cphone:gap-12 tabs  flex text-xl gap-20 border-2 w-fit mx-auto px-3 rounded-lg justify-center">
 
         <span onClick={() => setRender("events")} className={`${render === "events" ? "active" : ""} relative px-2 pt-3 pb-3 cursor-pointer tab`}>Events
           <div className="absolute anbd"></div>
@@ -163,8 +167,9 @@ const BeCommunity = () => {
       </div>
     </div>
 
-    <Downbar />
+   
   </div>
+  </Layout>
   )
 }
 
@@ -242,7 +247,9 @@ const WhatsOnYourMind = () => {
       </button>
     </div>
 
-  </div >)
+  </div >
+
+)
 }
 
 

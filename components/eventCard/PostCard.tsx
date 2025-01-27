@@ -99,6 +99,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               src={image}
               alt="Post Image"
               className="w-full h-full object-cover"
+              loading='lazy'
             />
           </div>
         </div>

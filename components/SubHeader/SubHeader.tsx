@@ -63,20 +63,17 @@ const SubHeader = () => {
   }, [isLoaded, user, mongoId]);
 
   return (
-    <div className='absolute top-0 left-[4%] w-[92%] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] my-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
+    <div className='relative top-0 left-[4%] w-[60vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] my-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
+    
+      
+         
             <Link href={'/'}>
               <Home className="w-6 h-6" />
             </Link>
-          </TooltipTrigger>
+        
 
-          <TooltipContent side="bottom" align="center">
-            <p>Home</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+        
+   
 
       <div className="mx-[5%]">
         <TooltipProvider>

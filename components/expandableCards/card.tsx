@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/components/expandableCards/hooks/use-outside-click";
 import mongoose from "mongoose";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
+import Link from "next/link";
 
 
 
@@ -57,44 +58,7 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps) {
   },
     [active, cUser]);
 
-  const addTeamHandler = (user: IUser) => {
-    const newMember: newMember = {
-      _id: user._id,
-      name: user.name,
-      gradYear: user.gradYear,
-      image: user.image,
-    }
 
-    const storedMembersString = localStorage.getItem('members');
-
-    let membersArray: newMember[] = [];
-
-    if (storedMembersString) {
-      membersArray = JSON.parse(storedMembersString);
-    }
-
-    if (!newMember) {
-      alert('No member selected!');
-      return;
-    }
-
-    const memberExists = membersArray.some(member => member._id === newMember._id);
-
-    if (memberExists) {
-      alert('Member already exists!');
-      return;
-    }
-
-    membersArray.push(newMember);
-
-    localStorage.setItem('members', JSON.stringify(membersArray));
-
-    window.dispatchEvent(new Event('local-storage-update'));
-
-
-
-    console.log('New member added to local storage');
-  }
 
   return (
     <>
@@ -135,11 +99,11 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps) {
                   </div>
                 </div>
 
-                <button className="border-2 w-fit self-end border-cyan-700 px-3 py-1 rounded-lg"
-                  onClick={() => addTeamHandler(card)}
+                <Link href={`/profile?id=${card._id}`} className="border-2 w-fit self-end border-cyan-700 px-3 py-1 rounded-lg"
+                 
                 >
-                  Add to Team
-                </button>
+                  View
+                </Link>
               </div>
             </DialogTrigger>
             <DialogContent className="bg-slate-950 opacity-75">
@@ -152,7 +116,7 @@ export function ExpandableCardDemo({ users, cUser }: ExpandableCardDemoProps) {
                     <span className="text-lg text-cyan-300">{card.gradYear}</span>
                     <p className="mt-4">You both share these common Interests:</p>
                     <p className="text-sm text-red-400 mt-1">{cInterests.join(", ")}</p>
-                    <button onClick={() => addTeamHandler(card)} className="border-2 border-cyan-500 text-cyan-500 w-fit px-2 py-1 mt-5 hover:opacity-70">Add to Team</button>
+                    <Link href={`/profile?id=${card._id}`} className="border-2 border-cyan-500 text-cyan-500 w-fit px-2 py-1 mt-5 hover:opacity-70">View</Link>
                   </div>
 
                 </div>
