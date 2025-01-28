@@ -102,8 +102,7 @@ export async function PUT(req:NextRequest){
                            { status: 404 });
                           }
 
-                          let affiliatedEvents: any[] = []; 
-                          let affiliatedTeams:any[]=[];
+                    
                           let posts:any[]=[];
                           
                         
@@ -115,8 +114,7 @@ export async function PUT(req:NextRequest){
 
                           
                           
-                         user.events=affiliatedEvents;
-                         user.teams=affiliatedTeams;
+                        
                          user.posts=posts;
 
                           return NextResponse.json(user);
