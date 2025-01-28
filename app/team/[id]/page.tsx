@@ -103,9 +103,9 @@ const TeamPage = () => {
   return (
     <div className="bg min-h-screen">
       <SubHeader></SubHeader>
-      <div className="mt-24 p-5  px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
+      <div className="mt-4 p-5 px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
         <div className="ctab:order-2 w-full">
-          <Card className="p-3 bg-transparent items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
+          <Card className="p-3 py-5 glass items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
             <div className="flex gap-6 ctab:flex-col">
               <div className="h-40 w-40 mx-auto">
                 {teamImg ? <Image
@@ -123,7 +123,7 @@ const TeamPage = () => {
 
               <div className="flex flex-col gap-3">
                 <div className="gap-3 items-center">
-                  <h1 className="text-5xl ctab:text-4xl">{teamName}</h1>
+                  <h1 className="text-5xl ctab:text-4xl ctab:text-center text-cyan-200 font-semibold">{teamName}</h1>
                   <Dialog>
                     <DialogTrigger asChild>
                       <IoMdInformationCircleOutline className="ctab:w-7 flex-wrap ctab:h-7 hover:opacity-80 h-10 w-10 cursor-pointer mt-3 ctab:mx-auto"></IoMdInformationCircleOutline>
@@ -146,13 +146,48 @@ const TeamPage = () => {
                   <h3 className="text-2xl mt-4 ctab:text-center">Created By: {createdBy?.name}</h3>
                 </div>
 
-                <Button className="w-fit text-md mt-6 ctab:mx-auto">Request to Join</Button>
+                <div className="flex justify-center gap-4 flex-wrap">
+
+                  <Button className="w-fit text-md">Request to Join</Button>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>Edit</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Team</DialogTitle>
+                        <div>
+                          {/* give edit team form content here*/}
+                        </div>
+                      </DialogHeader>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>Manage Team Members</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogContent>Manage Team Members</DialogContent>
+                        </DialogHeader>
+                        <div>
+                          {/* give manage team content here*/}
+                        </div>
+                      </DialogContent>
+                    </DialogContent>
+                  </Dialog>
+
+                </div>
+
               </div>
             </div>
 
           </Card>
 
-          <div className="w-full border-2 rounded-xl p-3 mt-5">
+          <div className="w-full rounded-xl mt-5">
             <Tabs defaultValue="members">
               <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
                 <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>
@@ -170,10 +205,10 @@ const TeamPage = () => {
 
         </div >
 
-        <Accordion type="single" collapsible className="hidden ctab:flex mb-10">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-2xl w-[300px] ctab:w-[250px]">Upcoming Events</AccordionTrigger>
-            <AccordionContent>
+        <Accordion type="single" collapsible className="hidden ctab:flex w-full mb-10">
+          <AccordionItem value="item-1" className="w-full">
+            <AccordionTrigger className="text-2xl w-full border-2">Upcoming Events</AccordionTrigger>
+            <AccordionContent className="w-full">
               <UpcomingEventsCard events={events} mongoId={mongoId}></UpcomingEventsCard>
             </AccordionContent>
           </AccordionItem>
@@ -214,22 +249,18 @@ const TeamPage = () => {
 
 const UpcomingEventsCard = ({ events, mongoId }: { events: IEvent[] | null, mongoId: string }) => {
   return (
-    <Card className="bg-transparent max-w-[500px] ctab:p-0 w-fit max-h-[800px]">
+    <Card className="glass w-full">
       <CardHeader>
-        <CardTitle className="text-xl">Upcoming Events</CardTitle>
+        <CardTitle className="text-xl text-cyan-200">Upcoming Events</CardTitle>
       </CardHeader>
 
-      <CardContent className="">
+      <CardContent>
 
-        <Card className="border-0 overflow-y-scroll scrollbar-thin flex flex-col gap-3">
-          <CardContent>
-            {events?.map((event) => (
-              <EventCard key={event._id.toString()} event={event} mongoId={mongoId}></EventCard>
-            ))}
-          </CardContent>
-        </Card>
-
-
+        <div className="flex flex-col gap-2">
+          {events?.map((event) => (
+            <EventCard key={event._id.toString()} event={event} mongoId={mongoId}></EventCard>
+          ))}
+        </div>
 
       </CardContent>
     </Card >
@@ -239,7 +270,7 @@ const UpcomingEventsCard = ({ events, mongoId }: { events: IEvent[] | null, mong
 
 const EventCard = ({ event, mongoId }: { event: IEvent, mongoId: string }) => {
   return (
-    <div className="bg-transparent border-2 w-[300px] cphone:w-[210px] rounded-xl p-3">
+    <div className="bg-transparent w-full hover:bg-slate-700 hover:scale-[1.02] transition-all duration-200 min-w-[300px] cphone:w-[210px] rounded-xl p-3">
       <h1 className="text-purple-300 font-semibold text-2xl">{event.name}</h1>
       <p className="mt-3 text-lg">{new Date(event.date).toLocaleDateString()} at {event.time}</p>
       <p>SNT Building</p>
@@ -256,9 +287,9 @@ const EventCard = ({ event, mongoId }: { event: IEvent, mongoId: string }) => {
 
 const TeamMembersCard = ({ members }: { members: IUser[] | null }) => {
   return (
-    <Card className="mt-10 border-0">
+    <Card className="mt-10 bg-transparent border-0">
       <CardContent className="">
-        <div className="flex flex-wrap gap-7 ctab:justify-center">
+        <div className="flex flex-wrap gap-7 justify-center">
           {members?.map((member) => <MemberCard member={member} key={member._id.toString()}></MemberCard>)}
         </div>
       </CardContent>
@@ -267,14 +298,15 @@ const TeamMembersCard = ({ members }: { members: IUser[] | null }) => {
 }
 
 const MemberCard = ({ member }: { member: IUser }) => {
-  return (<Card className="w-fit hover:bg-accent cursor-pointer">
-    <CardContent className="mt-7">
-      <div className="flex gap-5 w-fit ctab:gap-5">
-        <img src={member.image} className="rounded-full h-10 w-10" alt="Profile picture of member" />
-        <h1 className="text-2xl capitalize ctab:text-xl">{member.name}</h1>
-      </div>
-    </CardContent>
-  </Card>)
+  return (
+    <Card className="w-fit hover:[glass] hover:bg-slate-700 border-0 cursor-pointer bg-transparent">
+      <CardContent className="mt-7">
+        <div className=" w-fit ctab:gap-5">
+          <h1 className="text-2xl capitalize ctab:text-xl">{member.name}</h1>
+          <p className="text-sm">{member.email}</p>
+        </div>
+      </CardContent>
+    </Card>)
 }
 
 export default TeamPage;
