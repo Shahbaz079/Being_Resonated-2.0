@@ -306,10 +306,10 @@ const EventPage = () => {
 
 
   return (
-    <div className="p-12 bg min-h-screen flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
+    <div className="bg min-h-screen flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
 
       <SubHeader></SubHeader>
-      <Card className="glass mt-20">
+      <Card className="glass mt-10">
         <CardHeader>
           <div className="relative h-fit w-fit">
             {isLeader &&
@@ -471,7 +471,7 @@ const EventPage = () => {
             <TabsContent value="Organisers" className="mt-7">
               <div className="flex gap-3 flex-wrap">
                 {leaders?.map((leader) => (
-                  <OrganiserCard key={leader.toString()} number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
+                  <OrganiserCard key={leader.email.toString()} number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
                 ))}
               </div>
             </TabsContent>
@@ -483,7 +483,20 @@ const EventPage = () => {
             <TabsContent value="Members"></TabsContent>
           </Tabs>
         </CardHeader>
+      </Card>
 
+      <Card className="glass">
+        <CardHeader>
+          <CardTitle className="text-2xl text-cyan-200">Rewards</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4 flex-wrap">
+            <PrizeCard position="Winner" content="Asus Keyboard + Mouse + 5000 Rs"></PrizeCard>
+            <PrizeCard position="First Runner Up" content="Asus Keyboard + Mouse"></PrizeCard>
+            <PrizeCard position="Second Runner Up" content="2 month Leetcode Prime"></PrizeCard>
+            <PrizeCard position="Fastest Coding Team" content="Headphones"></PrizeCard>
+          </div>
+        </CardContent>
       </Card>
 
 
@@ -507,7 +520,7 @@ const AttachmentCard = ({ name }: { name: string }) => (
 )
 
 const PrizeCard = ({ position, content }: { position: string, content: string }) => (
-  <div className="border-2 p-4 hover:bg-accent rounded-xl flex items-center w-fit max-w-[400px] gap-4">
+  <div className="hover:bg-slate-700 border-2 border-cyan-700 p-4 cursor-pointer rounded-xl flex items-center w-fit max-w-[400px] gap-4">
     <div>
       <h1 className="text-2xl text-wrap">{position}</h1>
       <p className="mt-2 text-gray-400">{content}</p>
