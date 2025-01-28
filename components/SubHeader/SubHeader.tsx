@@ -64,16 +64,14 @@ const SubHeader = () => {
 
   return (
     <div className='relative top-0 left-[4%] w-[60vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] my-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
-    
-      
-         
-            <Link href={'/'}>
-              <Home className="w-6 h-6" />
-            </Link>
-        
 
-        
-   
+      <Link href={'/'}>
+        <Home className="w-6 h-6" />
+      </Link>
+
+
+
+
 
       <div className="mx-[5%]">
         <TooltipProvider>
