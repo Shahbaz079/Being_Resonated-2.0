@@ -189,7 +189,7 @@ const ProfilePage = () => {
           <MdOutlineModeEditOutline className="w-6 h-6" />
         </button> : null}
 
-        <div className="glass rounded-xl w-full text-gray-300 h-fit mt-[10vh] flex flex-col max-w-[600px] items-center">
+        <div className="glass rounded-xl w-full text-gray-300 h-fit mt-[10vh] flex flex-col max-w-[600px] items-center py-2">
 
           <div className="w-fit h-fit mt-3">
             <Image className="object-fill rounded-full" alt={name} src={image} width={120} height={120} />
@@ -223,7 +223,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <Card className="bg-transparent border-0 mt-7 p-0">
+        <Card className="bg-transparent border-0 w-full mt-7 p-0">
           <CardHeader className="p-0">
             <Tabs defaultValue="Posts">
               <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
