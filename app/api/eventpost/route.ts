@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const events = db.collection('events');
     const teams = db.collection('teams');
 
-    const { title,name, image, caption, createdBy, Location, time, date, eventId } = body;
+    const { title,name, image,imgThumbnail, caption, createdBy, Location, time, date, eventId } = body;
 
     const team = await teams.findOne({ _id: new ObjectId(title as string) });
 
@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
       from:team.name,
       
       image,
+      imgThumbnail,
       caption,
       createdBy: new ObjectId(createdBy as string),
       Location,

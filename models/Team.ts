@@ -7,6 +7,7 @@ const TeamSchema=new mongoose.Schema({
   members:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"User"}],
   leaders:[{type:mongoose.Schema.Types.ObjectId,required:true,ref:"User"}],
   image:{type:String,required:false},
+  imgThumbnail:{type:String,required:false},
   createdBy:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"User"},
   events:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Event"}],
   posts:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"TeamPost"}],

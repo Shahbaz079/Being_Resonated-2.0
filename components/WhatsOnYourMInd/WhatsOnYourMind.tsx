@@ -53,7 +53,7 @@ const WhatsOnYourMind = () => {
                 if (response.url) {
                     const res = await fetch(`/api/userpost`, {
                         method: "POST",
-                        body: JSON.stringify({ image: response.url, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
                     })
                     if (res.ok) {
                         toast.success("Posted successfully")

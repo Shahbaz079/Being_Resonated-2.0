@@ -10,6 +10,7 @@ const userSchema=new mongoose.Schema({
   gradYear:{type:Number,required:false},
   password:{type:String,select:false},
   image:{type:String,required:false},
+  imgThumbnail:{type:String,required:false},
   interests:[{type:String,required:false}],
   teams:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Team"}],
  // assignedWorks: [ {

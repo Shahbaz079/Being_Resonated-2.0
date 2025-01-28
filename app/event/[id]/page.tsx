@@ -109,7 +109,7 @@ const EventPage = () => {
 
       const response = await fetch(`/api/upload?id=${eventId}&source=event`, {
         method: "POST",
-        body: JSON.stringify({ imgUrl: res.url })
+        body: JSON.stringify({ imgUrl: res.url,thumbUrl:res.thumbnailUrl })
       })
 
       if (response.ok) {

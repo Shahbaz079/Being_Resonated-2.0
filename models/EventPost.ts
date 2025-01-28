@@ -7,6 +7,7 @@ const EventPostSchema = new mongoose.Schema(
     from:{type:String,required:true},
     caption:{type:String,required:false},
     Image: { type: String, required: true },
+    imgThumbnail: { type: String, required: false },
     likes: { type: Number, default: 0 },
     location: { type: String, required: true },
     date: { type: Date, required: true },

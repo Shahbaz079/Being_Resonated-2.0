@@ -36,14 +36,14 @@ export async function POST(req: NextRequest) {
     
     const users = db.collection('users');
     
-    const { name, image, caption, createdBy } = body;
+    const { name, image,imgThumbnail, caption, createdBy } = body;
     
     const user = await users.findOne({ _id: new ObjectId(createdBy as string) }); 
     
     if (!user) { 
       return NextResponse.json({ error: 'User not found' }, { status: 404 }); } 
       
-      const post = { name, image, caption, createdBy: new ObjectId(createdBy as string), 
+      const post = { name, image, caption,imgThumbnail, createdBy: new ObjectId(createdBy as string), 
         createdAt: new Date(), 
         updatedAt: new Date() 
       };

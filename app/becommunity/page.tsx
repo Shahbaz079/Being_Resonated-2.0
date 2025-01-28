@@ -23,6 +23,7 @@ export interface EventPost {
   title: string;
   caption?: string;
   image: string;
+  imgThumbnail?: string;
   likes?: number; // Default value is 0
   location: string;
   date: Date;

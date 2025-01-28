@@ -1,12 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+
 import { NextRequest, NextResponse } from 'next/server';
-import multer from 'multer';
-import { Readable } from 'stream';
-import { promises as fsPromises } from 'fs';
-import { join } from 'path';
-import { nanoid } from 'nanoid';
-import upload from '@/lib/multer';
-import connectDB from '@/config/db';
+
 import { MongoClient ,ObjectId} from 'mongodb';
  // Ensure you have this function set up
   // Ensure you have a corresponding model
@@ -31,7 +25,7 @@ import { MongoClient ,ObjectId} from 'mongodb';
 export async function POST(req: NextRequest) {
   console.log(req)
 
-  const { imgUrl } = await req.json();
+  const { imgUrl ,thumbnailUrl} = await req.json();
 
   const url = new URL(req.url);
   const id = url.searchParams.get('id') as string;
@@ -67,7 +61,7 @@ let client: MongoClient | null = null;
 
     const events = db.collection('events');
 
-    const updatedEvent = await events.updateOne({ _id: new ObjectId(id) }, { $set: { image: imgUrl } })
+    const updatedEvent = await events.updateOne({ _id: new ObjectId(id) }, { $set: { image: imgUrl,imgThumbnail:thumbnailUrl } })
 
     if (!updatedEvent) { 
       return NextResponse.json({ error: 'Event not found.' },
@@ -78,7 +72,7 @@ let client: MongoClient | null = null;
         }else{
  const teams = db.collection('teams');
 
-    const updatedTeam = await teams.updateOne({ _id: new ObjectId(id) }, { $set: { image: imgUrl } })
+    const updatedTeam = await teams.updateOne({ _id: new ObjectId(id) }, { $set: { image: imgUrl,imgThumbnail:thumbnailUrl } })
 
     if (!updatedTeam) { 
       return NextResponse.json({ error: 'Team not found.' },

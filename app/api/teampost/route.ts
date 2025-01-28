@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
    
     const teams = db.collection('teams');
 
-    const { title, image, caption, createdBy, teamId } = body;
+    const { title, image,imgThumbnail, caption, createdBy, teamId } = body;
 
     
 
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       title,
       from:teamId,
       image,
+      imgThumbnail,
       caption,
       createdAt: new Date(), 
       updatedAt: new Date() ,

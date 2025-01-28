@@ -4,6 +4,7 @@ const EventSchema=new mongoose.Schema({
   name:{type:String,required:true},
   leaders:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"User"}],
   image:{type:String,required:true},
+  imgThumbnail:{type:String,required:false},
   team:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"Team"},
   date:{type:Date,required:true},
   members:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"User"}],
