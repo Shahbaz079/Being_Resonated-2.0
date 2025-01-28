@@ -1,23 +1,17 @@
 'use client'
 
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople"
-import { useUser } from "@clerk/nextjs"
+
 import { useEffect, useState } from "react"
 import { ObjectId } from 'mongodb';
-import Downbar from "@/components/Downbar/Downbar";
+
 import EventCard from "@/components/eventCard/EventCard";
 import PostCard from "@/components/eventCard/PostCard";
 import { UserPost } from "@/components/eventCard/PostCard";
 ;
-import SubHeader from "@/components/SubHeader/SubHeader"
+
 import "./becommunity.css";
-import { IoIosSend } from "react-icons/io";
-import { FaImage } from "react-icons/fa";
-import { useEdgeStore } from "@/lib/edgestore";
-import { toast } from "react-toastify";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDropZone";
-import { Divide } from "lucide-react";
+
 import Layout from "@/components/customLayouts/Layout";
 import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
 import { useSearchParams } from "next/navigation";
@@ -72,13 +66,15 @@ const BeCommunity = () => {
   }, []);
 
   useEffect(() => {
+    if(!eventPosts || !userPosts) return;
     const finalPosts = [...eventPosts, ...userPosts];
     finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
     setFinalPosts(finalPosts);
-  }, [])
+  }, [eventPosts, userPosts])
 
 
   console.log("eventposts", eventPosts)
+  console.log(finalPosts,"finalposts")
 
   return (
     <Layout>
@@ -105,7 +101,7 @@ const BeCommunity = () => {
 
 
 
-          <div className="cbecomn:mt-32 h-fit justify-between cbecom:justify-center flex gap-3 p-5 cphone:px-2">
+          <div className=" h-fit justify-between cbecom:justify-center flex gap-3 p-5 cphone:px-2">
 
             {render === "events" ? <div className="w-[500px] glass rounded-2xl h-fit min-w-[300px] mt-3 cbecomn:hidden">
               <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Upcoming Events</h1>

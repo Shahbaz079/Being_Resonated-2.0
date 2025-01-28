@@ -25,7 +25,7 @@ const Header = () => {
 const mongoId=user?.publicMetadata.mongoId as string
 console.log(mongoId)
   return (
-    <header className="absolute top-0 left-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between ">
+    <header className="absolute top-0 right-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between ">
       <div className="mx-10">
         
       </div>

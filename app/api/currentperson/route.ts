@@ -69,6 +69,7 @@ if (!dbName) {
                        const users = db.collection('users'); 
                        const events=db.collection('events');
                        const teams=db.collection('teams');
+                       const userPosts=db.collection('userposts');
 
 
 
@@ -80,6 +81,7 @@ if (!dbName) {
 
                           let affiliatedEvents: any[] = []; 
                           let affiliatedTeams:any[]=[];
+                          let posts:any[]=[];
                           
                           if (user?.events) { 
                             const eventIds = user.events
@@ -92,11 +94,16 @@ if (!dbName) {
                             
                             affiliatedTeams = await teams.find({ _id: { $in: teamIds } }).toArray(); 
                           }
+                          if(user?.posts){
+                            const postIds=user.posts;
+                            posts=await userPosts.find({_id:{$in:postIds}}).toArray();
+                          }
 
                           
                           
                          user.events=affiliatedEvents;
                          user.teams=affiliatedTeams;
+                         user.posts=posts;
 
                           return NextResponse.json(user);
                           } catch (error) {

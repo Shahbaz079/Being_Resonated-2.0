@@ -71,3 +71,63 @@ export async function PUT(req:NextRequest){
   }
 }
 
+
+   export async function GET(request: NextRequest) {
+
+              let client: MongoClient | null = null;
+               try { 
+                const { searchParams } = new URL(request.url);
+                const id = searchParams.get('id') as string;
+
+                const type=searchParams.get('type') as string;
+
+                  // Extract `id` from query params
+                  if (!ObjectId.isValid(id)) { 
+                   return NextResponse.json({ error: 'Invalid team ID' }, { status: 400 }); }
+                    client = new MongoClient(uri!);
+                     // Use non-null assertion to ensure uri is defined await
+                      client.connect();
+                       const db = client.db(dbName!); 
+                       // Use non-null assertion to ensure dbName is defined 
+                       const users = db.collection('users'); 
+                      
+                      
+                       const userPosts=db.collection('userposts');
+
+
+
+                       const user = await users.findOne({ _id: new ObjectId(id) }, {projection:{name:1,desrciption:1,email:1,gradYear:1,interests:1,image:1,posts:1}});
+                        if (!user) {
+                          return NextResponse.json({ error: 'User not found' }, 
+                           { status: 404 });
+                          }
+
+                          let affiliatedEvents: any[] = []; 
+                          let affiliatedTeams:any[]=[];
+                          let posts:any[]=[];
+                          
+                        
+                          
+                          if(user?.posts){
+                            const postIds=user.posts;
+                            posts=await userPosts.find({_id:{$in:postIds}}).toArray();
+                          }
+
+                          
+                          
+                         user.events=affiliatedEvents;
+                         user.teams=affiliatedTeams;
+                         user.posts=posts;
+
+                          return NextResponse.json(user);
+                          } catch (error) {
+                            console.error('Error:', error);
+                             return NextResponse.json({ error: 'Failed to fetch currrent User' },
+                                { status: 500 }); } 
+                                finally {
+
+                                 if (client) {
+                                   await client.close(); 
+                                  }
+                                 } }
+

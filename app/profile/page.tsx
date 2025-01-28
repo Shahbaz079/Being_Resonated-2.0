@@ -18,6 +18,8 @@ import AllInterests from "./allInterests";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
+import Layout from "@/components/customLayouts/Layout";
+import PostCard from "@/components/eventCard/PostCard";
 
 interface Team {
   _id: ObjectId;
@@ -36,9 +38,9 @@ const ProfilePage = () => {
   const params = useSearchParams();
   const id = params.get("id") as string;
 
-  const { user } = useUser();
+ 
   const { isLoaded } = useSession();
-  const mId = user?.publicMetadata.mongoId as string || id as string;
+  const mId = id as string;
   console.log(`mongoId:${mId} and id:${id}`);
   // const [user, setUser] = useState<any>(null); // Type appropriately
   const [name, setName] = useState<string>("");
@@ -56,6 +58,9 @@ const ProfilePage = () => {
 
   const [edit, setEdit] = useState<boolean>(false);
   const [showAllInterests, setShowAllInterests] = useState<boolean>(false);
+  const [owner, setOwner] = useState<boolean>(true);
+
+  const [posts, setPosts] = useState<any[]>([]);
 
 
 
@@ -83,7 +88,12 @@ const ProfilePage = () => {
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/currentperson?id=${mId}`);
+      const response = await fetch(`/api/user?id=${mId}`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
       const data = await response.json();
       setLoading(false);
       console.log(data);
@@ -97,10 +107,13 @@ const ProfilePage = () => {
       setGradYear(data.gradYear || "");
       setimage(data.image || "");
       setDescription(data.description || "Tell us about yourself");
+      setPosts(data.posts || []);
     } catch (error) {
       console.error('Error fetching user:', error);
     }
   };
+
+  
 
 
 
@@ -109,7 +122,19 @@ const ProfilePage = () => {
     fetchUserData();
     fetchTeamData();
   },
-    [isLoaded, user, mId]);
+    [isLoaded, mId]);
+
+
+
+    useEffect(() => {
+      if (isLoaded && mId) {
+        const ownerId=user?.publicMetadata.mongoId;
+        setOwner(ownerId===mId);
+
+      }
+      
+         
+    }, [isLoaded]);
 
 
 
@@ -117,6 +142,8 @@ const ProfilePage = () => {
   const [inputValue, setInputValue] = useState<string>('');
 
   const predefinedOptions = ['Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models', "coding", "Music", "Travel", "Content Creation", "Social Media Influencing", "Enterprenuership", "Socail Activity", "Body Building", "Robotics", "Cooking", "Blogging", "Writing", "Reading", "Gaming", "Sports", "Drama", "Dance", "Singing", "Crafting", "Drawing", "Painting", "Photography", "Videography", "Editing", "Designing", "Fashion", "Modelling", "Acting", "Anchoring", "Public Speaking", "Debating", "MUN", "Hackathons", "Competitive Coding", "Web Development", "App Development", "Game Development", "Graphic Designing", "UI/UX Designing", "Digital Marketing", "Content Writing", "Blogging", "Vlogging", "Social Media Influencing", "Entrepreneurship", "Startup", "Finance", "Investment", "Trading", "Economics", "Marketing", "Management", "HR", "Law", "Legal", "Politics", "Public Policy", "International Relations", "History", "Geography", "Psychology", "Sociology", "Philosophy", "Literature", "Languages", "Science", "Mathematics", "Physics", "Chemistry", "Biology", "Astronomy", "Astrophysics", "Medicine", "Engineering", "Computer Science", "Artificial Intelligence", "Machine Learning", "Data Science", "Cyber Security", "Blockchain", "Cloud Computing", "IoT", "Robotics", "Automation", "Ethical Hacking", "Game Development", "Web Development", "App Development", "Software Development", "Hardware Development", "Network Security", "Database Management", "System Administration", "DevOps", "Full Stack Development", "Frontend Development", "Backend Development", "Mobile Development", "Desktop Development", "Embedded Development", "Cloud Development", "AI Development", "ML Development", "Data Analysis", "Data Engineering", "Data Mining", "Data Visualization", "Big Data", "Business Intelligence", "Business Analysis", "Business Development", "Product Management", "Project Management", "Quality Assurance", "Quality Control", "Testing", "Technical Support", "Customer Support", "Customer Success", "Sales", "Marketing", "Advertising", "Public Relations", "Content Marketing", "Email Marketing", "Social Media Marketing", "SEO", "SEM", "SMM"];
+
+  const {user} = useUser();
 
   const filteredOptions = predefinedOptions.filter(option =>
     option.toLowerCase().includes(inputValue.toLowerCase()));
@@ -126,7 +153,7 @@ const ProfilePage = () => {
    // console.log(changedGradYear);
 
     const res = fetch(`/api/user?id=${mId}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         "content-Type": 'application/json',
       },
@@ -154,9 +181,10 @@ const ProfilePage = () => {
 
 
   return (
+    <Layout>
     <div className="h-fit mx-[5vw]">
 
-      {!loading && !edit ? <button onClick={() => setEdit(!edit)} className={` absolute top-[15vh] right-[10vw] w-8 h-8 bg-trasparent rounded-full`}>
+      {!loading && owner && !edit ? <button onClick={() => setEdit(!edit)} className={` absolute top-[15vh] right-[10vw] w-8 h-8 bg-trasparent rounded-full`}>
         <MdOutlineModeEditOutline className="w-6 h-6" />
       </button> : null}
 
@@ -187,7 +215,7 @@ const ProfilePage = () => {
             </div>
 
             <p className="mt-5 cphone:text-[12px]">{description}</p>
-            <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-20">Create Team</Link>
+          {owner &&  <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-20">Create Team</Link>}
           </div>
 
           <div style={{ "--position": 3 } as React.CSSProperties} className="hidden cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl   flex-col justify-center z-20">
@@ -202,18 +230,23 @@ const ProfilePage = () => {
           <Tabs defaultValue="Posts">
             <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
               <TabsTrigger value="Posts" className="text-lg">Posts</TabsTrigger>
-              <TabsTrigger value="Participations" className="text-lg">Participations</TabsTrigger>
+              {owner && <TabsTrigger value="Participations" className="text-lg">Participations</TabsTrigger> }
             </TabsList>
             <TabsContent value="Posts">
               <div>
                 <WhatsOnYourMind></WhatsOnYourMind>
+                {posts?.map((userPost) => (
+                  <div className="" key={userPost._id?.toString()}>
+                    <PostCard post={userPost} />
+                  </div>
+                ))}
               </div>
             </TabsContent>
-            <TabsContent value="Members">
+          { owner && <TabsContent value="Members">
               <div>
                 {/* render participations here */}
               </div>
-            </TabsContent>
+            </TabsContent> }
           </Tabs>
         </CardHeader>
 
@@ -222,6 +255,7 @@ const ProfilePage = () => {
       {edit ? <Form setEdit={setEdit} handleUpdate={handleUpdate}  currentInterests={interests}></Form> : null}
       {showAllInterests ? <AllInterests interests={interests} name={name} setShowAllInterests={setShowAllInterests}></AllInterests> : null}
     </div>
+    </Layout>
   )
 }
 
