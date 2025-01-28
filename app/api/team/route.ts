@@ -17,7 +17,7 @@ if (!dbName) {
 export async function POST(request: NextRequest) {
    let client: MongoClient | null = null; 
    try { 
-    const { name, description, deadline, members, leaders, timage,createdBy } = await request.json();
+    const { name, description, members, leaders, image,createdBy,requests } = await request.json();
      client = new MongoClient(uri!);
       // Use non-null assertion to ensure uri is defined 
       await client.connect(); 
@@ -26,13 +26,14 @@ export async function POST(request: NextRequest) {
        const teams = db.collection('teams'); 
        
        const team = { name, description, 
-        deadline: deadline ? new Date(deadline) : null,
+        
         members: members.map((member: { _id: string }) => new ObjectId(member._id)),
         leaders: leaders.map((leader: { _id: string }) => new ObjectId(leader._id)),
-           timage,
+        requests: requests.map((request: { _id: string }) => new ObjectId(request._id)),
+           image,
            createdAt: new Date(), 
            updatedAt: new Date() ,
-           createdBy:new ObjectId(createdBy) }; 
+           createdBy:new ObjectId(createdBy as string) }; 
           const result = await teams.insertOne(team);
            if (result.acknowledged) { 
             // Perform additional actions if needed
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
                           } } }
 
 
-                          export async function GET(request: NextRequest) {
+                        export async function GET(request: NextRequest) {
                              let client: MongoClient | null = null;
                               try { 
                                const id = request.nextUrl.searchParams.get('id') as string;
@@ -110,3 +111,99 @@ export async function POST(request: NextRequest) {
                                                 if (client) { await client.close(); } } }
 
 
+
+export async function PUT(request: NextRequest) {
+
+  const teamId = request.nextUrl.searchParams.get('id');
+  const type=request.nextUrl.searchParams.get('type');
+
+  const {userId, name, description, members, leaders, image,  team, time,requests } = await request.json();
+
+  let client: MongoClient | null = null;
+
+
+  if(!teamId){
+    return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
+  }
+
+  
+  try {
+    client = new MongoClient(uri!);
+    await client.connect();
+    const db = client.db(dbName!);
+    const teams = db.collection('teams');
+    const users = db.collection('users');
+
+
+    const team = await teams.findOne({ _id: new ObjectId(teamId as string) });
+
+
+
+    if(!team){
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 });
+    }
+
+    if(type==='join'){
+    
+     
+      
+      const user = await users.findOne({ _id: new ObjectId(userId as string) });
+
+      if(!user){
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+
+      const updatedRequests = team.requests || [];
+      updatedRequests.push(new ObjectId(userId as string));
+
+      const result = await teams.updateOne(
+        { _id: new ObjectId(teamId as string) },
+        { $set: { requests: updatedRequests } }
+      );
+
+      if(result.acknowledged){
+        const requestTeams=user.requestTeams || [];
+        requestTeams.push(new ObjectId(teamId as string));
+        await users.updateOne(
+          { _id: new ObjectId(userId as string) },
+          { $set: { requestTeams } }
+        );
+        return NextResponse.json({ message: 'Request sent' });
+      }else{
+        return NextResponse.json({ error: 'Failed to sent requests' }, { status: 500 });
+      }
+
+    }
+
+    const updatedTeam = {
+      name: name || team.name,
+      description: description || team.description,
+      
+      members: members || team.members,
+      leaders: leaders || team.leaders,
+      image: image || team.image,
+      
+      
+     
+      
+    
+      requests:requests?.map((p:any)=>new ObjectId(p._id as string)) || team.requests
+    }
+
+    const result = await teams.updateOne(
+      { _id: new ObjectId(teamId as string) },
+      { $set: updatedTeam }
+    );
+
+    if(result.acknowledged){
+      return NextResponse.json(updatedTeam);
+    }else{
+      return NextResponse.json({ error: 'Failed to update Event' }, { status: 500 });
+    }
+    
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}

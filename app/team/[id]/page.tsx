@@ -61,17 +61,14 @@ const TeamPage = () => {
   const [createdBy, setCreatedBy] = useState<IUser | null>();
   const [leaders, setLeaders] = useState<IUser[]>();
   const [teamName, setTeamName] = useState<string>("")
-  const [modal, setModal] = useState(false);
+ 
   const [events, setEvents] = useState<IEvent[] | null>([])
 
-  const modalCloseHandler = () => {
-    setModal(false);
-  }
+  const [requests, setRequests] = useState<IUser[] >([])
 
-  const [eventModal, setEventModal] = useState(false);
-  const eventModalCloseHandler = () => {
-    setEventModal(false);
-  }
+  
+
+  
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -99,6 +96,23 @@ const TeamPage = () => {
 
     TeamHandler();
   }, [])
+
+  const joinHandler = async () => {
+    const response = await fetch(`/api/join?id=${mongoId}&type=join`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const data = await response.json();
+    if (response) {
+              toast.success("Request sent successfully")
+            } else {
+              toast.error("Request failed")
+            }
+  }
+
 
   return (
     <div className="bg min-h-screen">
@@ -146,10 +160,10 @@ const TeamPage = () => {
                   <h3 className="text-2xl mt-4 ctab:text-center">Created By: {createdBy?.name}</h3>
                 </div>
 
-                <Button className="w-fit text-md mt-6 ctab:mx-auto">Request to Join</Button>
-              </div>
-            </div>
+                <Button onClick={()=>joinHandler()} className="w-fit text-md mt-6 ctab:mx-auto">Request to Join</Button>
 
+                </div>
+                </div>
           </Card>
 
           <div className="w-full border-2 rounded-xl p-3 mt-5">
