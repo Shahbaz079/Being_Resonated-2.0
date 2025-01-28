@@ -20,6 +20,7 @@ import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDrop
 import { Divide } from "lucide-react";
 import Layout from "@/components/customLayouts/Layout";
 import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
+import { useSearchParams } from "next/navigation";
 
 
 export interface EventPost {
@@ -47,7 +48,7 @@ const BeCommunity = () => {
   const [render, setRender] = useState<"posts" | "events" | "users">("posts");
   const [finalPosts, setFinalPosts] = useState<any[]>([]);
 
-  const searchParams= new URLSearchParams(window.location.search)
+  const searchParams= useSearchParams();
   const mongoId = searchParams.get("id")
 
   useEffect(() => {
