@@ -86,13 +86,13 @@ const CreateTeam = () => {
     event.preventDefault(); // Prepare data
 
 
-    if (!name || !description || !deadline || !members || !leaders || !id) {
+    if (!name || !description|| !members || !leaders || !id) {
       toast.error('Please fill in all required fields.');
 
       return;
     }
 
-    const data = { name, description, deadline, members, leaders, createdBy: id };
+    const data = { name, description, members, leaders, createdBy: id };
     // Send data to the API
 
     try {
@@ -107,7 +107,7 @@ const CreateTeam = () => {
 
         toast.success('Team created successfully!');
 
-        window.location.href = `/team/${resData?._id}`;
+        window.location.href = `/becommunity?id=${id}}`;
 
       } else {
         toast.error('Failed to create team!');
@@ -224,11 +224,7 @@ const CreateTeam = () => {
               onChange={(e) => setDescription(e.target.value)} required />
           </div>
 
-          <div className="">
-            <Label htmlFor="deadline">Deadline</Label>
-            <Input className="mt-1" type="date" id="deadline" value={deadline}
-              onChange={(e) => setDeadline(e.target.value)} />
-          </div>
+          
 
 
 

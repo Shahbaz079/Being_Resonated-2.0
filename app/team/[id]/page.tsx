@@ -61,17 +61,14 @@ const TeamPage = () => {
   const [createdBy, setCreatedBy] = useState<IUser | null>();
   const [leaders, setLeaders] = useState<IUser[]>();
   const [teamName, setTeamName] = useState<string>("")
-  const [modal, setModal] = useState(false);
+ 
   const [events, setEvents] = useState<IEvent[] | null>([])
 
-  const modalCloseHandler = () => {
-    setModal(false);
-  }
+  const [requests, setRequests] = useState<IUser[] >([])
 
-  const [eventModal, setEventModal] = useState(false);
-  const eventModalCloseHandler = () => {
-    setEventModal(false);
-  }
+  
+
+  
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -99,6 +96,23 @@ const TeamPage = () => {
 
     TeamHandler();
   }, [])
+
+  const joinHandler = async () => {
+    const response = await fetch(`/api/join?id=${mongoId}&type=join`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const data = await response.json();
+    if (response) {
+              toast.success("Request sent successfully")
+            } else {
+              toast.error("Request failed")
+            }
+  }
+
 
   return (
     <div className="bg min-h-screen">
