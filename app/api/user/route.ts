@@ -92,7 +92,7 @@ export async function PUT(req:NextRequest){
                        const users = db.collection('users'); 
                       
                       
-                       const userPosts=db.collection('userposts');
+                       const userPosts = db.collection('userposts');
 
 
 
@@ -109,7 +109,8 @@ export async function PUT(req:NextRequest){
                           
                           if(user?.posts){
                             const postIds=user.posts;
-                            posts=await userPosts.find({_id:{$in:postIds}}).toArray();
+                            const finalIds=postIds.map((id:string)=>new ObjectId(id));
+                            posts=await userPosts.find({_id:{$in:finalIds}}).toArray();
                           }
 
                           
