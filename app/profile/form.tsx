@@ -3,16 +3,16 @@ import { RxCross2 } from "react-icons/rx"
 
 interface PropsType {
     setEdit: Dispatch<SetStateAction<boolean>>,
-    handleUpdate: (yaer: number, interests: string[]) => void,
-    currentGradYear: number,
+    handleUpdate: ( interests: string[]) => void,
+   // currentGradYear: number,
     currentInterests: string[],
 }
 
 const predefinedOptions = ['Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models', "coding", "Music", "Travel", "Content Creation", "Social Media Influencing", "Enterprenuership", "Socail Activity", "Body Building", "Robotics", "Cooking", "Blogging", "Writing", "Reading", "Gaming", "Sports", "Drama", "Dance", "Singing", "Crafting", "Drawing", "Painting", "Photography", "Videography", "Editing", "Designing", "Fashion", "Modelling", "Acting", "Anchoring", "Public Speaking", "Debating", "MUN", "Hackathons", "Competitive Coding", "Web Development", "App Development", "Game Development", "Graphic Designing", "UI/UX Designing", "Digital Marketing", "Content Writing", "Blogging", "Vlogging", "Social Media Influencing", "Entrepreneurship", "Startup", "Finance", "Investment", "Trading", "Economics", "Marketing", "Management", "HR", "Law", "Legal", "Politics", "Public Policy", "International Relations", "History", "Geography", "Psychology", "Sociology", "Philosophy", "Literature", "Languages", "Science", "Mathematics", "Physics", "Chemistry", "Biology", "Astronomy", "Astrophysics", "Medicine", "Engineering", "Computer Science", "Artificial Intelligence", "Machine Learning", "Data Science", "Cyber Security", "Blockchain", "Cloud Computing", "IoT", "Robotics", "Automation", "Ethical Hacking", "Game Development", "Web Development", "App Development", "Software Development", "Hardware Development", "Network Security", "Database Management", "System Administration", "DevOps", "Full Stack Development", "Frontend Development", "Backend Development", "Mobile Development", "Desktop Development", "Embedded Development", "Cloud Development", "AI Development", "ML Development", "Data Analysis", "Data Engineering", "Data Mining", "Data Visualization", "Big Data", "Business Intelligence", "Business Analysis", "Business Development", "Product Management", "Project Management", "Quality Assurance", "Quality Control", "Testing", "Technical Support", "Customer Support", "Customer Success", "Sales", "Marketing", "Advertising", "Public Relations", "Content Marketing", "Email Marketing", "Social Media Marketing", "SEO", "SEM", "SMM"];
 
 
-const Form = ({ setEdit, handleUpdate, currentGradYear, currentInterests }: PropsType) => {
-    const [gradYear, setGradYear] = useState<number>(currentGradYear);
+const Form = ({ setEdit, handleUpdate, currentInterests }: PropsType) => {
+  //  const [gradYear, setGradYear] = useState<number>(currentGradYear);
     const [interests, setInterests] = useState<string[]>(currentInterests);
     const [currentInterest, setCurrentInterest] = useState<string>(""); // For the interest user is currently typing.
     const [userDescription, setUserDescription] = useState<string>();
@@ -41,12 +41,12 @@ const Form = ({ setEdit, handleUpdate, currentGradYear, currentInterests }: Prop
 
                 <h1 className="text-3xl mb-[30px] mt-1">Edit Profile</h1>
                 <div className="px-3 flex flex-col gap-10 h-max-full overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded scrollbar-track-black scrollbar-thumb-blue-900">
-                    <div>
+              {   /*   <div>
                         <label htmlFor="gradYear" className="ml-1">Graduation Year</label>
                         <input type="number" name="gradYear" placeholder="graduation year" className="mt-1 h-10 w-full self-center rounded-xl p-3"
                             value={gradYear}
                             onChange={(e) => setGradYear(Number(e.target.value))} />
-                    </div>
+                    </div>*/}
 
                     <div className="relative">
                         <label htmlFor="interests" className="ml-1">Select Interests</label>
@@ -74,7 +74,7 @@ const Form = ({ setEdit, handleUpdate, currentGradYear, currentInterests }: Prop
                     </div>
 
 
-                    <button className="w-20 p-2 rounded-xl self-end bg-green-900" type="submit" onClick={() => handleUpdate(gradYear, interests)}>Save</button>
+                    <button className="w-20 p-2 rounded-xl self-end bg-green-900" type="submit" onClick={() => handleUpdate( interests)}>Save</button>
                 </div >
 
             </form >

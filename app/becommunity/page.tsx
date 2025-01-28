@@ -4,12 +4,12 @@ import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople"
 import { useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"
 import { ObjectId } from 'mongodb';
-import Downbar from "@/components/Downbar/Downbar";
+
 import EventCard from "@/components/eventCard/EventCard";
 import PostCard from "@/components/eventCard/PostCard";
 import { UserPost } from "@/components/eventCard/PostCard";
 ;
-import SubHeader from "@/components/SubHeader/SubHeader"
+
 import "./becommunity.css";
 import { IoIosSend } from "react-icons/io";
 import { FaImage } from "react-icons/fa";
@@ -17,8 +17,9 @@ import { useEdgeStore } from "@/lib/edgestore";
 import { toast } from "react-toastify";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDropZone";
-import { Divide } from "lucide-react";
+
 import Layout from "@/components/customLayouts/Layout";
+import { redirect } from "next/dist/server/api-utils";
 
 
 export interface EventPost {
@@ -44,13 +45,12 @@ const BeCommunity = () => {
   const [eventPosts, setEventPosts] = useState<EventPost[]>([]);
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [render, setRender] = useState<"posts" | "events" | "users">("posts");
+  const [finalPosts,setFinalPosts]=useState<any[]>([]);
 
-  const { user, isLoaded } = useUser();
-  const mongoId = user?.publicMetadata?.mongoId
+  const searchParams = new URLSearchParams(window.location.search);
+  const mongoId = searchParams.get("id");
   useEffect(() => {
-    if (!isLoaded || typeof window === "undefined") {
-      return;
-    }
+   
     const fetchPosts = async () => {
       const eventRes = await fetch("/api/eventpost", { method: "GET" });
       const userRes = await fetch("/api/userpost", { method: "GET" })
@@ -66,11 +66,12 @@ const BeCommunity = () => {
     }
     fetchPosts();
 
-  }, [isLoaded]);
+  }, []);
 
   useEffect(() => {
     const finalPosts = [...eventPosts, ...userPosts];
     finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
+    setFinalPosts(finalPosts);
   }, [])
 
 
@@ -78,7 +79,7 @@ const BeCommunity = () => {
 
   return (
     <Layout>
-  <div className="bg relative min-h-screen border-2">
+  <div className="bg relative min-h-screen ">
 
    
 
@@ -101,7 +102,7 @@ const BeCommunity = () => {
 
 
 
-      <div className="cbecomn:mt-32 h-fit justify-between cbecom:justify-center flex gap-3 p-5 cphone:px-2">
+      <div className=" h-fit justify-between cbecom:justify-center flex gap-3 p-5 cphone:px-2">
 
         {render === "events" ? <div className="w-[500px] glass rounded-2xl h-fit min-w-[300px] mt-3 cbecomn:hidden">
           <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Upcoming Events</h1>
@@ -118,17 +119,17 @@ const BeCommunity = () => {
         {render === "posts" ? <div className="posts mt-3 cbecomn:hidden">
           <div className="">
             <WhatsOnYourMind></WhatsOnYourMind>
-            {eventPosts.map((eventPost) => (
+            {finalPosts?.map((eventPost) => (
               <div className="" key={eventPost._id?.toString()}>
                 <PostCard post={eventPost} />
               </div>
 
             ))}
-            {userPosts.map((userPost) => (
+        { /*   {userPosts.map((userPost) => (
               <div className="" key={userPost._id?.toString()}>
                 <PostCard post={userPost} />
               </div>
-            ))}
+            ))}   */}
           </div>
         </div> : null}
 
@@ -187,7 +188,8 @@ const WhatsOnYourMind = () => {
       setMongoId(user.publicMetadata.mongoId as string)
       setUserName(user.fullName)
     }
-  }, [isLoaded, user])
+    
+  }, [])
 
   const handlePost = () => {
     console.log("clicked");
@@ -204,7 +206,7 @@ const WhatsOnYourMind = () => {
         if (response.url) {
           const res = await fetch(`/api/userpost`, {
             method: "POST",
-            body: JSON.stringify({ image: response.url, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+            body: JSON.stringify({ image: response.url, caption, createdBy:mongoId, name: userName }),
           })
           if (res.ok) {
             toast.success("Posted successfully")

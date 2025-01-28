@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 
 const userSchema=new mongoose.Schema({
   name:{type:String,required:true},
-  
+  description:{type:String,required:false},
   email:{type:String,required:true},
   dob:{type:Date,required:false},
   events:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Event"}],

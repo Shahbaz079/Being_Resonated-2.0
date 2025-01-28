@@ -15,6 +15,7 @@ import { SlOptions } from "react-icons/sl"
 import Image from "next/image";
 import Form from "./form";
 import AllInterests from "./allInterests";
+import Layout from "@/components/customLayouts/Layout";
 
 interface Team {
   _id: ObjectId;
@@ -33,31 +34,34 @@ const ProfilePage = () => {
   const params = useSearchParams();
   const id = params.get("id") as string;
 
-  const { user } = useUser();
-  const { isLoaded } = useSession();
-  const mId = user?.publicMetadata.mongoId as string || id as string;
+
+  const mId = id as string;
   console.log(`mongoId:${mId} and id:${id}`);
   // const [user, setUser] = useState<any>(null); // Type appropriately
   const [name, setName] = useState<string>("");
 
   const [email, setEmail] = useState<string>("");
   const [interests, setInterests] = useState<string[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
+  //const [teams, setTeams] = useState<Team[]>([]);
   //const [assignedWorks, setAssignedWorks] = useState<string[]>([]);
   const [birthDate, setBirthDate] = useState<Date>();
-  const [gradYear, setGradYear] = useState<number>(0);
+  const [gradYear, setGradYear] = useState<number>();
   const [image, setimage] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(true);
+  const [description, setDescription] = useState<string>("");
 
 
   const [edit, setEdit] = useState<boolean>(false);
   const [showAllInterests, setShowAllInterests] = useState<boolean>(false);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [participations, setParticipations] = useState<any[]>([]);
 
 
 
 
 
-  const fetchTeamData = async () => {
+
+{/**  const fetchTeamData = async () => {
     try {
       const res = await fetch(`/api/team/${mId}`,{
         method: 'GET',
@@ -75,7 +79,15 @@ const ProfilePage = () => {
 
   }
 
+   */}
 
+
+
+
+  useEffect(() => {
+    console.log("fetching data");
+
+    
   const fetchUserData = async () => {
     try {
       setLoading(true);
@@ -87,38 +99,41 @@ const ProfilePage = () => {
       setName(data.name || "");
       setEmail(data.email || "");
       setInterests(data.interests || []);
-      setTeams(data.teams || []);
+    //  setTeams(data.teams || []);
       // setAssignedWorks(data.assignedWorks || []); 
       setBirthDate(data.dob || "");
       setGradYear(data.gradYear || "");
       setimage(data.image || "");
+      setDescription(data.description || "Tell something about Yourself!");
+      setPosts(data.posts || []);
+      setParticipations(data.participations || []);
+
     } catch (error) {
       console.error('Error fetching user:', error);
     }
   };
 
 
-
-  useEffect(() => {
-    console.log("fetching data");
     fetchUserData();
-    fetchTeamData();
+  //  fetchTeamData();
   },
-    [isLoaded, user, mId]);
+    [ mId]);
 
 
 
 
   const [inputValue, setInputValue] = useState<string>('');
 
-  const predefinedOptions = ['Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models', "coding", "Music", "Travel", "Content Creation", "Social Media Influencing", "Enterprenuership", "Socail Activity", "Body Building", "Robotics", "Cooking", "Blogging", "Writing", "Reading", "Gaming", "Sports", "Drama", "Dance", "Singing", "Crafting", "Drawing", "Painting", "Photography", "Videography", "Editing", "Designing", "Fashion", "Modelling", "Acting", "Anchoring", "Public Speaking", "Debating", "MUN", "Hackathons", "Competitive Coding", "Web Development", "App Development", "Game Development", "Graphic Designing", "UI/UX Designing", "Digital Marketing", "Content Writing", "Blogging", "Vlogging", "Social Media Influencing", "Entrepreneurship", "Startup", "Finance", "Investment", "Trading", "Economics", "Marketing", "Management", "HR", "Law", "Legal", "Politics", "Public Policy", "International Relations", "History", "Geography", "Psychology", "Sociology", "Philosophy", "Literature", "Languages", "Science", "Mathematics", "Physics", "Chemistry", "Biology", "Astronomy", "Astrophysics", "Medicine", "Engineering", "Computer Science", "Artificial Intelligence", "Machine Learning", "Data Science", "Cyber Security", "Blockchain", "Cloud Computing", "IoT", "Robotics", "Automation", "Ethical Hacking", "Game Development", "Web Development", "App Development", "Software Development", "Hardware Development", "Network Security", "Database Management", "System Administration", "DevOps", "Full Stack Development", "Frontend Development", "Backend Development", "Mobile Development", "Desktop Development", "Embedded Development", "Cloud Development", "AI Development", "ML Development", "Data Analysis", "Data Engineering", "Data Mining", "Data Visualization", "Big Data", "Business Intelligence", "Business Analysis", "Business Development", "Product Management", "Project Management", "Quality Assurance", "Quality Control", "Testing", "Technical Support", "Customer Support", "Customer Success", "Sales", "Marketing", "Advertising", "Public Relations", "Content Marketing", "Email Marketing", "Social Media Marketing", "SEO", "SEM", "SMM"];
+  const predefinedOptions = ['Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models', "coding", "Music", "Travel", "Content Creation", "Social Media Influencing", "Enterprenuership", "Socail Activity", "Body Building", "Robotics", "Cooking", "Blogging", "Writing", "Reading", "Gaming", "Sports", "Drama", "Singing", "Crafting", "Drawing", "Painting", "Photography", "Videography", "Editing", "Designing", "Fashion", "Modelling", "Acting", "Anchoring", "Public Speaking", "Debating", "MUN", "Hackathons", "Competitive Coding",, "App Development", "Game Development", "Graphic Designing", "UI/UX Designing", "Digital Marketing", "Content Writing", "Blogging", "Vlogging", "Social Media Influencing", "Entrepreneurship", "Startup", "Finance", "Investment", "Trading", "Economics", "Marketing", "Management", "HR", "Law", "Legal", "Politics", "Public Policy", "International Relations", "History", "Geography", "Psychology", "Sociology", "Philosophy", "Literature", "Languages", "Science", "Mathematics", "Physics", "Chemistry", "Biology", "Astronomy", "Astrophysics", "Medicine", "Engineering", "Computer Science", "Artificial Intelligence", "Machine Learning", "Data Science", "Cyber Security", "Blockchain", "Cloud Computing", "IoT", "Robotics", "Automation", "Ethical Hacking", "Game Development", "Web Development", "App Development", "Software Development", "Hardware Development", "Network Security", "Database Management", "System Administration", "DevOps", "Full Stack Development", "Frontend Development", "Backend Development", "Mobile Development", "Desktop Development", "Embedded Development", "Cloud Development", "AI Development", "ML Development", "Data Analysis", "Data Engineering", "Data Mining", "Data Visualization", "Big Data", "Business Intelligence", "Business Analysis", "Business Development", "Product Management", "Project Management", "Quality Assurance", "Quality Control", "Testing", "Technical Support", "Customer Support", "Customer Success", "Sales", "Marketing", "Advertising", "Public Relations", "Content Marketing", "Email Marketing", "Social Media Marketing", "SEO", "SEM", "SMM"];
+
+  const {user} = useUser();
 
   const filteredOptions = predefinedOptions.filter(option =>
-    option.toLowerCase().includes(inputValue.toLowerCase()));
+    option?.toLowerCase().includes(inputValue.toLowerCase()));
 
-  const handleUpdate = (changedGradYear: number, changedInterests: string[]) => {
+  const handleUpdate = ( changedInterests: string[]) => {
     setEdit(false);
-    console.log(changedGradYear);
+   // console.log(changedGradYear);
 
     const res = fetch(`/api/user?id=${mId}`, {
       method: 'POST',
@@ -127,17 +142,18 @@ const ProfilePage = () => {
       },
       body: JSON.stringify({
         email: email,
-        gradYear: changedGradYear, //edit it carefully
+       // gradYear: changedGradYear, //edit it carefully
         interests: changedInterests,
         dob: birthDate,
-        image: user?.imageUrl
+        image: user?.imageUrl,
+        description,
       })
     }).then(response => response.json())
       .then(data => {
         // setUser(data)
 
         setInterests(data.interests || []);
-        setTeams(data.teams || []);
+       // setTeams(data.teams || []);
 
         setBirthDate(data.dob || "")
         setGradYear(data.gradyr || "")
@@ -149,6 +165,7 @@ const ProfilePage = () => {
 
 
   return (
+    <Layout>
     <div className="h-fit mx-[5vw]">
 
       {!loading && !edit ? <button onClick={() => setEdit(!edit)} className={` absolute top-[15vh] right-[10vw] w-8 h-8 bg-trasparent rounded-full`}>
@@ -180,7 +197,7 @@ const ProfilePage = () => {
               </div>) : <p className="mt-5 text-gray-400">You have not selected any interests yet !</p>}
             </div>
 
-            <p className="mt-5 cphone:text-[12px]">Lorem ipsum dolor adipisicing elit. Comtium cumque odit assumenda ab a, facilis temporibus, dolore impedit tempora laborum! Exercitationem nihil deserunt asperiores blanditiis quod, placeat culpa facilis delectus voluptatum odit sapiente, dolore modi veritatis vitae debitis ducimus rem at consequuntur aliquam. Animi!</p>
+            <p className="mt-5 cphone:text-[12px]">{description}</p>
             <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-7">Create Team</Link>
           </div>
 
@@ -191,9 +208,10 @@ const ProfilePage = () => {
         </div>
       )}
 
-      {edit ? <Form setEdit={setEdit} handleUpdate={handleUpdate} currentGradYear={gradYear} currentInterests={interests}></Form> : null}
+      {edit ? <Form setEdit={setEdit} handleUpdate={handleUpdate} currentInterests={interests}></Form> : null}
       {showAllInterests ? <AllInterests interests={interests} name={name} setShowAllInterests={setShowAllInterests}></AllInterests> : null}
     </div>
+    </Layout>
   )
 }
 

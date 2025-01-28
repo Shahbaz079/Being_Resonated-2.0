@@ -13,11 +13,11 @@ if (!dbName) {
   throw new Error('Invalid/Missing environment variable: "DB_NAME"');
 }
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   let client: MongoClient | null = null;
   try {
     const body = await req.json();
-    const { email, userId } = body;
+    const { email, userId,gradYear } = body;
 
     console.log('Received email:', email);
     console.log('Received userId:', userId);
@@ -41,6 +41,8 @@ export async function POST(req: NextRequest) {
     if (!existingUser) {
       return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
+
+    await users.updateOne({ email }, { $set: { gradYear } });
 
     console.log('Found existing user:', existingUser);
 

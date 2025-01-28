@@ -20,7 +20,7 @@ if (!dbName) {
 }
 
 
-export async function POST(req:NextRequest){
+export async function PUT(req:NextRequest){
   const body:IUserUpdate=await req.json();
   
   

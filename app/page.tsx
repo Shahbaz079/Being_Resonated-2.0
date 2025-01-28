@@ -50,33 +50,36 @@ const Home = () => {
 
   useEffect(() => {
     if (!isLoaded) {
-      return
+      return 
     }
     const fetchData = async () => {
 
-      if (userId && (!mongoId || mongoId === '' || mongoId === undefined)) {
+      if (userId) {
         try {
+          if(!mongoId){
           const result = await fetch('/api/createuser', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               name: user?.firstName,
               email: user?.primaryEmailAddress?.emailAddress,
+              gradYear:user?.primaryEmailAddress?.emailAddress.slice(0,4),
 
             })
-          });
+          }); 
           if (result.ok) {
 
             toast.success('User created successfully');
             console.log("Done")
           } else if (result.status === 400) {
             const res = await fetch('/api/retrieve', {
-              method: 'POST',
+              method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 email: user?.primaryEmailAddress?.emailAddress,
                 userId: userId,
                 image: user?.imageUrl,
+                gradYear:user?.primaryEmailAddress?.emailAddress.slice(0,4),
 
               })
             });
@@ -86,11 +89,10 @@ const Home = () => {
               console.log('User retrieved successfully');
             }
           }
+        }
+        
 
-          else {
-
-            console.error('Error:', result);
-          }
+    
         } catch (error) {
 
           console.error('Error:', error);
@@ -112,7 +114,7 @@ const Home = () => {
         const fetchData = async () => {
           try {
             const result = await fetch('/api/user', {
-              method: 'POST',
+              method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 email: user?.primaryEmailAddress?.emailAddress,
