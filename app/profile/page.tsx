@@ -45,12 +45,13 @@ const ProfilePage = () => {
 
   const [email, setEmail] = useState<string>("");
   const [interests, setInterests] = useState<string[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
+ // const [teams, setTeams] = useState<Team[]>([]);
   //const [assignedWorks, setAssignedWorks] = useState<string[]>([]);
   const [birthDate, setBirthDate] = useState<Date>();
-  const [gradYear, setGradYear] = useState<number>(0);
+  const [gradYear, setGradYear] = useState<number>();
   const [image, setimage] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(true);
+  const [description, setDescription] = useState<string>("Tell us about yourself");
 
 
   const [edit, setEdit] = useState<boolean>(false);
@@ -69,11 +70,11 @@ const ProfilePage = () => {
         }
       });
 
-      if (res.ok) {
+     {/* if (res.ok) {
         const data = await res.json();
         setTeams(data);
 
-      }
+      } */}
     } catch (error) { console.error('Error fetching team:', error); }
 
   }
@@ -90,11 +91,12 @@ const ProfilePage = () => {
       setName(data.name || "");
       setEmail(data.email || "");
       setInterests(data.interests || []);
-      setTeams(data.teams || []);
+     // setTeams(data.teams || []);
       // setAssignedWorks(data.assignedWorks || []); 
       setBirthDate(data.dob || "");
       setGradYear(data.gradYear || "");
       setimage(data.image || "");
+      setDescription(data.description || "Tell us about yourself");
     } catch (error) {
       console.error('Error fetching user:', error);
     }
@@ -119,9 +121,9 @@ const ProfilePage = () => {
   const filteredOptions = predefinedOptions.filter(option =>
     option.toLowerCase().includes(inputValue.toLowerCase()));
 
-  const handleUpdate = (changedGradYear: number, changedInterests: string[]) => {
+  const handleUpdate = ( changedInterests: string[]) => {
     setEdit(false);
-    console.log(changedGradYear);
+   // console.log(changedGradYear);
 
     const res = fetch(`/api/user?id=${mId}`, {
       method: 'POST',
@@ -130,7 +132,7 @@ const ProfilePage = () => {
       },
       body: JSON.stringify({
         email: email,
-        gradYear: changedGradYear, //edit it carefully
+       // gradYear: changedGradYear, //edit it carefully
         interests: changedInterests,
         dob: birthDate,
         image: user?.imageUrl
@@ -140,10 +142,10 @@ const ProfilePage = () => {
         // setUser(data)
 
         setInterests(data.interests || []);
-        setTeams(data.teams || []);
+       // setTeams(data.teams || []);
 
         setBirthDate(data.dob || "")
-        setGradYear(data.gradyr || "")
+        setGradYear(data.gradYear || "")
 
       }).catch(error => console.error('Error:', error))
   }
@@ -169,7 +171,8 @@ const ProfilePage = () => {
             <div className="cphone:text-4xl text-5xl capitalize ">{name} </div>
 
             <div className="flex text-2xl cphone:text-xl mt-2">
-              <p>ToBeSpecified •</p>
+            {/**  <p>ToBeSpecified •</p>
+         */}
               <p className="ml-1">{gradYear ? gradYear : null}</p>
             </div>
 
@@ -183,7 +186,7 @@ const ProfilePage = () => {
               </div>) : <p className="mt-5 text-gray-400">You have not selected any interests yet !</p>}
             </div>
 
-            <p className="mt-5 cphone:text-[12px]">Lorem ipsum dolor adipisicing elit. Comtium cumque odit assumenda ab a, facilis temporibus, dolore impedit tempora laborum! Exercitationem nihil deserunt asperiores blanditiis quod, placeat culpa facilis delectus voluptatum odit sapiente, dolore modi veritatis vitae debitis ducimus rem at consequuntur aliquam. Animi!</p>
+            <p className="mt-5 cphone:text-[12px]">{description}</p>
             <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-20">Create Team</Link>
           </div>
 
@@ -216,7 +219,7 @@ const ProfilePage = () => {
 
       </Card>
 
-      {edit ? <Form setEdit={setEdit} handleUpdate={handleUpdate} currentGradYear={gradYear} currentInterests={interests}></Form> : null}
+      {edit ? <Form setEdit={setEdit} handleUpdate={handleUpdate}  currentInterests={interests}></Form> : null}
       {showAllInterests ? <AllInterests interests={interests} name={name} setShowAllInterests={setShowAllInterests}></AllInterests> : null}
     </div>
   )

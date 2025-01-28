@@ -45,13 +45,13 @@ const BeCommunity = () => {
   const [eventPosts, setEventPosts] = useState<EventPost[]>([]);
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [render, setRender] = useState<"posts" | "events" | "users">("posts");
+  const [finalPosts, setFinalPosts] = useState<any[]>([]);
 
-  const { user, isLoaded } = useUser();
-  const mongoId = user?.publicMetadata?.mongoId
+  const searchParams= new URLSearchParams(window.location.search)
+  const mongoId = searchParams.get("id")
+
   useEffect(() => {
-    if (!isLoaded || typeof window === "undefined") {
-      return;
-    }
+  
     const fetchPosts = async () => {
       const eventRes = await fetch("/api/eventpost", { method: "GET" });
       const userRes = await fetch("/api/userpost", { method: "GET" })
@@ -67,11 +67,12 @@ const BeCommunity = () => {
     }
     fetchPosts();
 
-  }, [isLoaded]);
+  }, []);
 
   useEffect(() => {
     const finalPosts = [...eventPosts, ...userPosts];
     finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
+    setFinalPosts(finalPosts);
   }, [])
 
 
@@ -119,13 +120,13 @@ const BeCommunity = () => {
             {render === "posts" ? <div className="posts mt-3 cbecomn:hidden">
               <div className="">
                 <WhatsOnYourMind></WhatsOnYourMind>
-                {eventPosts.map((eventPost) => (
+                {/**  eventPosts.map((eventPost) => (
                   <div className="" key={eventPost._id?.toString()}>
                     <PostCard post={eventPost} />
                   </div>
 
-                ))}
-                {userPosts.map((userPost) => (
+                ))  */}
+                {finalPosts.map((userPost) => (
                   <div className="" key={userPost._id?.toString()}>
                     <PostCard post={userPost} />
                   </div>
@@ -136,13 +137,13 @@ const BeCommunity = () => {
             <div className="posts mt-3 cbecom:hidden">
               <div className="">
                 <WhatsOnYourMind></WhatsOnYourMind>
-                {eventPosts.map((eventPost) => (
+                {/**eventPosts.map((eventPost) => (
                   <div className="" key={eventPost._id?.toString()}>
                     <PostCard post={eventPost} />
                   </div>
 
-                ))}
-                {userPosts.map((userPost) => (
+                ))*/}
+                {finalPosts.map((userPost) => (
                   <div className="" key={userPost._id?.toString()}>
                     <PostCard post={userPost} />
                   </div>
