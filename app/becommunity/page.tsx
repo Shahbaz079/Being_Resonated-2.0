@@ -21,6 +21,7 @@ import { Divide } from "lucide-react";
 import Layout from "@/components/customLayouts/Layout";
 import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 
 export interface EventPost {
@@ -177,4 +178,10 @@ const BeCommunity = () => {
 }
 
 
-export default BeCommunity
+const BeCommunityWithSuspense = () => (
+    <Suspense fallback={<div>Loding</div>}> <BeCommunity /></Suspense>
+)
+
+export default BeCommunityWithSuspense;
+
+
