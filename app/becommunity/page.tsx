@@ -43,11 +43,11 @@ const BeCommunity = () => {
   const [render, setRender] = useState<"posts" | "events" | "users">("posts");
   const [finalPosts, setFinalPosts] = useState<any[]>([]);
 
-  const searchParams= useSearchParams();
+  const searchParams = useSearchParams();
   const mongoId = searchParams.get("id")
 
   useEffect(() => {
-  
+
     const fetchPosts = async () => {
       const eventRes = await fetch("/api/eventpost", { method: "GET" });
       const userRes = await fetch("/api/userpost", { method: "GET" })
@@ -66,7 +66,7 @@ const BeCommunity = () => {
   }, []);
 
   useEffect(() => {
-    if(!eventPosts || !userPosts) return;
+    if (!eventPosts || !userPosts) return;
     const finalPosts = [...eventPosts, ...userPosts];
     finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
     setFinalPosts(finalPosts);
@@ -74,7 +74,7 @@ const BeCommunity = () => {
 
 
   console.log("eventposts", eventPosts)
-  console.log(finalPosts,"finalposts")
+  console.log(finalPosts, "finalposts")
 
   return (
     <Layout>
@@ -132,7 +132,7 @@ const BeCommunity = () => {
               </div>
             </div> : null}
 
-            <div className="posts mt-3 cbecom:hidden">
+            <div className="posts mt-3 w-full cbecom:hidden">
               <div className="">
                 <WhatsOnYourMind></WhatsOnYourMind>
                 {/**eventPosts.map((eventPost) => (
@@ -175,7 +175,7 @@ const BeCommunity = () => {
 
 
 const BeCommunityWithSuspense = () => (
-    <Suspense fallback={<div>Loding</div>}> <BeCommunity /></Suspense>
+  <Suspense fallback={<div>Loding</div>}> <BeCommunity /></Suspense>
 )
 
 export default BeCommunityWithSuspense;

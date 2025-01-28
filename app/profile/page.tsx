@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
 import Layout from "@/components/customLayouts/Layout";
 import PostCard from "@/components/eventCard/PostCard";
+import "./user.css"
 
 interface Team {
   _id: ObjectId;
@@ -38,7 +39,7 @@ const ProfilePage = () => {
   const params = useSearchParams();
   const id = params.get("id") as string;
 
- 
+
   const { isLoaded } = useSession();
   const mId = id as string;
   console.log(`mongoId:${mId} and id:${id}`);
@@ -47,7 +48,7 @@ const ProfilePage = () => {
 
   const [email, setEmail] = useState<string>("");
   const [interests, setInterests] = useState<string[]>([]);
- // const [teams, setTeams] = useState<Team[]>([]);
+  // const [teams, setTeams] = useState<Team[]>([]);
   //const [assignedWorks, setAssignedWorks] = useState<string[]>([]);
   const [birthDate, setBirthDate] = useState<Date>();
   const [gradYear, setGradYear] = useState<number>();
@@ -75,7 +76,7 @@ const ProfilePage = () => {
         }
       });
 
-     {/* if (res.ok) {
+      {/* if (res.ok) {
         const data = await res.json();
         setTeams(data);
 
@@ -88,7 +89,7 @@ const ProfilePage = () => {
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/user?id=${mId}`,{
+      const response = await fetch(`/api/user?id=${mId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ const ProfilePage = () => {
       setName(data.name || "");
       setEmail(data.email || "");
       setInterests(data.interests || []);
-     // setTeams(data.teams || []);
+      // setTeams(data.teams || []);
       // setAssignedWorks(data.assignedWorks || []); 
       setBirthDate(data.dob || "");
       setGradYear(data.gradYear || "");
@@ -113,7 +114,7 @@ const ProfilePage = () => {
     }
   };
 
-  
+
 
 
 
@@ -126,15 +127,15 @@ const ProfilePage = () => {
 
 
 
-    useEffect(() => {
-      if (isLoaded && mId) {
-        const ownerId=user?.publicMetadata.mongoId;
-        setOwner(ownerId===mId);
+  useEffect(() => {
+    if (isLoaded && mId) {
+      const ownerId = user?.publicMetadata.mongoId;
+      setOwner(ownerId === mId);
 
-      }
-      
-         
-    }, [isLoaded]);
+    }
+
+
+  }, [isLoaded]);
 
 
 
@@ -143,14 +144,14 @@ const ProfilePage = () => {
 
   const predefinedOptions = ['Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive Programming', 'Video Editing', 'Painting', 'T-shirt Design', 'Photography', 'LLM models', "coding", "Music", "Travel", "Content Creation", "Social Media Influencing", "Enterprenuership", "Socail Activity", "Body Building", "Robotics", "Cooking", "Blogging", "Writing", "Reading", "Gaming", "Sports", "Drama", "Dance", "Singing", "Crafting", "Drawing", "Painting", "Photography", "Videography", "Editing", "Designing", "Fashion", "Modelling", "Acting", "Anchoring", "Public Speaking", "Debating", "MUN", "Hackathons", "Competitive Coding", "Web Development", "App Development", "Game Development", "Graphic Designing", "UI/UX Designing", "Digital Marketing", "Content Writing", "Blogging", "Vlogging", "Social Media Influencing", "Entrepreneurship", "Startup", "Finance", "Investment", "Trading", "Economics", "Marketing", "Management", "HR", "Law", "Legal", "Politics", "Public Policy", "International Relations", "History", "Geography", "Psychology", "Sociology", "Philosophy", "Literature", "Languages", "Science", "Mathematics", "Physics", "Chemistry", "Biology", "Astronomy", "Astrophysics", "Medicine", "Engineering", "Computer Science", "Artificial Intelligence", "Machine Learning", "Data Science", "Cyber Security", "Blockchain", "Cloud Computing", "IoT", "Robotics", "Automation", "Ethical Hacking", "Game Development", "Web Development", "App Development", "Software Development", "Hardware Development", "Network Security", "Database Management", "System Administration", "DevOps", "Full Stack Development", "Frontend Development", "Backend Development", "Mobile Development", "Desktop Development", "Embedded Development", "Cloud Development", "AI Development", "ML Development", "Data Analysis", "Data Engineering", "Data Mining", "Data Visualization", "Big Data", "Business Intelligence", "Business Analysis", "Business Development", "Product Management", "Project Management", "Quality Assurance", "Quality Control", "Testing", "Technical Support", "Customer Support", "Customer Success", "Sales", "Marketing", "Advertising", "Public Relations", "Content Marketing", "Email Marketing", "Social Media Marketing", "SEO", "SEM", "SMM"];
 
-  const {user} = useUser();
+  const { user } = useUser();
 
   const filteredOptions = predefinedOptions.filter(option =>
     option.toLowerCase().includes(inputValue.toLowerCase()));
 
-  const handleUpdate = ( changedInterests: string[]) => {
+  const handleUpdate = (changedInterests: string[]) => {
     setEdit(false);
-   // console.log(changedGradYear);
+    // console.log(changedGradYear);
 
     const res = fetch(`/api/user?id=${mId}`, {
       method: 'PUT',
@@ -159,7 +160,7 @@ const ProfilePage = () => {
       },
       body: JSON.stringify({
         email: email,
-       // gradYear: changedGradYear, //edit it carefully
+        // gradYear: changedGradYear, //edit it carefully
         interests: changedInterests,
         dob: birthDate,
         image: user?.imageUrl
@@ -169,7 +170,7 @@ const ProfilePage = () => {
         // setUser(data)
 
         setInterests(data.interests || []);
-       // setTeams(data.teams || []);
+        // setTeams(data.teams || []);
 
         setBirthDate(data.dob || "")
         setGradYear(data.gradYear || "")
@@ -182,30 +183,27 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-    <div className="h-fit mx-[5vw]">
+      <div className="min-h-screen border-2 bg flex flex-col items-center p-2">
 
-      {!loading && owner && !edit ? <button onClick={() => setEdit(!edit)} className={` absolute top-[15vh] right-[10vw] w-8 h-8 bg-trasparent rounded-full`}>
-        <MdOutlineModeEditOutline className="w-6 h-6" />
-      </button> : null}
+        {!loading && owner && !edit ? <button onClick={() => setEdit(!edit)} className={` absolute top-[15vh] right-[10vw] w-8 h-8 bg-trasparent rounded-full`}>
+          <MdOutlineModeEditOutline className="w-6 h-6" />
+        </button> : null}
 
-      {loading ? <LoadSkeleton></LoadSkeleton> : (
-        <div className="text-gray-300 h-fit mt-[10vh] flex ctab:flex-col ctab:items-center justify-center p-5 gap-20 ctab:gap-0 ctab:p-0">
+        <div className="glass rounded-xl w-full text-gray-300 h-fit mt-[10vh] flex flex-col max-w-[600px] items-center py-2">
 
-          <div className="w-fit h-fit">
-            <Image className="object-fill rounded-full h-[230px]" alt={name} src={image} width={230} height={230} />
+          <div className="w-fit h-fit mt-3">
+            <Image className="object-fill rounded-full" alt={name} src={image} width={120} height={120} />
           </div>
 
-          <div className="w-fit h-[100%] max-w-[60%] ctab:max-w-full ctab:flex ctab:flex-col ctab:items-center ctab:mt-5">
-            <div className="cphone:text-4xl text-5xl capitalize ">{name} </div>
+          <div className="w-fit flex flex-col">
 
-            <div className="flex text-2xl cphone:text-xl mt-2">
-            {/**  <p>ToBeSpecified •</p>
-         */}
-              <p className="ml-1">{gradYear ? gradYear : null}</p>
-            </div>
+            <div className="cphone:text-4xl text-5xl capitalize text-center text-cyan-200 font-semibold mt-3">{name}</div>
 
-            <div className="w-[100%]  flex flex-row">
-              {interests.length ? (<div className="gap-3 flex mt-7 flex-wrap ctab:justify-center w-full">
+            <p className="mt-3 text-lg text-center">{gradYear ? gradYear : null}</p>
+
+
+            <div className="w-[100%] flex p-2">
+              {interests.length ? (<div className="gap-3 flex mt-7 flex-wrap justify-center w-full">
                 {interests.length >= 1 ? <InterestTag interest={interests[0]}></InterestTag> : null}
                 {interests.length >= 2 ? <InterestTag interest={interests[1]}></InterestTag> : null}
                 {interests.length >= 3 ? <InterestTag interest={interests[2]}></InterestTag> : null}
@@ -214,8 +212,9 @@ const ProfilePage = () => {
               </div>) : <p className="mt-5 text-gray-400">You have not selected any interests yet !</p>}
             </div>
 
-            <p className="mt-5 cphone:text-[12px]">{description}</p>
-          {owner &&  <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 rounded-lg my-3 mt-20">Create Team</Link>}
+            <p className="mt-5 text-center">{description}</p>
+
+            {owner && <Link href={`/teamcreate?id=${mId}`} className="bg-green-700 px-4 py-2 w-fit mx-auto rounded-lg my-3 mt-5">Create Team</Link>}
           </div>
 
           <div style={{ "--position": 3 } as React.CSSProperties} className="hidden cards pCard w-[60%]  mx-10 my-10 px-5 h-[100%] bg-gradient-to-bl from-[#527ff1] to-[#102438] rounded-xl   flex-col justify-center z-20">
@@ -223,38 +222,37 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-      )}
 
-      <Card className="glass">
-        <CardHeader>
-          <Tabs defaultValue="Posts">
-            <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
-              <TabsTrigger value="Posts" className="text-lg">Posts</TabsTrigger>
-              {owner && <TabsTrigger value="Participations" className="text-lg">Participations</TabsTrigger> }
-            </TabsList>
-            <TabsContent value="Posts">
-              <div>
-                <WhatsOnYourMind></WhatsOnYourMind>
-                {posts?.map((userPost) => (
-                  <div className="" key={userPost._id?.toString()}>
-                    <PostCard post={userPost} />
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-          { owner && <TabsContent value="Members">
-              <div>
-                {/* render participations here */}
-              </div>
-            </TabsContent> }
-          </Tabs>
-        </CardHeader>
+        <Card className="bg-transparent border-0 w-full mt-7 p-0">
+          <CardHeader className="p-0">
+            <Tabs defaultValue="Posts">
+              <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
+                <TabsTrigger value="Posts" className="text-lg">Posts</TabsTrigger>
+                {owner && <TabsTrigger value="Participations" className="text-lg">Participations</TabsTrigger>}
+              </TabsList>
+              <TabsContent value="Posts">
+                <div>
+                  <WhatsOnYourMind></WhatsOnYourMind>
+                  {posts?.map((userPost) => (
+                    <div className="" key={userPost._id?.toString()}>
+                      <PostCard post={userPost} />
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+              {owner && <TabsContent value="Members">
+                <div>
+                  {/* render participations here */}
+                </div>
+              </TabsContent>}
+            </Tabs>
+          </CardHeader>
 
-      </Card>
+        </Card>
 
-      {edit ? <Form setEdit={setEdit} handleUpdate={handleUpdate}  currentInterests={interests}></Form> : null}
-      {showAllInterests ? <AllInterests interests={interests} name={name} setShowAllInterests={setShowAllInterests}></AllInterests> : null}
-    </div>
+        {edit ? <Form currentUserDescription={description} setEdit={setEdit} handleUpdate={handleUpdate} currentInterests={interests}></Form> : null}
+        {showAllInterests ? <AllInterests interests={interests} name={name} setShowAllInterests={setShowAllInterests}></AllInterests> : null}
+      </div>
     </Layout>
   )
 }

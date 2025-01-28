@@ -8,7 +8,6 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
 import { IEvent } from '@/app/team/[id]/page';
-import "./EventCard.styles.css"
 
 interface Event {
   _id: ObjectId;
