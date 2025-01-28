@@ -27,9 +27,9 @@ export async function POST(request: NextRequest) {
        
        const team = { name, description, 
         
-        members: members.map((member: { _id: string }) => new ObjectId(member._id)),
-        leaders: leaders.map((leader: { _id: string }) => new ObjectId(leader._id)),
-        requests: requests.map((request: { _id: string }) => new ObjectId(request._id)),
+        members: members?.map((member: { _id: string }) => new ObjectId(member._id)),
+        leaders: leaders?.map((leader: { _id: string }) => new ObjectId(leader._id)),
+        requests: requests?.map((request: { _id: string }) => new ObjectId(request._id)),
            image,
            createdAt: new Date(), 
            updatedAt: new Date() ,
