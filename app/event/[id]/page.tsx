@@ -30,6 +30,7 @@ import WhatsOnEventMind from "@/components/WhatsOnYourMInd/WhatsOnEventMind";
 import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 import Layout from "@/components/customLayouts/Layout";
+import PostCard from "@/components/eventCard/PostCard";
 
 interface EventUpdateType {
   date: string;
@@ -77,6 +78,7 @@ const EventPage = () => {
   const [teamName,setTeamName]=useState<string>("")
 
   const [eventUpdateData, setEventUpdateData] = useState<EventUpdateType>(emptyEventUpdateData);
+  const [posts, setPosts] = useState<any[]>([]);
 
 
 
@@ -169,7 +171,7 @@ const EventPage = () => {
         setRequests(data.requests);
         setParticipants(data.participated);
         setEvent(data)
-        console.log(data);
+        setPosts(data.posts);
         setEventUpdateData({ name: data.name, date: data.date, description: data.description, location: data.location, time: data.time });
         setLoading(false);
       } else {
@@ -476,6 +478,12 @@ const EventPage = () => {
                 
                   <WhatsOnEventMind title={teamId} name={teamName} location={location} time={time} date={date} eventId={eventId} />
               </div>}
+              {posts?.map((userPost) => (
+                    <div className="" key={userPost._id?.toString()}>
+                      <PostCard post={userPost} />
+                    </div>
+                  ))}
+              
             </TabsContent>
             <TabsContent value="Members"></TabsContent>
           </Tabs>

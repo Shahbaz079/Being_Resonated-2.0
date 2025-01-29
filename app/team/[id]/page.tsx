@@ -30,6 +30,7 @@ import "./teams.css"
 import WhatsOnTeamMind from "@/components/WhatsOnYourMInd/WhatsOnTeamMind";
 import { Suspense } from "react";
 import Layout from "@/components/customLayouts/Layout";
+import PostCard from "@/components/eventCard/PostCard";
 
 
 export interface IEvent {
@@ -64,6 +65,7 @@ const TeamPage = () => {
   const [events, setEvents] = useState<IEvent[] | null>([])
 
   const [requests, setRequests] = useState<IUser[] >([])
+  const [posts, setPosts] = useState<any[]>([])
 
   
 
@@ -89,6 +91,7 @@ const TeamPage = () => {
         setRequests(data.requests);
         setTeamName(data.name);
         setEvents(data.events)
+        setPosts(data.posts);
       })
 
 
@@ -268,18 +271,18 @@ const TeamPage = () => {
                     <DialogContent>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogContent>Manage Team Members</DialogContent>
-                        </DialogHeader>
-                        <h2>Requests</h2>
+                          <DialogContent>Requests
+
+                          
                         <div>
                         <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
                         {requests?.map((participant) => (
-                          <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
+                          <div className="flex flex-row justify-start items-center" key={participant?._id?.toString()}>
                             <div className="px-2 mx-2">
-                              <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+                              <img src={participant?.image} alt={participant?.name} className="object-cover w-[60px] h-[60px]" /></div>
 
                             <div className="flex flex-col px-2 mx-2">
-                              <div className="">{participant.name}</div>
+                              <div className="">{participant?.name}</div>
                               <div className="">{participant?.gradYear}</div>
                             </div>
 
@@ -289,6 +292,12 @@ const TeamPage = () => {
                         ))}
                       </div>
                         </div>
+                          </DialogContent>
+
+
+
+                        </DialogHeader>
+                        
                       </DialogContent>
                     </DialogContent>
                   </Dialog>
@@ -316,6 +325,11 @@ const TeamPage = () => {
                   id={id} 
                   ></WhatsOnTeamMind>} 
                 </div>}
+                {posts?.map((userPost) => (
+                    <div className="" key={userPost._id?.toString()}>
+                      <PostCard post={userPost} />
+                    </div>
+                  ))}
               </TabsContent>
             </Tabs>
           </div>

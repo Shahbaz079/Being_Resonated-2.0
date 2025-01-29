@@ -70,9 +70,9 @@ export async function POST(req: NextRequest) {
 
     if (result.acknowledged) {
       const updatedTeamPosts=team.posts || [];
-      updatedTeamPosts.push(result.insertedId.toString());
+      updatedTeamPosts.push( new ObjectId(result.insertedId));
       await teams.findOneAndUpdate(
-        { _id: teamId },
+        { _id:new ObjectId(teamId as string) },
         { $set: {posts:updatedTeamPosts},
        }
       );
