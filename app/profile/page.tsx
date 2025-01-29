@@ -21,6 +21,7 @@ import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import Layout from "@/components/customLayouts/Layout";
 import PostCard from "@/components/eventCard/PostCard";
 import "./user.css"
+import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 
 interface Team {
   _id: ObjectId;
@@ -183,13 +184,15 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen border-2 bg flex flex-col items-center p-2">
+      <div className="min-h-screen bg flex flex-col items-center p-2">
+
+        {loading && <div className="mt-44"><LoadingAnimation></LoadingAnimation></div>}
 
         {!loading && owner && !edit ? <button onClick={() => setEdit(!edit)} className={` absolute top-[15vh] right-[10vw] w-8 h-8 bg-trasparent rounded-full`}>
           <MdOutlineModeEditOutline className="w-6 h-6" />
         </button> : null}
 
-        <div className="glass rounded-xl w-full text-gray-300 h-fit mt-[10vh] flex flex-col max-w-[600px] items-center py-2">
+        {!loading && <div className="animate-slide-top glass rounded-xl w-full text-gray-300 h-fit mt-[10vh] flex flex-col max-w-[600px] items-center py-2">
 
           <div className="w-[120px] h-[120px] mt-3 relative">
             {image ? <Image className="rounded-full" alt={name} src={image} layout="fill" /> : null}
@@ -221,9 +224,10 @@ const ProfilePage = () => {
             <div className=" h-[90%] flex flex-col justify-start align-middle text-lg">
             </div>
           </div>
-        </div>
+        </div>}
 
-        <Card className="bg-transparent border-0 w-full mt-7 p-0">
+
+        {!loading && <Card className="animate-slide-top bg-transparent border-0 w-full mt-7 p-0">
           <CardHeader className="p-0">
             <Tabs defaultValue="Posts">
               <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
@@ -248,7 +252,8 @@ const ProfilePage = () => {
             </Tabs>
           </CardHeader>
 
-        </Card>
+        </Card>}
+
 
         {edit ? <Form currentUserDescription={description} setEdit={setEdit} handleUpdate={handleUpdate} currentInterests={interests}></Form> : null}
         {showAllInterests ? <AllInterests interests={interests} name={name} setShowAllInterests={setShowAllInterests}></AllInterests> : null}

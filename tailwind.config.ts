@@ -98,10 +98,15 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'slide-top': {
+					'0%': { transform: 'translateY(100px)', opacity: "0%" },
+					'100%': { transform: 'translateY(0)', opacity: "100%" },
+				},
 			},
 			animation: {
-				skeleton: 'skeleton 1.4s infinite',
+				"skeleton": 'skeleton 1.4s infinite',
+				'slide-top': 'slide-top 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
 			},
