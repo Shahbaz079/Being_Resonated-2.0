@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
 
                                       const users=db.collection('users')
                                       const teams = db.collection('teams'); 
+                                      const teamPosts=db.collection('teamposts');
 
                                       const events=db.collection('events');
 
@@ -84,6 +85,8 @@ export async function POST(request: NextRequest) {
                                          let teamLeaders:any[]=[]; 
                                          let teamCreator;
                                          let teamEvents:any[]=[];
+                                         let requests:any[]=[];
+                                         let posts:any[]=[];
                                          if(team?.members){
                                             teamMembers=await users.find({_id:{$in:team?.members}},{ projection: { password: 0, teams: 0, events: 0 } }).toArray();
                                          }
@@ -98,10 +101,19 @@ export async function POST(request: NextRequest) {
                                           teamEvents=await events.find({_id:{$in:team?.events}}).toArray();
                                          }
 
+                                         if(team?.requests){
+                                          requests=await users.find({_id:{$in:team?.requests}},{ projection: { password: 0, teams: 0, events: 0 } }).toArray();
+                                         }
+                                         if(team?.posts){
+                                          posts=await teamPosts.find({_id:{$in:team?.posts}}).toArray();
+                                         }
+
                                          team.members=teamMembers
                                          team.leaders=teamLeaders;
                                          team.createdBy=teamCreator;
                                          team.events=teamEvents;
+                                         team.requests=requests;
+                                         team.posts=posts;
                                          
                                          return NextResponse.json(team);
                                          } catch (error) {
@@ -123,7 +135,7 @@ export async function PUT(request: NextRequest) {
 
 
   if(!teamId){
-    return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
+    return NextResponse.json({ error: 'Team ID is required' }, { status: 400 });
   }
 
   

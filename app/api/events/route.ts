@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     const events = db.collection('events');
     const users = db.collection('users');
     const teams = db.collection('teams');
-    const eventPosts=db.collection('eventPosts');
+    const eventPosts=db.collection('eventposts');
      
             if(type!=='all') {
 

@@ -68,12 +68,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
+    const updatedPosts = event.posts || [];
+    
+
     const result = await eventposts.insertOne(post);
 
     if (result.acknowledged) {
+      const updatedEventPosts=event.posts || [];
+      updatedEventPosts.push( new ObjectId(result.insertedId));
       await events.findOneAndUpdate(
-        { _id: event._id },
-        { $set: { isLive: true ,Post:result.insertedId},
+        { _id:new ObjectId(eventId as string) },
+        { $set: {posts:updatedEventPosts},
        }
       );
       return NextResponse.json({ message: 'Event Post created successfully', event: post }, { status: 201 });

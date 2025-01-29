@@ -42,7 +42,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
 
-    const newGradYear=gradYear+4;
+    const newGradYear = gradYear;
 
     await users.updateOne({ email }, { $set: { gradYear,name:username } });
 

@@ -72,6 +72,9 @@ const Home = () => {
             toast.success('User created successfully');
             console.log("Done")
           } else if (result.status === 400) {
+
+           const grad=Number( user?.primaryEmailAddress?.emailAddress.slice(0,4))+4;
+
             const res = await fetch('/api/retrieve', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
@@ -80,7 +83,7 @@ const Home = () => {
                 email: user?.primaryEmailAddress?.emailAddress,
                 userId: userId,
                 image: user?.imageUrl,
-                gradYear:user?.primaryEmailAddress?.emailAddress.slice(0,4),
+                gradYear:grad,
 
               })
             });
@@ -120,6 +123,7 @@ const Home = () => {
               body: JSON.stringify({
                 email: user?.primaryEmailAddress?.emailAddress,
                 image: user?.imageUrl,
+                name:user?.username,
 
               })
             });

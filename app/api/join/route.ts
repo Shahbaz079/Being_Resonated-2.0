@@ -31,7 +31,7 @@ export async function PUT(req: NextRequest) {
     await client.connect();
     const db = client.db(dbName!);
     const users = db.collection('users');
-    const teams = db.collection('events');
+    const teams = db.collection('teams');
 
     const user = await users.findOne({ _id: new ObjectId(id) });
     const team = await teams.findOne({ _id: new ObjectId(tId) });

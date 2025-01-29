@@ -30,7 +30,7 @@ import "./teams.css"
 import WhatsOnTeamMind from "@/components/WhatsOnYourMInd/WhatsOnTeamMind";
 import { Suspense } from "react";
 import Layout from "@/components/customLayouts/Layout";
-import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
+import PostCard from "@/components/eventCard/PostCard";
 
 
 export interface IEvent {
@@ -65,7 +65,7 @@ const TeamPage = () => {
   const [events, setEvents] = useState<IEvent[] | null>([])
 
   const [requests, setRequests] = useState<IUser[]>([])
-  const [loading, setLoading] = useState<boolean>(true);
+  const [posts, setPosts] = useState<any[]>([])
 
 
 
@@ -91,8 +91,8 @@ const TeamPage = () => {
         setLeaders(data.leaders);
         setRequests(data.requests);
         setTeamName(data.name);
-        setEvents(data.events);
-        setLoading(false);
+        setEvents(data.events)
+        setPosts(data.posts);
       })
     }
 
@@ -274,27 +274,33 @@ const TeamPage = () => {
                         <DialogContent>
                           <DialogContent>
                             <DialogHeader>
-                              <DialogContent>Manage Team Members</DialogContent>
-                            </DialogHeader>
-                            <h2>Requests</h2>
-                            <div>
-                              <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
-                                {requests?.map((participant) => (
-                                  <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
-                                    <div className="px-2 mx-2">
-                                      <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+                              <DialogContent>Requests
 
-                                    <div className="flex flex-col px-2 mx-2">
-                                      <div className="">{participant.name}</div>
-                                      <div className="">{participant?.gradYear}</div>
-                                    </div>
 
-                                    <button onClick={() => acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
-                                    <button onClick={() => removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
+                                <div>
+                                  <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
+                                    {requests?.map((participant) => (
+                                      <div className="flex flex-row justify-start items-center" key={participant?._id?.toString()}>
+                                        <div className="px-2 mx-2">
+                                          <img src={participant?.image} alt={participant?.name} className="object-cover w-[60px] h-[60px]" /></div>
+
+                                        <div className="flex flex-col px-2 mx-2">
+                                          <div className="">{participant?.name}</div>
+                                          <div className="">{participant?.gradYear}</div>
+                                        </div>
+
+                                        <button onClick={() => acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
+                                        <button onClick={() => removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
+                                      </div>
+                                    ))}
                                   </div>
-                                ))}
-                              </div>
-                            </div>
+                                </div>
+                              </DialogContent>
+
+
+
+                            </DialogHeader>
+
                           </DialogContent>
                         </DialogContent>
                       </Dialog>
@@ -322,6 +328,11 @@ const TeamPage = () => {
                       id={id}
                     ></WhatsOnTeamMind>}
                   </div>}
+                  {posts?.map((userPost) => (
+                    <div className="" key={userPost._id?.toString()}>
+                      <PostCard post={userPost} />
+                    </div>
+                  ))}
                 </TabsContent>
               </Tabs>
             </div>
