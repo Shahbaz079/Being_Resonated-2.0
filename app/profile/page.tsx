@@ -191,8 +191,8 @@ const ProfilePage = () => {
 
         <div className="glass rounded-xl w-full text-gray-300 h-fit mt-[10vh] flex flex-col max-w-[600px] items-center py-2">
 
-          <div className="w-fit h-fit mt-3">
-            <Image className="object-fill rounded-full" alt={name} src={image} width={120} height={120} />
+          <div className="w-[120px] h-[120px] mt-3 relative">
+            {image ? <Image className="rounded-full" alt={name} src={image} layout="fill" /> : null}
           </div>
 
           <div className="w-fit flex flex-col">

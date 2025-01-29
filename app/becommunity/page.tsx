@@ -116,7 +116,7 @@ const BeCommunity = () => {
 
 
 
-            {render === "posts" ? <div className="posts mt-3 cbecomn:hidden">
+            {render === "posts" ? <div className="posts w-full mt-3 cbecomn:hidden">
               <div className="">
                 <WhatsOnYourMind></WhatsOnYourMind>
                 {/**  eventPosts.map((eventPost) => (
