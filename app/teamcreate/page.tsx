@@ -88,7 +88,7 @@ const CreateTeam = () => {
 
     if (!name || !description || !members || !leaders || !id) {
       toast.error('Please fill in all required fields.');
-
+      setSubmitted(false);
       return;
     }
 
@@ -112,15 +112,13 @@ const CreateTeam = () => {
 
       } else {
         toast.error('Failed to create team!');
+        setSubmitted(false);
         redirect(`/`);
       }
     } catch (error) {
       console.error('Error creating team:', error);
-
-
+      setSubmitted(false);
     }
-
-
   };
 
   const removeHandler = (id: string) => {
