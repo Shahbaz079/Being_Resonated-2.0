@@ -13,7 +13,7 @@ import { UserPost } from "@/components/eventCard/PostCard";
 import "./becommunity.css";
 
 import Layout from "@/components/customLayouts/Layout";
-import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
+import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -118,7 +118,7 @@ const BeCommunity = () => {
 
             {render === "posts" ? <div className="posts w-full mt-3 cbecomn:hidden">
               <div className="">
-                <WhatsOnYourMind></WhatsOnYourMind>
+                <WhatsOnUserMind></WhatsOnUserMind>
                 {/**  eventPosts.map((eventPost) => (
                   <div className="" key={eventPost._id?.toString()}>
                     <PostCard post={eventPost} />
@@ -135,7 +135,7 @@ const BeCommunity = () => {
 
             <div className="posts mt-3 w-full cbecom:hidden">
               <div className="">
-                <WhatsOnYourMind></WhatsOnYourMind>
+                <WhatsOnUserMind></WhatsOnUserMind>
                 {/**eventPosts.map((eventPost) => (
                   <div className="" key={eventPost._id?.toString()}>
                     <PostCard post={eventPost} />

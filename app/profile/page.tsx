@@ -17,7 +17,7 @@ import Form from "./form";
 import AllInterests from "./allInterests";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
+import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import Layout from "@/components/customLayouts/Layout";
 import PostCard from "@/components/eventCard/PostCard";
 import "./user.css"

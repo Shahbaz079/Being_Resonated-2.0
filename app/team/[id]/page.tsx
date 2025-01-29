@@ -2,35 +2,34 @@
 import { IUser } from "@/components/expandableCards/card";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import Modal from "@/components/Modal/Modal";
+
 import Link from "next/link";
 import CreateEvent from "@/components/eventCreate/EventCreate";
-import EventModal from "@/components/Modal/EventModal";
-import { Calendar, Users, Award, ChevronRight, ArrowUpRight, Sparkles, Star, MessageCircle, Share2 } from 'lucide-react';
+
 import mongoose from "mongoose";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
-import { TeamPostModal } from "@/components/Modal/TeamPostModal";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { string } from "zod";
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { IoIosSend, IoMdInformationCircleOutline } from "react-icons/io";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DialogHeader } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useEdgeStore } from "@/lib/edgestore";
-import { FaImage } from "react-icons/fa";
-import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDropZone";
+
 import { toast } from "react-toastify";
 import "./teams.css"
-import SubHeader from "@/components/SubHeader/SubHeader";
-import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
+
+import WhatsOnTeamMind from "@/components/WhatsOnYourMInd/WhatsOnTeamMind";
+import { Suspense } from "react";
+import Layout from "@/components/customLayouts/Layout";
 
 
 export interface IEvent {
@@ -113,10 +112,16 @@ const TeamPage = () => {
             }
   }
 
+  
+  const isLeader = leaders?.some((leader) => leader._id.toString() === mongoId);
+  const isVolunteer = members?.some((member) => member._id.toString() === mongoId);
+
+
 
   return (
+    <Layout>
     <div className="bg min-h-screen">
-      <SubHeader></SubHeader>
+   
       <div className="mt-4 p-5 px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
         <div className="ctab:order-2 w-full">
           <Card className="p-3 py-5 glass items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
@@ -161,9 +166,9 @@ const TeamPage = () => {
                 </div>
 
                 <div className="flex justify-center gap-4 flex-wrap">
-
-                  <Button className="w-fit text-md">Request to Join</Button>
-
+{!isVolunteer &&
+                  <Button className="w-fit text-md">Request to Join</Button>}
+{ isLeader &&      <div className="">
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>Edit</Button>
@@ -193,7 +198,8 @@ const TeamPage = () => {
                       </DialogContent>
                     </DialogContent>
                   </Dialog>
-
+                  </div>
+}
                 </div>
 
               </div>
@@ -210,7 +216,9 @@ const TeamPage = () => {
               <TabsContent value="members"><TeamMembersCard members={members}></TeamMembersCard></TabsContent>
               <TabsContent value="posts">
                 <div>
-                  <WhatsOnYourMind></WhatsOnYourMind>
+                  <WhatsOnTeamMind title={teamName}
+                  id={id!} 
+                  ></WhatsOnTeamMind>
                 </div>
               </TabsContent>
             </Tabs>
@@ -258,6 +266,7 @@ const TeamPage = () => {
       </div>
 
     </div >
+    </Layout>
   )
 }
 
@@ -323,4 +332,10 @@ const MemberCard = ({ member }: { member: IUser }) => {
     </Card>)
 }
 
-export default TeamPage;
+const teamPageWithSuspense = () => (
+  <Suspense fallback={<div>Loading</div>}>
+    <TeamPage></TeamPage>
+  </Suspense>
+)
+
+export default teamPageWithSuspense;

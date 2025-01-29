@@ -19,17 +19,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RiAttachment2 } from "react-icons/ri";
 import { HiMiniTrophy } from "react-icons/hi2";
-import { Textarea } from "@/components/ui/textarea";
-import { MdOutlineModeEditOutline } from "react-icons/md";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ObjectId } from "mongoose";
 import "./event.css"
 import SubHeader from "@/components/SubHeader/SubHeader";
 import { FaImage, FaInfoCircle } from "react-icons/fa";
-import { IoIosSend } from "react-icons/io";
-import { SingleImageDropzone } from "@/components/singledropZone/SingleImageDropZone";
-import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnYourMind";
 
+import WhatsOnEventMind from "@/components/WhatsOnYourMInd/WhatsOnEventMind";
+import { Suspense } from "react";
 
 interface EventUpdateType {
   date: string;
@@ -136,20 +134,15 @@ const EventPage = () => {
 
 
 
-  useEffect(() => {
-
-    if (uid !== mongoId) {
-      redirect('/');
-    }
-  }, [isLoaded]);
+  
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    
       setEventId(window.location.pathname.split('/')[2]);
       console.log(eventId, "eventid")
 
 
-    }
+    
   }, [isLoaded])
 
 
@@ -476,9 +469,9 @@ const EventPage = () => {
               </div>
             </TabsContent>
             <TabsContent value="Posts">
-              <div>
-                <WhatsOnYourMind></WhatsOnYourMind>
-              </div>
+             {isLeader && <div>
+                <WhatsOnEventMind title={team?._id?.toString()!} name={team?.name!} location={location} time={time} date={date} eventId={eventId!}    />
+              </div>   }
             </TabsContent>
             <TabsContent value="Members"></TabsContent>
           </Tabs>
@@ -529,4 +522,10 @@ const PrizeCard = ({ position, content }: { position: string, content: string })
   </div>
 )
 
-export default EventPage;
+
+
+const EventPagewithSuspense = () =>  (
+  <Suspense fallback={<div>Loding</div>}> <EventPage /></Suspense>
+)
+
+export default EventPagewithSuspense;

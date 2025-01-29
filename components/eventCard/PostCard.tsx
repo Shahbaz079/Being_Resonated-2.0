@@ -106,7 +106,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     alt="Post Image"
     className="w-full h-full object-cover"
     loading="lazy"
+    
+   // style={{ display: 'none' }} // 
+
     onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
+   
     style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
   />
 </div>

@@ -7,8 +7,12 @@ import { FaImage } from "react-icons/fa";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IoIosSend } from "react-icons/io";
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
+import { UserPost } from "../eventCard/PostCard";
+import { EventPost } from "@/app/becommunity/page";
 
-const WhatsOnYourMind = () => {
+
+
+const WhatsOnTeamMind = ({title,id}:{title:string,id:string}) => {
     const [file, setFile] = useState<File>();
     const { edgestore } = useEdgeStore();
     const [caption, setCaption] = useState<string>("");
@@ -17,6 +21,8 @@ const WhatsOnYourMind = () => {
     const [mongoId, setMongoId] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>("")
     const [posting, setPosting] = useState<boolean>(false);
+
+    
 
     const imageUrl = React.useMemo(() => {
         if (typeof file === 'string') {
@@ -49,11 +55,11 @@ const WhatsOnYourMind = () => {
                         setProgress(progress);
                     },
                 });
-
+            
                 if (response.url) {
-                    const res = await fetch(`/api/userpost`, {
+                    const res = await fetch(`/api/teampost`, {
                         method: "POST",
-                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy:mongoId, title: title,from:id }),
                     })
                     if (res.ok) {
                         toast.success("Posted successfully")
@@ -62,8 +68,10 @@ const WhatsOnYourMind = () => {
                         setPosting(false);
                     }
                 }
+                    
+                }
             }
-        }
+        
         post();
     }
 
@@ -100,4 +108,4 @@ const WhatsOnYourMind = () => {
     </div >)
 }
 
-export default WhatsOnYourMind;
+export default WhatsOnTeamMind;

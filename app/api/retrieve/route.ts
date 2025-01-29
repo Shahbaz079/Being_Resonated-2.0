@@ -17,7 +17,7 @@ export async function PUT(req: NextRequest) {
   let client: MongoClient | null = null;
   try {
     const body = await req.json();
-    const { email, userId,gradYear } = body;
+    const { email, userId,gradYear,username } = body;
 
     console.log('Received email:', email);
     console.log('Received userId:', userId);
@@ -42,7 +42,9 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
 
-    await users.updateOne({ email }, { $set: { gradYear } });
+    const newGradYear=gradYear+4;
+
+    await users.updateOne({ email }, { $set: { gradYear,name:username } });
 
     console.log('Found existing user:', existingUser);
 

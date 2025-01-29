@@ -61,7 +61,7 @@ const Home = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              name: user?.firstName,
+              name: user?.username,
               email: user?.primaryEmailAddress?.emailAddress,
               gradYear:user?.primaryEmailAddress?.emailAddress.slice(0,4),
 
@@ -76,6 +76,7 @@ const Home = () => {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
+                name: user?.username,
                 email: user?.primaryEmailAddress?.emailAddress,
                 userId: userId,
                 image: user?.imageUrl,
