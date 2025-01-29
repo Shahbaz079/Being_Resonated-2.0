@@ -257,7 +257,7 @@ const SliderComponent = ({ mongoId }: { mongoId: string }) => {
             <p className="mb-5">
               Contribute to Being Resonated by joining our team.
             </p>
-            <Link href="/jointeam" className="ml-[-3px] text-lg border-4 px-2 py-1 text-cyan-100 hover:bg-gray-500">Join Team</Link>
+            <Link href={`/team/678ed41edc8b11d686d71c64?id=678ed41edc8b11d686d71c64`} className="ml-[-3px] text-lg border-4 px-2 py-1 text-cyan-100 hover:bg-gray-500">Join Team</Link>
           </div>
         </div>
 

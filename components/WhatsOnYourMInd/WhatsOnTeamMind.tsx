@@ -59,7 +59,9 @@ const WhatsOnTeamMind = ({title,id}:{title:string,id:string}) => {
                 if (response.url) {
                     const res = await fetch(`/api/teampost`, {
                         method: "POST",
-                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy:mongoId, title: title,from:id }),
+                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy:mongoId, title: title,teamId:id
+
+                         }),
                     })
                     if (res.ok) {
                         toast.success("Posted successfully")
