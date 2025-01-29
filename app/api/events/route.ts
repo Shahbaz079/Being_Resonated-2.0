@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
       { _id: { $in: event?.posts } }
     ).toArray() : [];
 
-    const team = event?.team ? await events.findOne(
+    const team = event?.team ? await teams.findOne(
       { _id: event?.team }
     ) : null;
 

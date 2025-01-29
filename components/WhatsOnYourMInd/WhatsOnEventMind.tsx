@@ -57,7 +57,7 @@ const WhatsOnEventMind = ({title,name,location,time,date,eventId}:{title:string,
                 });
             
                 if (response.url) {
-                    const res = await fetch(`/api/teampost`, {
+                    const res = await fetch(`/api/eventpost`, {
                         method: "POST",
                         body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy:mongoId, title: title,Location:location,time,date,eventId,name }),
                     })

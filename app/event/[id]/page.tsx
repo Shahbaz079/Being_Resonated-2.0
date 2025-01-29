@@ -72,6 +72,8 @@ const EventPage = () => {
 
   const [live, setLive] = useState<boolean>(false);
   const [editEvent, setEditEvent] = useState<boolean>(false);
+  const [teamId,setTeamId] = useState<string>("");
+  const [teamName,setTeamName]=useState<string>("")
 
   const [eventUpdateData, setEventUpdateData] = useState<EventUpdateType>(emptyEventUpdateData);
 
@@ -160,6 +162,8 @@ const EventPage = () => {
         setTime(data.time);
         setLocation(data.location);
         setTeam(data.team);
+        setTeamId(data.team?._id.toString());
+        setTeamName(data.team?.name);
         setLive(data.isLive);
         setRequests(data.requests);
         setParticipants(data.participated);
@@ -466,8 +470,8 @@ const EventPage = () => {
             </TabsContent>
             <TabsContent value="Posts">
               {isLeader && <div>
-                {team?._id &&
-                  <WhatsOnEventMind title={team?._id?.toString()} name={team?.name} location={location} time={time} date={date} eventId={eventId} />}
+                
+                  <WhatsOnEventMind title={teamId} name={teamName} location={location} time={time} date={date} eventId={eventId} />
               </div>}
             </TabsContent>
             <TabsContent value="Members"></TabsContent>
