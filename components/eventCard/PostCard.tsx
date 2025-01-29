@@ -47,7 +47,7 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const { caption, image, likes,imgThumbnail } = post;
+  const { caption, image, likes, imgThumbnail } = post;
 
   const name = 'name' in post ? post.name : '';
   const title = 'title' in post ? post.title : '';
@@ -76,9 +76,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     setShowCommentBox(false);
   };
   console.log(post);
-  console.log("thumbnail",imgThumbnail)
+  console.log("thumbnail", imgThumbnail)
   return (
-    <div className="glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
+    <div className="animate-slide-top glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
 
       {'user' in post &&
         <div className="flex items-start gap-5" onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}>
@@ -97,23 +97,23 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
       {image && (
         <div className="relative w-full flex justify-center">
-        <div
-  className="w-full h-70 overflow-hidden rounded-lg"
-  style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
->
-  <img
-    src={image}
-    alt="Post Image"
-    className="w-full h-full object-cover"
-    loading="lazy"
-    
-   // style={{ display: 'none' }} // 
+          <div
+            className="w-full h-70 overflow-hidden rounded-lg"
+            style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          >
+            <img
+              src={image}
+              alt="Post Image"
+              className="w-full h-full object-cover"
+              loading="lazy"
 
-    onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
-   
-    style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
-  />
-</div>
+              // style={{ display: 'none' }} // 
+
+              onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
+
+              style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
+            />
+          </div>
 
 
         </div>

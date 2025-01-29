@@ -30,6 +30,7 @@ import "./teams.css"
 import WhatsOnTeamMind from "@/components/WhatsOnYourMInd/WhatsOnTeamMind";
 import { Suspense } from "react";
 import Layout from "@/components/customLayouts/Layout";
+import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 
 
 export interface IEvent {
@@ -60,14 +61,15 @@ const TeamPage = () => {
   const [createdBy, setCreatedBy] = useState<IUser | null>();
   const [leaders, setLeaders] = useState<IUser[]>();
   const [teamName, setTeamName] = useState<string>("")
- 
+
   const [events, setEvents] = useState<IEvent[] | null>([])
 
-  const [requests, setRequests] = useState<IUser[] >([])
+  const [requests, setRequests] = useState<IUser[]>([])
+  const [loading, setLoading] = useState<boolean>(true);
 
-  
 
-  
+
+
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -80,6 +82,7 @@ const TeamPage = () => {
 
   useEffect(() => {
     const TeamHandler = async () => {
+      setLoading(true);
       await fetch(`/api/team?id=${id}`).then(res => res.json()).then(data => {
         setMembers(data.members);
         setTeamImg(data.timage);
@@ -87,10 +90,9 @@ const TeamPage = () => {
         setCreatedBy(data.createdBy);
         setLeaders(data.leaders);
         setTeamName(data.name);
-        setEvents(data.events)
+        setEvents(data.events);
+        setLoading(false);
       })
-
-
     }
 
     TeamHandler();
@@ -106,168 +108,172 @@ const TeamPage = () => {
 
     const data = await response.json();
     if (response) {
-              toast.success("Request sent successfully")
-            } else {
-              toast.error("Request failed")
-            }
+      toast.success("Request sent successfully")
+    } else {
+      toast.error("Request failed")
+    }
   }
 
-  
+
   const isLeader = leaders?.some((leader) => leader._id.toString() === mongoId);
   const isVolunteer = members?.some((member) => member._id.toString() === mongoId);
 
-
-
   return (
     <Layout>
-    <div className="bg min-h-screen">
-   
-      <div className="mt-4 p-5 px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
-        <div className="ctab:order-2 w-full">
-          <Card className="p-3 py-5 glass items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
-            <div className="flex gap-6 ctab:flex-col">
-              <div className="h-40 w-40 mx-auto">
-                {teamImg ? <Image
-                  className="h-40 w-40 rounded-full"
-                  src={teamImg}
-                  alt={teamName}
-                /> :
-                  <img
+      <div className="bg min-h-screen">
+
+        {loading &&
+          <div className="pt-44"><LoadingAnimation></LoadingAnimation></div>
+        }
+
+        {!loading && <div className="animate-slide-top mt-4 p-5 px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
+          <div className="ctab:order-2 w-full">
+            <Card className="p-3 py-5 glass items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
+              <div className="flex gap-6 ctab:flex-col">
+                <div className="h-40 w-40 mx-auto">
+                  {teamImg ? <Image
                     className="h-40 w-40 rounded-full"
-                    src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                    alt={"user did'nt provide image"}
-                  />}
-              </div>
-
-
-              <div className="flex flex-col gap-3">
-                <div className="gap-3 items-center">
-                  <h1 className="text-5xl ctab:text-4xl ctab:text-center text-cyan-200 font-semibold">{teamName}</h1>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <IoMdInformationCircleOutline className="ctab:w-7 flex-wrap ctab:h-7 hover:opacity-80 h-10 w-10 cursor-pointer mt-3 ctab:mx-auto"></IoMdInformationCircleOutline>
-                    </DialogTrigger>
-                    <DialogContent className="border-2">
-                      <DialogHeader>
-                        <DialogTitle className="text-2xl">About Team</DialogTitle>
-                      </DialogHeader>
-                      <p className="text-lg max-h-[600px] overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-black">{description}</p>
-                    </DialogContent>
-                  </Dialog>
-
+                    src={teamImg}
+                    alt={teamName}
+                  /> :
+                    <img
+                      className="h-40 w-40 rounded-full"
+                      src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                      alt={"user did'nt provide image"}
+                    />}
                 </div>
 
 
-                <div className="flex flex-col">
-                  <div className="capitalize text-2xl text-yellow-600 ctab:text-center">Team Leader {leaders?.map((leader) => (
-                    <h3 key={leader._id.toString()} className="ctab:mx-auto bg-red-300 w-fit mb-1 mt-1 text-black  px-2 border-2 border-red-900 rounded-xl text-lg">{leader.name}</h3>
-                  ))}</div>
-                  <h3 className="text-2xl mt-4 ctab:text-center">Created By: {createdBy?.name}</h3>
-                </div>
-
-                <div className="flex justify-center gap-4 flex-wrap">
-{!isVolunteer &&
-                  <Button className="w-fit text-md">Request to Join</Button>}
-{ isLeader &&      <div className="">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button>Edit</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Team</DialogTitle>
-                        <div>
-                          {/* give edit team form content here*/}
-                        </div>
-                      </DialogHeader>
-                    </DialogContent>
-                  </Dialog>
-
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button>Manage Team Members</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogContent>
+                <div className="flex flex-col gap-3">
+                  <div className="gap-3 items-center">
+                    <h1 className="text-5xl ctab:text-4xl ctab:text-center text-cyan-200 font-semibold">{teamName}</h1>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <IoMdInformationCircleOutline className="ctab:w-7 flex-wrap ctab:h-7 hover:opacity-80 h-10 w-10 cursor-pointer mt-3 ctab:mx-auto"></IoMdInformationCircleOutline>
+                      </DialogTrigger>
+                      <DialogContent className="border-2">
                         <DialogHeader>
-                          <DialogContent>Manage Team Members</DialogContent>
+                          <DialogTitle className="text-2xl">About Team</DialogTitle>
                         </DialogHeader>
-                        <div>
-                          {/* give manage team content here*/}
-                        </div>
+                        <p className="text-lg max-h-[600px] overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-black">{description}</p>
                       </DialogContent>
-                    </DialogContent>
-                  </Dialog>
-                  </div>
-}
-                </div>
+                    </Dialog>
 
+                  </div>
+
+
+                  <div className="flex flex-col">
+                    <div className="capitalize text-2xl text-yellow-600 ctab:text-center">Team Leader {leaders?.map((leader) => (
+                      <h3 key={leader._id.toString()} className="ctab:mx-auto bg-red-300 w-fit mb-1 mt-1 text-black  px-2 border-2 border-red-900 rounded-xl text-lg">{leader.name}</h3>
+                    ))}</div>
+                    <h3 className="text-2xl mt-4 ctab:text-center">Created By: {createdBy?.name}</h3>
+                  </div>
+
+                  <div className="flex flex-col justify-center gap-4 flex-wrap">
+                    {!isVolunteer &&
+                      <Button className="w-fit text-md" onClick={joinHandler}>Request to Join</Button>}
+                    {isLeader && <div className=" flex gap-4 flex-wrap">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button>Edit</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Team</DialogTitle>
+                            <div>
+                              {/* give edit team form content here*/}
+                            </div>
+                          </DialogHeader>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button>Manage Team Members</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogContent>Manage Team Members</DialogContent>
+                            </DialogHeader>
+                            <div>
+                              {/* give manage team content here*/}
+                            </div>
+                          </DialogContent>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    }
+                  </div>
+
+                </div>
               </div>
+
+            </Card>
+
+            <div className="w-full rounded-xl mt-5">
+              <Tabs defaultValue="members">
+                <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
+                  <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>
+                  <TabsTrigger value="posts" className="text-lg">Posts</TabsTrigger>
+                </TabsList>
+                {isVolunteer && <TabsContent value="members">
+                  <TeamMembersCard members={members}></TeamMembersCard>
+                </TabsContent>}
+                <TabsContent value="posts">
+                  {isLeader && <div>{id &&
+                    <WhatsOnTeamMind title={teamName}
+                      id={id}
+                    ></WhatsOnTeamMind>}
+                  </div>}
+                </TabsContent>
+              </Tabs>
             </div>
 
-          </Card>
 
-          <div className="w-full rounded-xl mt-5">
-            <Tabs defaultValue="members">
-              <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
-                <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>
-                <TabsTrigger value="posts" className="text-lg">Posts</TabsTrigger>
-              </TabsList>
-            {isVolunteer &&  <TabsContent value="members">
-                <TeamMembersCard members={members}></TeamMembersCard>
-                </TabsContent>}
-              <TabsContent value="posts">
-              {isLeader &&  <div>{ id &&
-                  <WhatsOnTeamMind title={teamName}
-                  id={id} 
-                  ></WhatsOnTeamMind>} 
-                </div>}
-              </TabsContent>
-            </Tabs>
+          </div >
+
+          <Accordion type="single" collapsible className="hidden ctab:flex w-full mb-10">
+            <AccordionItem value="item-1" className="w-full">
+              <AccordionTrigger className="text-2xl w-full border-2">Upcoming Events</AccordionTrigger>
+              <AccordionContent className="w-full">
+                <UpcomingEventsCard events={events} mongoId={mongoId}></UpcomingEventsCard>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+
+          <div className="ctab:hidden">
+            <UpcomingEventsCard events={events} mongoId={mongoId}>
+            </UpcomingEventsCard>
           </div>
 
 
-        </div >
 
-        <Accordion type="single" collapsible className="hidden ctab:flex w-full mb-10">
-          <AccordionItem value="item-1" className="w-full">
-            <AccordionTrigger className="text-2xl w-full border-2">Upcoming Events</AccordionTrigger>
-            <AccordionContent className="w-full">
-              <UpcomingEventsCard events={events} mongoId={mongoId}></UpcomingEventsCard>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        </div >}
 
 
-        <div className="ctab:hidden">
-          <UpcomingEventsCard events={events} mongoId={mongoId}>
-          </UpcomingEventsCard>
-        </div>
+        {isLeader &&
+          <div className="flex">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="ml-10 cphone:mx-auto">Create Event</Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[600px] max-w-[700px]">
+                <DialogHeader>
+                  <DialogTitle className="text-xl">Create Event</DialogTitle>
+                </DialogHeader>
 
+                <div className="flex overflow-hidden h-[500px]">
+                  <CreateEvent teamId={id} members={members}></CreateEvent>
+                </div>
 
+              </DialogContent>
+            </Dialog>
+
+          </div>}
 
       </div >
-      {isLeader &&
-      <div className="flex">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="ml-10 cphone:mx-auto">Create Event</Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[600px] max-w-[700px]">
-            <DialogHeader>
-              <DialogTitle className="text-xl">Create Event</DialogTitle>
-            </DialogHeader>
-
-            <div className="flex overflow-hidden h-[500px]">
-              <CreateEvent teamId={id} members={members}></CreateEvent>
-            </div>
-
-          </DialogContent>
-        </Dialog>
-
-      </div>}
-
-    </div >
     </Layout>
   )
 }

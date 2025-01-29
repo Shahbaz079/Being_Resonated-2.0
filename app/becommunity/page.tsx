@@ -16,6 +16,7 @@ import Layout from "@/components/customLayouts/Layout";
 import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 
 
 export interface EventPost {
@@ -43,6 +44,7 @@ const BeCommunity = () => {
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [render, setRender] = useState<"posts" | "events" | "users">("posts");
   const [finalPosts, setFinalPosts] = useState<any[]>([]);
+  const [postsLoading, setPostsLoading] = useState<boolean>(true);
 
   const searchParams = useSearchParams();
   const mongoId = searchParams.get("id")
@@ -50,6 +52,7 @@ const BeCommunity = () => {
   useEffect(() => {
 
     const fetchPosts = async () => {
+      setPostsLoading(true);
       const eventRes = await fetch("/api/eventpost", { method: "GET" });
       const userRes = await fetch("/api/userpost", { method: "GET" })
 
@@ -61,6 +64,8 @@ const BeCommunity = () => {
 
       console.log("Userpostdata", userData)
       setUserPosts(userData);
+
+      setPostsLoading(false);
     }
     fetchPosts();
 
@@ -79,7 +84,7 @@ const BeCommunity = () => {
 
   return (
     <Layout>
-      <div className="bg relative min-h-screen border-2">
+      <div className="bg relative min-h-screen">
 
 
 
@@ -125,6 +130,11 @@ const BeCommunity = () => {
                   </div>
 
                 ))  */}
+
+                {postsLoading && <div>
+                  <LoadingAnimation></LoadingAnimation>
+                </div>}
+
                 {finalPosts.map((userPost) => (
                   <div className="" key={userPost._id?.toString()}>
                     <PostCard post={userPost} />
@@ -142,6 +152,11 @@ const BeCommunity = () => {
                   </div>
 
                 ))*/}
+
+                {postsLoading && <div>
+                  <LoadingAnimation></LoadingAnimation>
+                </div>}
+
                 {finalPosts.map((userPost) => (
                   <div className="" key={userPost._id?.toString()}>
                     <PostCard post={userPost} />
