@@ -4,8 +4,6 @@ import { FormEvent, useEffect, useState, Suspense } from "react";
 
 import { useSearchParams } from "next/navigation";
 import { redirect } from "next/navigation";
-import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople";
-import { newMember } from "@/components/expandableCards/card";
 import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
 import Image from "next/image";
@@ -22,8 +20,8 @@ const CreateTeam = () => {
   const [deadline, setDeadline] = useState('');
   const [members, setMembers] = useState<IUser[]>([]);
   const [leaders, setLeaders] = useState<IUser[]>([]);
-  const [currentPerson, setCurrentPerson] = useState<IUser>()
-
+  const [currentPerson, setCurrentPerson] = useState<IUser>();
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const [similarPeople, setSimilarPeople] = useState<IUser[]>([]);
   //  const [timage, setTimage] = useState('');
   // const [choosed, setChoosed] = useState(false);
@@ -85,10 +83,12 @@ const CreateTeam = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault(); // Prepare data
 
+    setSubmitted(true);
 
-    if (!name || !description|| !members || !leaders || !id) {
+
+    if (!name || !description || !members || !leaders || !id) {
       toast.error('Please fill in all required fields.');
-
+      setSubmitted(false);
       return;
     }
 
@@ -106,20 +106,19 @@ const CreateTeam = () => {
       if (response.ok) {
 
         toast.success('Team created successfully!');
+        setSubmitted(false);
 
         window.location.href = `/becommunity?id=${id}}`;
 
       } else {
         toast.error('Failed to create team!');
+        setSubmitted(false);
         redirect(`/`);
       }
     } catch (error) {
       console.error('Error creating team:', error);
-
-
+      setSubmitted(false);
     }
-
-
   };
 
   const removeHandler = (id: string) => {
@@ -152,7 +151,7 @@ const CreateTeam = () => {
               similarPeople.map((user) => (
                 <div className="p-2 w-full flex items-center gap-5 hover:bg-accent cursor-pointer" key={user._id.toString()} onClick={() => click(user)}>
                   <div className="w-10 h-10 rounded-full">
-                    <Image src={user.image || " "} className="w-10 h-10 rounded-full" width={200} height={200} alt={user.name} />
+                    <Image src={user.image || " "} alt={user.name} className="w-10 h-10 rounded-full" width={200} height={200} />
                   </div>
                   <div className="flex flex-col">
                     <div className="capitalize text-xl">{user.name}</div>
@@ -213,22 +212,22 @@ const CreateTeam = () => {
 
           <div className="mt-5">
             <Label htmlFor="name">Team Name:</Label>
-            <Input className="mt-1" type="text" id="name" value={name} onChange={(e) =>
+            <Input disabled={submitted} className="mt-1 disabled:opacity-70 disabled:cursor-not-allowed" type="text" id="name" value={name} onChange={(e) =>
               setName(e.target.value)} required />
           </div>
 
 
           <div className="">
             <Label htmlFor="description">Description</Label>
-            <Textarea className="mt-1" id="description" value={description}
+            <Textarea disabled={submitted} className="mt-1 disabled:opacity-70 disabled:cursor-not-allowed" id="description" value={description}
               onChange={(e) => setDescription(e.target.value)} required />
           </div>
 
-          
 
 
 
-          <Button type="submit" className="mx-auto  mt-5 w-fit">Create Team</Button> </form>
+
+          <Button disabled={submitted} type="submit" className="mx-auto disabled:opacity-70 disabled:cursor-not-allowed mt-5 w-fit">Create Team</Button> </form>
       </div >
 
 

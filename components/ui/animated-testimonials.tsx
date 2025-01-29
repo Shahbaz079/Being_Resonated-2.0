@@ -11,6 +11,7 @@ type Testimonial = {
   name: string;
   designation: string;
   src: string;
+  link: string;
 };
 export const AnimatedTestimonials = ({
   testimonials,
@@ -148,7 +149,9 @@ export const AnimatedTestimonials = ({
               </div>
 
               <motion.span>
-                <IoLogoLinkedin className="cursor-pointer fill-gray-400 hover:fill-cyan-300 hover:opacity-60 mt-3 w-10 h-10 ml-[-4px]"></IoLogoLinkedin>
+                <a href={testimonials[active].link} target="blank">
+                  <IoLogoLinkedin className="cursor-pointer fill-gray-400 hover:fill-cyan-300 hover:opacity-60 mt-3 w-10 h-10 ml-[-4px]"></IoLogoLinkedin>
+                </a>
               </motion.span>
 
             </motion.p>

@@ -11,28 +11,17 @@ import { useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import "./page.styles.css";
 
-const imageArray = ["/images/img1.jpg", "/images/img2.jpg", "/images/img3.jpg", "/images/img4.jpg", "/images/img5.jpg",]
-
 const Home = () => {
 
   const { isLoaded } = useSession();
   const { userId } = useAuth();
   const { user } = useUser();
-  const [animationOver, setAnimationOver] = useState<boolean>(false);
+
 
   //console.log(sessionId,getToken)
   const [mongoId, setMongoId] = useState(user?.publicMetadata?.mongoId as string)
-  const [isFirstVisit, setIsFirstVisit] = useState<boolean>(false);
 
-  useEffect(() => {
-    const visited = localStorage.getItem('hasVisited');
-    if (visited) {
-      setIsFirstVisit(false);
-    } else {
-      localStorage.setItem('hasVisited', 'true');
-      setIsFirstVisit(true);
-    }
-  }, []);
+
 
   useEffect(() => {
     setMongoId(user?.publicMetadata?.mongoId as string)
@@ -40,7 +29,6 @@ const Home = () => {
 
   useEffect(() => {
     const newInterval = setInterval(() => {
-      setAnimationOver(true);
     }, 7500);
 
     return () => {
@@ -50,53 +38,53 @@ const Home = () => {
 
   useEffect(() => {
     if (!isLoaded) {
-      return 
+      return
     }
     const fetchData = async () => {
 
       if (userId) {
         try {
-          if(!mongoId){
-          const result = await fetch('/api/createuser', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: user?.username,
-              email: user?.primaryEmailAddress?.emailAddress,
-              gradYear:user?.primaryEmailAddress?.emailAddress.slice(0,4),
-
-            })
-          }); 
-          if (result.ok) {
-
-            toast.success('User created successfully');
-            console.log("Done")
-          } else if (result.status === 400) {
-
-           const grad=Number( user?.primaryEmailAddress?.emailAddress.slice(0,4))+4;
-
-            const res = await fetch('/api/retrieve', {
-              method: 'PUT',
+          if (!mongoId) {
+            const result = await fetch('/api/createuser', {
+              method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 name: user?.username,
                 email: user?.primaryEmailAddress?.emailAddress,
-                userId: userId,
-                image: user?.imageUrl,
-                gradYear:grad,
+                gradYear: user?.primaryEmailAddress?.emailAddress.slice(0, 4),
 
               })
             });
+            if (result.ok) {
 
-            if (res.ok) {
+              toast.success('User created successfully');
+              console.log("Done")
+            } else if (result.status === 400) {
 
-              console.log('User retrieved successfully');
+              const grad = Number(user?.primaryEmailAddress?.emailAddress.slice(0, 4)) + 4;
+
+              const res = await fetch('/api/retrieve', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: user?.username,
+                  email: user?.primaryEmailAddress?.emailAddress,
+                  userId: userId,
+                  image: user?.imageUrl,
+                  gradYear: grad,
+
+                })
+              });
+
+              if (res.ok) {
+
+                console.log('User retrieved successfully');
+              }
             }
           }
-        }
-        
 
-    
+
+
         } catch (error) {
 
           console.error('Error:', error);
@@ -123,7 +111,7 @@ const Home = () => {
               body: JSON.stringify({
                 email: user?.primaryEmailAddress?.emailAddress,
                 image: user?.imageUrl,
-                name:user?.username,
+                name: user?.username,
 
               })
             });
@@ -152,16 +140,6 @@ const Home = () => {
   return (
     <div className="relative h-screen w-full">
 
-      {(isFirstVisit && !animationOver) ? <div className="absolute banner before: h-full w-full z-[200] bg-black banner flex items-center justify-center">
-        <div className="content">
-          <p className="font-bold text-xl mb-5">LOGO</p>
-          <h1 className="font-bold text-6xl">BEing</h1>
-          <h1 className="font-bold text-6xl">Resonated</h1>
-        </div>
-      </div> : null}
-
-
-
       <header>
         <div className="logo text-xl text-red-950 font-extrabold">LOGO</div>
         <ul className="menu text-xl ctab:text-sm text-cyan-100" >
@@ -176,7 +154,7 @@ const Home = () => {
 
 
 
-      {(!isFirstVisit || animationOver) ? <SliderComponent mongoId={mongoId}></SliderComponent> : null}
+      <SliderComponent mongoId={mongoId}></SliderComponent>
 
     </div>
   )

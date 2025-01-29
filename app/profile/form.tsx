@@ -13,7 +13,6 @@ const predefinedOptions = ['Web Dev', 'Poetry', 'Dance', 'Chess', 'Competitive P
 
 
 const Form = ({ setEdit, handleUpdate, currentInterests, currentUserDescription }: PropsType) => {
-    //  const [gradYear, setGradYear] = useState<number>(currentGradYear);
     const [interests, setInterests] = useState<string[]>(currentInterests);
     const [currentInterest, setCurrentInterest] = useState<string>(""); // For the interest user is currently typing.
     const [userDescription, setUserDescription] = useState<string>(currentUserDescription);
@@ -42,13 +41,6 @@ const Form = ({ setEdit, handleUpdate, currentInterests, currentUserDescription 
 
                 <h1 className="text-3xl mb-[30px] mt-1">Edit Profile</h1>
                 <div className="px-3 flex flex-col gap-10 h-max-full overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded scrollbar-track-black scrollbar-thumb-blue-900">
-                    {   /*   <div>
-                        <label htmlFor="gradYear" className="ml-1">Graduation Year</label>
-                        <input type="number" name="gradYear" placeholder="graduation year" className="mt-1 h-10 w-full self-center rounded-xl p-3"
-                            value={gradYear}
-                            onChange={(e) => setGradYear(Number(e.target.value))} />
-                    </div>*/}
-
                     <div className="relative">
                         <label htmlFor="interests" className="ml-1">Select Interests</label>
                         <input type="text" name="interests" placeholder="Type to search..." className="mt-1 h-10 w-full self-center rounded-xl p-3"
@@ -64,7 +56,6 @@ const Form = ({ setEdit, handleUpdate, currentInterests, currentUserDescription 
                                     {option} </div>))} </div>)}
 
                         <div className="p-2 mt-4 scrollbar-corner-white rounded-2xl scrollbar-thumb-black flex gap-3 flex-wrap max-h-36 overflow-y-scroll scrollbar-thin">
-                            {/* <div className="w-full h-full absolute top-0 bg-gradient-to-b from-transparent to-black mix-blend-multiply"></div> */}
                             {interests.map((option, index) => (<InterestTag handleRemoveOption={handleRemoveOption} interest={option} key={index} />))}
                         </div>
                     </div>

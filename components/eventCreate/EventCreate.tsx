@@ -23,7 +23,7 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
   const [currentPerson, setCurrentPerson] = useState<IUser | string | null>();
   const [time, setTime] = useState<string | null>();
   const [location, setLocation] = useState<string | null>("");
-
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
 
 
@@ -36,9 +36,11 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
       )
     }
     event.preventDefault(); // Prepare data
+    setSubmitted(true);
 
     if (!name || !description || !eventDate || !eventMembers || !leaders || !currentPerson || !teamId || !time || !location) {
       toast.error('Please fill in all required fields.');
+      setSubmitted(false);
       return;
     }
 
@@ -67,6 +69,7 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
     } catch (error) {
       console.error('Error creating Event:', error);
     }
+    setSubmitted(false);
   };
 
   const removeHandler = (id: string) => {
@@ -107,6 +110,7 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
     <div className="h-full w-full overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-blue-600 px-4 py-2">
 
       <div className="mt-4 flex flex-col items-center rounded-xl px-4 max-h-48 overflow-y-scroll scrollbar-thin scrollbar-track-black scrollbar-thumb-black">
+        <h1>Team Members</h1>
         {members?.map((member) => <MemberCard addToEvent={addToEvent} member={member} key={member._id.toString()}></MemberCard>)}
       </div>
 
@@ -150,30 +154,30 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
 
           </div>
         )}
-        <div className="w-full px-4 py-2 flex flex-col mt-5">
+        <div className="w-full px-4 py-2 flex flex-col mt-5 disabled:opacity-70 disabled:cursor-not-allowed">
           <Label htmlFor="name">Event Name:</Label>
-          <Input type="text" id="name" className="mt-2" value={name} onChange={(e) => setName(e.target.value)} required />
+          <Input disabled={submitted} type="text" id="name" className="mt-2" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
         <div className="w-full px-4 py-2 flex flex-col ">
           <Label htmlFor="description">Description</Label>
-          <Textarea id="description" className="mt-2" value={description} onChange={(e) => setDescription(e.target.value)} required />
+          <Textarea disabled={submitted} id="description" className="mt-2 disabled:opacity-70 disabled:cursor-not-allowed" value={description} onChange={(e) => setDescription(e.target.value)} required />
         </div>
         <div className="w-full px-4 py-2 flex flex-col ">
           <Label htmlFor="time">Time</Label>
-          <Input type="string" id="time" className="mt-2" value={time || ''} onChange={(e) => setTime(e.target.value.toString())} required />
+          <Input disabled={submitted} type="string" id="time" className="mt-2 disabled:opacity-70 disabled:cursor-not-allowed" value={time || ''} onChange={(e) => setTime(e.target.value.toString())} required />
         </div>
         <div className="w-full px-4 py-2 flex flex-col ">
           <Label htmlFor="location">Location</Label>
-          <Input type="string" className="mt-2" value={location || ''} onChange={(e) => setLocation(e.target.value)} required />
+          <Input disabled={submitted} type="string" className="mt-2 disabled:opacity-70 disabled:cursor-not-allowed" value={location || ''} onChange={(e) => setLocation(e.target.value)} required />
         </div>
         <div className="w-full px-4 py-2 flex flex-col ">
           <Label htmlFor="eventDate">Event Date</Label>
-          <Input type="date" id="eventDate" className="mt-2" value={eventDate} required onChange={(e) => setEventDate(e.target.value)} />
+          <Input disabled={submitted} type="date" id="eventDate" className="mt-2 disabled:opacity-70 disabled:cursor-not-allowed" value={eventDate} required onChange={(e) => setEventDate(e.target.value)} />
         </div>
 
 
 
-        <Button type="submit" className="mt-3">Create Event</Button>
+        <Button disabled={submitted} type="submit" className="mt-3 disabled:opacity-70 disabled:cursor-not-allowed">Create Event</Button>
       </form>
 
     </div>
@@ -184,7 +188,7 @@ const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: str
 }
 
 const MemberCard = ({ member, addToEvent }: { member: IUser, addToEvent: (member: IUser) => void }) => {
-  return <div onClick={() => addToEvent(member)} className="flex w-full mb-1 items-center gap-3 hover:bg-accent cursor-pointer p-2 rounded-lg">
+  return <div onClick={() => addToEvent(member)} className="flex w-full mb-1 items-center gap-3 hover:scale-[1.02] transition-all duration-200 hover:bg-slate-700 hover:[glass] cursor-pointer p-2 rounded-lg">
     <img className="w-10 h-10 rounded-full" src={member.image} alt="profile picture of member" />
     <span className="capitalize">{member.name}</span>
   </div>
