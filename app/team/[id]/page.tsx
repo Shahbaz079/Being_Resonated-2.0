@@ -213,13 +213,15 @@ const TeamPage = () => {
                 <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>
                 <TabsTrigger value="posts" className="text-lg">Posts</TabsTrigger>
               </TabsList>
-              <TabsContent value="members"><TeamMembersCard members={members}></TeamMembersCard></TabsContent>
+            {isVolunteer &&  <TabsContent value="members">
+                <TeamMembersCard members={members}></TeamMembersCard>
+                </TabsContent>}
               <TabsContent value="posts">
-                <div>
+              {isLeader &&  <div>{ id &&
                   <WhatsOnTeamMind title={teamName}
-                  id={id!} 
-                  ></WhatsOnTeamMind>
-                </div>
+                  id={id} 
+                  ></WhatsOnTeamMind>} 
+                </div>}
               </TabsContent>
             </Tabs>
           </div>
@@ -245,7 +247,7 @@ const TeamPage = () => {
 
 
       </div >
-
+      {isLeader &&
       <div className="flex">
         <Dialog>
           <DialogTrigger asChild>
@@ -263,7 +265,7 @@ const TeamPage = () => {
           </DialogContent>
         </Dialog>
 
-      </div>
+      </div>}
 
     </div >
     </Layout>

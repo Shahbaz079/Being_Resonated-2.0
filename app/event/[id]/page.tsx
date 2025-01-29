@@ -65,7 +65,7 @@ const EventPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [event, setEvent] = useState<IEvent | null>(null);
-  const [eventId, setEventId] = useState<string | null>(null);
+  const [eventId, setEventId] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
 
   const [live, setLive] = useState<boolean>(false);
@@ -470,8 +470,9 @@ const EventPage = () => {
             </TabsContent>
             <TabsContent value="Posts">
              {isLeader && <div>
-                <WhatsOnEventMind title={team?._id?.toString()!} name={team?.name!} location={location} time={time} date={date} eventId={eventId!}    />
-              </div>   }
+              {team?._id &&
+                <WhatsOnEventMind title={team?._id?.toString()} name={team?.name} location={location} time={time} date={date} eventId={eventId}    />  }
+              </div>    }
             </TabsContent>
             <TabsContent value="Members"></TabsContent>
           </Tabs>
