@@ -31,6 +31,7 @@ import WhatsOnTeamMind from "@/components/WhatsOnYourMInd/WhatsOnTeamMind";
 import { Suspense } from "react";
 import Layout from "@/components/customLayouts/Layout";
 import PostCard from "@/components/eventCard/PostCard";
+import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 
 
 export interface IEvent {
@@ -66,6 +67,7 @@ const TeamPage = () => {
 
   const [requests, setRequests] = useState<IUser[]>([])
   const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true);
 
 
 
@@ -93,6 +95,7 @@ const TeamPage = () => {
         setTeamName(data.name);
         setEvents(data.events)
         setPosts(data.posts);
+        setLoading(false);
       })
     }
 
@@ -249,10 +252,10 @@ const TeamPage = () => {
                     <h3 className="text-2xl mt-4 ctab:text-center">Created By: {createdBy?.name}</h3>
                   </div>
 
-                  <div className="flex justify-center gap-4 flex-wrap">
+                  <div className="flex border-2 justify-start gap-4 flex-wrap">
                     {!isVolunteer &&
                       <Button className="w-fit text-md " onClick={() => joinHandler(id!)}>Request to Join</Button>}
-                    {isLeader && <div className="">
+                    {isLeader && <div className="flex gap-4 justify-start">
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button>Edit</Button>
