@@ -245,7 +245,7 @@ const TeamPage = () => {
 
                 <div className="flex justify-center gap-4 flex-wrap">
 {!isVolunteer &&
-                  <Button className="w-fit text-md " onClick={()=>joinHandler(mongoId)}>Request to Join</Button>}
+                  <Button className="w-fit text-md " onClick={()=>joinHandler(id!)}>Request to Join</Button>}
 { isLeader &&      <div className="">
                   <Dialog>
                     <DialogTrigger asChild>
