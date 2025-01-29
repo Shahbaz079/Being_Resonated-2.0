@@ -51,6 +51,7 @@ export async function PUT(req: NextRequest) {
 
 
     const updatedParticipated = event?.participated || [];
+    
     updatedParticipated.push(new ObjectId(id));
 
     const eventUpdatedRequests = event?.requests || [];

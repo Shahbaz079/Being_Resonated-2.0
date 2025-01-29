@@ -54,7 +54,7 @@ export interface IEvent {
 
 const TeamPage = () => {
 
-  const [members, setMembers] = useState<IUser[] | null>([])
+  const [members, setMembers] = useState<IUser[] >([])
   const [teamImg, setTeamImg] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>("");
   const [createdBy, setCreatedBy] = useState<IUser | null>();
@@ -82,10 +82,11 @@ const TeamPage = () => {
     const TeamHandler = async () => {
       await fetch(`/api/team?id=${id}`).then(res => res.json()).then(data => {
         setMembers(data.members);
-        setTeamImg(data.timage);
+        setTeamImg(data.image);
         setDescription(data.description);
         setCreatedBy(data.createdBy);
         setLeaders(data.leaders);
+        setRequests(data.requests);
         setTeamName(data.name);
         setEvents(data.events)
       })
@@ -96,7 +97,7 @@ const TeamPage = () => {
     TeamHandler();
   }, [])
 
-  const joinHandler = async () => {
+  const joinHandler1 = async () => {
     const response = await fetch(`/api/join?id=${mongoId}&type=join`, {
       method: 'PUT',
       headers: {
@@ -113,8 +114,85 @@ const TeamPage = () => {
   }
 
   
+  const joinHandler = (id: string) => {
+    try {
+
+      const join = async () => {
+        const res = await fetch(`/api/team?type=join&id=${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: mongoId }),
+
+        })
+        const data = await res.json();
+        if (res) {
+          toast.success("Request sent successfully")
+        } else {
+          toast.error("Request failed")
+        }
+      }
+      join();
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  
+  const removeAcceptHandler = (newParticipant: IUser) => {
+
+
+
+    const updatedRequests = requests?.filter((request) => request._id.toString() !== newParticipant._id.toString())
+    setRequests(updatedRequests || []);
+
+    const updateParticipants = async () => {
+      const res = await fetch(`/api/team?id=${id}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ requests: updatedRequests })
+      })
+
+      const data = res.json();
+      if (res.ok) {
+        toast.success("Participant Removed successfully");
+      }
+    }
+    updateParticipants();
+  }
+
+  
   const isLeader = leaders?.some((leader) => leader._id.toString() === mongoId);
   const isVolunteer = members?.some((member) => member._id.toString() === mongoId);
+
+  const acceptRequestHandler = (newParticipant: IUser) => {
+  
+      const updatedMembers = members ? [...members, newParticipant] : [newParticipant];
+      setMembers(updatedMembers);
+
+    const updatedRequests = requests?.filter((request) => request._id.toString() !== newParticipant._id.toString())
+    setRequests(updatedRequests);
+
+    const updateParticipants = async () => {
+      const res = await fetch(`/api/join?tid=${id}&id=${newParticipant._id.toString()}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+      })
+
+      const data = res.json();
+      if (res.ok) {
+        toast.success("Participant added successfully");
+      }
+    }
+    updateParticipants();
+  }
 
 
 
@@ -167,7 +245,7 @@ const TeamPage = () => {
 
                 <div className="flex justify-center gap-4 flex-wrap">
 {!isVolunteer &&
-                  <Button className="w-fit text-md">Request to Join</Button>}
+                  <Button className="w-fit text-md " onClick={()=>joinHandler(mongoId)}>Request to Join</Button>}
 { isLeader &&      <div className="">
                   <Dialog>
                     <DialogTrigger asChild>
@@ -192,8 +270,24 @@ const TeamPage = () => {
                         <DialogHeader>
                           <DialogContent>Manage Team Members</DialogContent>
                         </DialogHeader>
+                        <h2>Requests</h2>
                         <div>
-                          {/* give manage team content here*/}
+                        <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
+                        {requests?.map((participant) => (
+                          <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
+                            <div className="px-2 mx-2">
+                              <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+
+                            <div className="flex flex-col px-2 mx-2">
+                              <div className="">{participant.name}</div>
+                              <div className="">{participant?.gradYear}</div>
+                            </div>
+
+                            <button onClick={() => acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
+                            <button onClick={() => removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
+                          </div>
+                        ))}
+                      </div>
                         </div>
                       </DialogContent>
                     </DialogContent>

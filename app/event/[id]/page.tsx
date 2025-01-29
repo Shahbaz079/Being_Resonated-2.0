@@ -29,6 +29,7 @@ import { FaImage, FaInfoCircle } from "react-icons/fa";
 import WhatsOnEventMind from "@/components/WhatsOnYourMInd/WhatsOnEventMind";
 import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
+import Layout from "@/components/customLayouts/Layout";
 
 interface EventUpdateType {
   date: string;
@@ -200,7 +201,7 @@ const EventPage = () => {
     setRequests(updatedRequests);
 
     const updateParticipants = async () => {
-      const res = await fetch(`/api/participate?eid=${eventId}&id=${mongoId}`, {
+      const res = await fetch(`/api/participate?eid=${eventId}&id=${newParticipant._id.toString()}`, {
         method: "PUT",
         headers: {
           'Content-Type': 'application/json'
@@ -294,9 +295,11 @@ const EventPage = () => {
 
 
   return (
+
+    <Layout>
     <div className="bg min-h-screen flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
 
-      <SubHeader></SubHeader>
+      
 
       {loading && <div className="mt-44">
         <LoadingAnimation></LoadingAnimation></div>}
@@ -499,6 +502,7 @@ const EventPage = () => {
 
 
     </div >
+    </Layout>
   );
 }
 

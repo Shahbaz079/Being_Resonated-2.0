@@ -117,7 +117,7 @@ export async function PUT(request: NextRequest) {
   const teamId = request.nextUrl.searchParams.get('id');
   const type=request.nextUrl.searchParams.get('type');
 
-  const {userId, name, description, members, leaders, image,  team, time,requests } = await request.json();
+  const { name, description, members, leaders, image,requests,userId } = await request.json();
 
   let client: MongoClient | null = null;
 
