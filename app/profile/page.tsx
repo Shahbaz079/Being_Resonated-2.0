@@ -1,17 +1,13 @@
 "use client"
-import Ring from "@/components/ring/ring";
-import { useSession, useUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
 
+import { useSession, useUser } from "@clerk/nextjs";
 import { useEffect, Suspense, Dispatch, SetStateAction } from "react";
 import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { ObjectId } from "mongoose";
 import Link from "next/link";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { useSearchParams } from "next/navigation";
 import { SlOptions } from "react-icons/sl"
-
 import Image from "next/image";
 import Form from "./form";
 import AllInterests from "./allInterests";
@@ -43,10 +39,9 @@ const ProfilePage = () => {
 
   const { isLoaded } = useSession();
   const mId = id as string;
-  console.log(`mongoId:${mId} and id:${id}`);
+  // console.log(`mongoId:${mId} and id:${id}`);
   // const [user, setUser] = useState<any>(null); // Type appropriately
   const [name, setName] = useState<string>("");
-
   const [email, setEmail] = useState<string>("");
   const [interests, setInterests] = useState<string[]>([]);
   // const [teams, setTeams] = useState<Team[]>([]);
@@ -56,12 +51,9 @@ const ProfilePage = () => {
   const [image, setimage] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(true);
   const [description, setDescription] = useState<string>("Tell us about yourself");
-
-
   const [edit, setEdit] = useState<boolean>(false);
   const [showAllInterests, setShowAllInterests] = useState<boolean>(false);
   const [owner, setOwner] = useState<boolean>(true);
-
   const [posts, setPosts] = useState<any[]>([]);
 
 
@@ -152,7 +144,6 @@ const ProfilePage = () => {
 
   const handleUpdate = (changedInterests: string[]) => {
     setEdit(false);
-    // console.log(changedGradYear);
 
     const res = fetch(`/api/user?id=${mId}`, {
       method: 'PUT',
@@ -161,21 +152,15 @@ const ProfilePage = () => {
       },
       body: JSON.stringify({
         email: email,
-        // gradYear: changedGradYear, //edit it carefully
         interests: changedInterests,
         dob: birthDate,
         image: user?.imageUrl
       })
     }).then(response => response.json())
       .then(data => {
-        // setUser(data)
-
         setInterests(data.interests || []);
-        // setTeams(data.teams || []);
-
         setBirthDate(data.dob || "")
         setGradYear(data.gradYear || "")
-
       }).catch(error => console.error('Error:', error))
   }
 
@@ -268,18 +253,18 @@ const ProfilePageWithSuspense = () => (
   </Suspense>
 )
 
-const LoadSkeleton = () => (
-  <div className="h-fit mt-[10vh] flex ctab:flex-col ctab:items-center justify-center p-5 gap-20 ctab:gap-0 ctab:p-0 relative overflow-hidden">
-    <div className="Shine absolute h-full w-full bg-black mix-blend-screen animate-skeleton"></div>
-    <div className="rounded-full h-[230px] w-[230px] bg-[#252424]"></div>
-    <div className="ctab:w-full max-w-[60%] w-[60%] h-[100%] ctab:max-w-full ctab:flex ctab:flex-col ctab:items-center ctab:mt-5">
-      <div className="bg-[#252424] h-16 rounded-xl w-full"></div>
-      <div className="bg-[#252424] h-7 mt-4 rounded-xl w-full"></div>
+// const LoadSkeleton = () => (
+//   <div className="h-fit mt-[10vh] flex ctab:flex-col ctab:items-center justify-center p-5 gap-20 ctab:gap-0 ctab:p-0 relative overflow-hidden">
+//     <div className="Shine absolute h-full w-full bg-black mix-blend-screen animate-skeleton"></div>
+//     <div className="rounded-full h-[230px] w-[230px] bg-[#252424]"></div>
+//     <div className="ctab:w-full max-w-[60%] w-[60%] h-[100%] ctab:max-w-full ctab:flex ctab:flex-col ctab:items-center ctab:mt-5">
+//       <div className="bg-[#252424] h-16 rounded-xl w-full"></div>
+//       <div className="bg-[#252424] h-7 mt-4 rounded-xl w-full"></div>
 
-      <div className="h-40 w-full ctab:mt-7 mt-12 bg-[#252424] rounded-xl"></div>
-    </div>
-  </div>
-);
+//       <div className="h-40 w-full ctab:mt-7 mt-12 bg-[#252424] rounded-xl"></div>
+//     </div>
+//   </div>
+// );
 
 const InterestTag = ({ interest }: { interest: string }) => (
   <div className="border-2 w-fit py-1 px-2 rounded-2xl text-sm bg-[#332A2A] border-red-400 cphone:text-[12px]">
