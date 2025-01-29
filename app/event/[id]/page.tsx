@@ -28,6 +28,7 @@ import { FaImage, FaInfoCircle } from "react-icons/fa";
 
 import WhatsOnEventMind from "@/components/WhatsOnYourMInd/WhatsOnEventMind";
 import { Suspense } from "react";
+import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 
 interface EventUpdateType {
   date: string;
@@ -58,6 +59,7 @@ const EventPage = () => {
   const [team, setTeam] = useState<ITeam | null>();
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [edit, setEdit] = useState(false);
   const [preview, setPreview] = useState<string | null>(null)
@@ -87,8 +89,6 @@ const EventPage = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-
-
     }
   };
 
@@ -107,7 +107,7 @@ const EventPage = () => {
 
       const response = await fetch(`/api/upload?id=${eventId}&source=event`, {
         method: "POST",
-        body: JSON.stringify({ imgUrl: res.url,thumbUrl:res.thumbnailUrl })
+        body: JSON.stringify({ imgUrl: res.url, thumbUrl: res.thumbnailUrl })
       })
 
       if (response.ok) {
@@ -117,8 +117,6 @@ const EventPage = () => {
     }
 
   }
-
-
 
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
@@ -131,24 +129,17 @@ const EventPage = () => {
   const isLeader = leaders?.some((leader) => leader._id.toString() === mongoId);
   const isVolunteer = members?.some((member) => member._id.toString() === mongoId);
 
-
-
-
-  
-
   useEffect(() => {
-    
-      setEventId(window.location.pathname.split('/')[2]);
-      console.log(eventId, "eventid")
 
-
-    
+    setEventId(window.location.pathname.split('/')[2]);
+    console.log(eventId, "eventid")
   }, [isLoaded])
 
 
   useEffect(() => {
 
     const handleEventData = async () => {
+      setLoading(true);
       const res = await fetch(`/api/events?id=${eventId}`, {
         method: "GET",
         headers: {
@@ -175,7 +166,7 @@ const EventPage = () => {
         setEvent(data)
         console.log(data);
         setEventUpdateData({ name: data.name, date: data.date, description: data.description, location: data.location, time: data.time });
-
+        setLoading(false);
       } else {
         toast.error("Failed to fetch event data");
       }
@@ -302,7 +293,11 @@ const EventPage = () => {
     <div className="bg min-h-screen flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
 
       <SubHeader></SubHeader>
-      <Card className="glass mt-10">
+
+      {loading && <div className="mt-44">
+        <LoadingAnimation></LoadingAnimation></div>}
+
+      {!loading && <Card className="glass mt-10 animate-slide-top">
         <CardHeader>
           <div className="relative h-fit w-fit">
             {isLeader &&
@@ -451,9 +446,10 @@ const EventPage = () => {
           <Button onClick={() => handleParticipation(eventId!)} variant={"default"} className="ml-4 bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Participate</Button>
         </CardFooter>
 
-      </Card>
+      </Card>}
 
-      <Card className="glass">
+
+      {!loading && <Card className="glass animate-slide-top">
         <CardHeader>
           <Tabs defaultValue="Organisers">
             <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
@@ -469,17 +465,17 @@ const EventPage = () => {
               </div>
             </TabsContent>
             <TabsContent value="Posts">
-             {isLeader && <div>
-              {team?._id &&
-                <WhatsOnEventMind title={team?._id?.toString()} name={team?.name} location={location} time={time} date={date} eventId={eventId}    />  }
-              </div>    }
+              {isLeader && <div>
+                {team?._id &&
+                  <WhatsOnEventMind title={team?._id?.toString()} name={team?.name} location={location} time={time} date={date} eventId={eventId} />}
+              </div>}
             </TabsContent>
             <TabsContent value="Members"></TabsContent>
           </Tabs>
         </CardHeader>
-      </Card>
+      </Card>}
 
-      <Card className="glass">
+      {!loading && <Card className="glass animate-slide-top">
         <CardHeader>
           <CardTitle className="text-2xl text-cyan-200">Rewards</CardTitle>
         </CardHeader>
@@ -491,7 +487,10 @@ const EventPage = () => {
             <PrizeCard position="Fastest Coding Team" content="Headphones"></PrizeCard>
           </div>
         </CardContent>
-      </Card>
+      </Card>}
+
+
+
 
 
 
@@ -525,7 +524,7 @@ const PrizeCard = ({ position, content }: { position: string, content: string })
 
 
 
-const EventPagewithSuspense = () =>  (
+const EventPagewithSuspense = () => (
   <Suspense fallback={<div>Loding</div>}> <EventPage /></Suspense>
 )
 
