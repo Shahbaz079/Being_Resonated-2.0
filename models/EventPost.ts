@@ -4,7 +4,8 @@ import { boolean } from "zod";
 const EventPostSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    from:{type:String,required:true},
+    from:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"Event"},
+    team:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"Team"},
     caption:{type:String,required:false},
     Image: { type: String, required: true },
     imgThumbnail: { type: String, required: false },

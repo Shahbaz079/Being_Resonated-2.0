@@ -32,7 +32,7 @@ export interface EventPost {
   createdBy: ObjectId;
   createdAt?: Date; // Managed by mongoose timestamps
   updatedAt?: Date; // Managed by mongoose timestamps
-  from: string;
+  from: ObjectId;
   isEventPost: boolean;
   projectProgress: number;
 
@@ -42,7 +42,10 @@ const BeCommunity = () => {
 
   const [eventPosts, setEventPosts] = useState<EventPost[]>([]);
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
+  const [teamPosts, setTeamPosts] = useState<any[]>([]);
   const [render, setRender] = useState<"posts" | "events" | "users">("posts");
+
+
   const [finalPosts, setFinalPosts] = useState<any[]>([]);
   const [postsLoading, setPostsLoading] = useState<boolean>(true);
 
@@ -55,14 +58,16 @@ const BeCommunity = () => {
       setPostsLoading(true);
       const eventRes = await fetch("/api/eventpost", { method: "GET" });
       const userRes = await fetch("/api/userpost", { method: "GET" })
+      const teamRes=await fetch("/api/teampost",{method:"GET"})
 
       const eventData: [] = await eventRes.json();
       const userData: [] = await userRes.json();
-
-      console.log("eventdata", eventData)
+      const teamData:[]=await teamRes.json()
+      
       setEventPosts(eventData);
 
-      console.log("Userpostdata", userData)
+      setTeamPosts(teamData);
+    
       setUserPosts(userData);
 
       setPostsLoading(false);
@@ -73,14 +78,13 @@ const BeCommunity = () => {
 
   useEffect(() => {
     if (!eventPosts || !userPosts) return;
-    const finalPosts = [...eventPosts, ...userPosts];
+    const finalPosts = [...eventPosts, ...userPosts,...teamPosts];
     finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
     setFinalPosts(finalPosts);
   }, [eventPosts, userPosts])
 
 
-  console.log("eventposts", eventPosts)
-  console.log(finalPosts, "finalposts")
+
 
   return (
     <Layout>

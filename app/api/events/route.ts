@@ -126,8 +126,8 @@ export async function GET(request: NextRequest) {
       { projection: { password: 0, teams: 0, events: 0, participations: 0 } }
     );
 
-    const eventParticipations = event?.participations ? await users.find(
-      { _id: { $in: event?.participations } },
+    const eventParticipations = event?.participated ? await users.find(
+      { _id: { $in: event?.participated } },
       { projection: { password: 0, teams: 0, events: 0, participations: 0 } }
     ).toArray() : [];
 

@@ -67,10 +67,10 @@ const EventCard = ({ uId }: { uId: string }) => {
         setRequestedEvents(data.eventRequests);
 
       } else {
-        toast.error("participation fetching failed")
+     console.error("failed to fetch participated events");
       }
     }
-    fetchParticipatedEvents();
+    if(uId)fetchParticipatedEvents();
     fetchEvents();
   }, [isLoaded])
 

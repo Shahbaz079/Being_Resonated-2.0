@@ -8,6 +8,7 @@ import { Input } from '../ui/input';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 import Link from 'next/link';
 import "./search.css"
+import { useUser } from '@clerk/nextjs';
 
 
 type ClickType = (user: IUser) => void;
@@ -30,6 +31,10 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
       clearTimeout(timerId);
     };
   }, [searchTerm]);
+
+  const {user} = useUser();
+
+  const mongoId=user?.publicMetadata?.mongoId
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -125,7 +130,7 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
                 </div>
               </div>
               <Link
-                href="to be filled"
+                href={`/event/${event._id}?uid=${mongoId}`}
                 className="text-center border-2 w-fit self-end border-cyan-700 px-3 py-1 rounded-lg"
               >
                 View Event

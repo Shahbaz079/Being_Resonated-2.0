@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
     
     const post = {
       title:name,
-      from:team.name,
-      
+      from:new ObjectId(eventId as string),
+      team:team._id,
       image,
       imgThumbnail,
       caption,
@@ -104,10 +104,19 @@ export async function GET(request: NextRequest) {
     await client.connect();
     const db = client.db(dbName);
     const eventposts = db.collection('eventposts');
+    const teams=db.collection('teams')
 
     const allEventpost = await eventposts.find({}).sort({date: -1 }).toArray();
 
-    return NextResponse.json(allEventpost);
+    const finalPosts = await Promise.all(
+      allEventpost.map(async (post) => {
+        const { from } = post;
+        const team = await teams.findOne({ _id: from }, { projection: {_id: 1, image: 1 } });
+        return { ...post, from:team };
+      })
+    );
+
+    return NextResponse.json(finalPosts);
   } finally {
     if (client) {
       await client.close();

@@ -274,10 +274,12 @@ const TeamPage = () => {
                         <DialogTrigger asChild>
                           <Button>Manage Team Members</Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        
                           <DialogContent>
                             <DialogHeader>
-                              <DialogContent>Requests
+                              <DialogTitle>Requests</DialogTitle>
+                            </DialogHeader>
+                              <DialogContent>
 
 
                                 <div>
@@ -302,9 +304,9 @@ const TeamPage = () => {
 
 
 
-                            </DialogHeader>
+                        
 
-                          </DialogContent>
+                         
                         </DialogContent>
                       </Dialog>
                     </div>
@@ -319,7 +321,7 @@ const TeamPage = () => {
             <div className="w-full rounded-xl mt-5">
               <Tabs defaultValue="members">
                 <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
-                  <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>
+               {isVolunteer &&   <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>}
                   <TabsTrigger value="posts" className="text-lg">Posts</TabsTrigger>
                 </TabsList>
                 {isVolunteer && <TabsContent value="members">

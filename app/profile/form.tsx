@@ -3,7 +3,7 @@ import { RxCross2 } from "react-icons/rx"
 
 interface PropsType {
     setEdit: Dispatch<SetStateAction<boolean>>,
-    handleUpdate: (interests: string[]) => void,
+    handleUpdate: (interests: string[],description:string) => void,
     // currentGradYear: number,
     currentInterests: string[],
     currentUserDescription: string,
@@ -66,7 +66,7 @@ const Form = ({ setEdit, handleUpdate, currentInterests, currentUserDescription 
                     </div>
 
 
-                    <button className="w-20 p-2 rounded-xl self-end bg-green-900" type="submit" onClick={() => handleUpdate(interests)}>Save</button>
+                    <button className="w-20 p-2 rounded-xl self-end bg-green-900" type="submit" onClick={() => handleUpdate(interests,userDescription)}>Save</button>
                 </div >
 
             </form >
@@ -80,7 +80,7 @@ const Form = ({ setEdit, handleUpdate, currentInterests, currentUserDescription 
 const InterestTag = ({ interest, handleRemoveOption }: { interest: string, handleRemoveOption: (option: string) => void }) => (
     <div className="flex w-fit py-1 px-2 gap-3 border-2 rounded-2xl items-center bg-[#332A2A] border-red-400">
         <p>{interest}</p>
-        <button className="text-sm" type="button" onClick={() => handleRemoveOption(interest)}><RxCross2 className="mt-[0.5px]"></RxCross2></button>
+        <button className="text-sm" type="button" onClick={() => handleRemoveOption(interest,)}><RxCross2 className="mt-[0.5px]"></RxCross2></button>
     </div>
 )
 

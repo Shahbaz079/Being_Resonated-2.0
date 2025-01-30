@@ -476,7 +476,7 @@ const EventPage = () => {
             <TabsContent value="Posts">
               {isLeader && <div>
                 
-                  <WhatsOnEventMind title={teamId} name={teamName} location={location} time={time} date={date} eventId={eventId} />
+                  <WhatsOnEventMind title={teamId} name={name} location={location} time={time} date={date} eventId={eventId} />
               </div>}
               {posts?.map((userPost) => (
                     <div className="" key={userPost._id?.toString()}>

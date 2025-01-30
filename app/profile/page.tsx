@@ -50,7 +50,7 @@ const ProfilePage = () => {
   const [gradYear, setGradYear] = useState<number>();
   const [image, setimage] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(true);
-  const [description, setDescription] = useState<string>("Tell us about yourself");
+  const [description, setDescription] = useState<string>("");
   const [edit, setEdit] = useState<boolean>(false);
   const [showAllInterests, setShowAllInterests] = useState<boolean>(false);
   const [owner, setOwner] = useState<boolean>(true);
@@ -100,7 +100,7 @@ const ProfilePage = () => {
       setBirthDate(data.dob || "");
       setGradYear(data.gradYear || "");
       setimage(data.image || "");
-      setDescription(data.description || "Tell us about yourself");
+      setDescription(data.description);
       setPosts(data.posts || []);
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -142,7 +142,7 @@ const ProfilePage = () => {
   const filteredOptions = predefinedOptions.filter(option =>
     option.toLowerCase().includes(inputValue.toLowerCase()));
 
-  const handleUpdate = (changedInterests: string[]) => {
+  const handleUpdate = (changedInterests: string[],changedDiscription:string) => {
     setEdit(false);
 
     const res = fetch(`/api/user?id=${mId}`, {
@@ -154,13 +154,15 @@ const ProfilePage = () => {
         email: email,
         interests: changedInterests,
         dob: birthDate,
-        image: user?.imageUrl
+        image: user?.imageUrl,
+        description:changedDiscription,
       })
     }).then(response => response.json())
       .then(data => {
         setInterests(data.interests || []);
         setBirthDate(data.dob || "")
         setGradYear(data.gradYear || "")
+        setDescription(data.description || "")
       }).catch(error => console.error('Error:', error))
   }
 

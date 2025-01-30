@@ -63,7 +63,7 @@ const SubHeader = () => {
   }, [isLoaded, user, mongoId]);
 
   return (
-    <div className='relative top-0 left-[4%] w-[60vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] my-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
+    <div className='relative top-0 left-[4%] w-[65vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] my-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
 
       <Link href={'/'}>
         <Home className="w-6 h-6" />
@@ -91,10 +91,10 @@ const SubHeader = () => {
             team._id && <div className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer" key={team._id.toString()}>
               <div className="flex gap-4 flex-col  md:flex-row ">
                 <div>
-                  {team.timage ? <Image
+                  {team.image ? <Image
                     width={100}
                     height={100}
-                    src={team.timage}
+                    src={team.image}
                     alt={team.name}
                   /> :
                     <img

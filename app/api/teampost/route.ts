@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     
     const post = {
       title,
-      from:teamId,
+      from:new ObjectId(teamId as string),
       image,
       imgThumbnail,
       caption,

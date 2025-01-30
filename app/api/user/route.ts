@@ -43,7 +43,7 @@ export async function PUT(req:NextRequest){
      // return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
    // }
 
-    const validFields = ['interests','name', 'dob', 'gradYear', 'image'];
+    const validFields = ['interests','name', 'dob', 'gradYear', 'image','description'];
      const validData = validFields.reduce((acc, field) => { 
       if (body[field as keyof IUserUpdate] !== undefined && body[field as keyof IUserUpdate] !== null) { acc[field] = body[field as keyof IUserUpdate]; }
 

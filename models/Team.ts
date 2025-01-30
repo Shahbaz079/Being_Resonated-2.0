@@ -31,7 +31,7 @@ interface ITeam {
     name: string;
     gradYear?: number
   };
-  timage?: string;
+  image?: string;
   createdBy: Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date,
