@@ -114,7 +114,7 @@ const ProfilePage = () => {
   useEffect(() => {
     console.log("fetching data");
     fetchUserData();
-    fetchTeamData();
+   // fetchTeamData();
   },
     [isLoaded, mId]);
 
