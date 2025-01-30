@@ -149,7 +149,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </div>
         </div>
 
-      <p>{caption}</p>
+      <p className='px-4 py-2'>{caption}</p>
 
       {image && (
         <div className="relative w-full flex justify-center">
@@ -179,7 +179,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
        </div> : 
 
 <div>
-<div className="flex items-start gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}>
+<div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}>
   <img src={`/team/${post?.from}?id=${post?.from}`} className='cursor-pointer w-12 h-12 rounded-full' />
 
   <div>
@@ -191,7 +191,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   </div>
 </div>
 
-<p>{caption}</p>
+<p className='px-4 py-2'>{caption}</p>
 
 {image && (
 <div className="relative w-full flex justify-center">
