@@ -67,10 +67,10 @@ const EventCard = ({ uId }: { uId: string }) => {
         setRequestedEvents(data.eventRequests);
 
       } else {
-     console.error("failed to fetch participated events");
+        console.error("failed to fetch participated events");
       }
     }
-    if(uId)fetchParticipatedEvents();
+    if (uId) fetchParticipatedEvents();
     fetchEvents();
   }, [isLoaded])
 
@@ -151,7 +151,8 @@ const EventCard = ({ uId }: { uId: string }) => {
                 handleParticipation(event._id);
                 console.log(event._id)
               }}
-              className={`w-full mt-2 flex items-center justify-center gap-2 text-xs ${participatedEvents?.includes(event?._id.toString()) ? 'bg-purple-500' : 'bg-teal-600'}  
+              disabled={participatedEvents?.includes(event?._id.toString()) || requestedEvents?.includes(event?._id.toString())}
+              className={`disabled:cursor-not-allowed w-full mt-2 flex items-center justify-center gap-2 text-xs ${participatedEvents?.includes(event?._id.toString()) ? 'bg-purple-500' : 'bg-teal-600'}  
                 
                text-white px-2 py-1.5 rounded-md transition-colors relative overflow-hidden`}
             >
