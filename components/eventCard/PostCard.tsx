@@ -48,7 +48,7 @@ type TeamPost = {
   likes: [string];
 
 
-};
+}
 
 interface PostCardProps {
   post: UserPost | EventPost | TeamPost;
@@ -60,7 +60,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const name = 'name' in post ? post.name : '';
   const title = 'title' in post ? post.title : '';
   const projectProgress = 'projectProgress' in post ? post.projectProgress : 0;
-  const from= post.from?post.from:null
+
   const isEventPost: boolean = 'isEventPost' in post ? (post as EventPost).isEventPost : false;
   const [liked, setLiked] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -87,8 +87,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
   const {user}=useUser();
   const mongoId=user?.publicMetadata.mongoId;
-  console.log(post.from);
-  console.log("thumbnail", imgThumbnail)
+  console.log(post);
+
   return (
     <div className="animate-slide-top glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
 
@@ -137,11 +137,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
 
 {'time' in post ? <div>
-        <div className="flex items-start gap-5" onClick={() => redirect(`/event/${post?.from.toString()}?uid=${mongoId}`)}>
-          <img src={"khbdu"} className='cursor-pointer w-12 h-12 rounded-full' />
+        <div className="flex items-start gap-5" onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)}>
+          <img src={post.eventImg?.image} className='cursor-pointer w-12 h-12 rounded-full' />
 
           <div>
-            <h2 onClick={() => redirect(`/event/${post?.from.toString()}?uid=${mongoId}`)} className="font-semibold">{post.title}</h2>
+            <h2 onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)} className="font-semibold">{post.title}</h2>
             {/**  <div className="flex items-center text-gray-500 space-x-1">
             <Clock size={16} />
             <span>{new Date(date).toLocaleString()}</span>

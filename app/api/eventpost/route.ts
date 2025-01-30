@@ -104,15 +104,15 @@ export async function GET(request: NextRequest) {
     await client.connect();
     const db = client.db(dbName);
     const eventposts = db.collection('eventposts');
-    const teams=db.collection('teams')
+    const events=db.collection('events')
 
     const allEventpost = await eventposts.find({}).sort({date: -1 }).toArray();
 
     const finalPosts = await Promise.all(
       allEventpost.map(async (post) => {
         const { from } = post;
-        const team = await teams.findOne({ _id: from }, { projection: {_id: 1, image: 1 } });
-        return { ...post, from:team };
+        const eventImg = await events.findOne({ _id: from }, { projection: { image: 1 } });
+        return { ...post, eventImg };
       })
     );
 

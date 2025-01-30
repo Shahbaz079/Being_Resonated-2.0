@@ -24,6 +24,9 @@ export interface EventPost {
   title: string;
   caption?: string;
   image: string;
+  eventImg: {
+    image: string;
+  };
   imgThumbnail?: string;
   likes?: number; // Default value is 0
   location: string;
