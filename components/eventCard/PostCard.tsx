@@ -180,7 +180,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
 <div>
 <div className="flex items-start gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}>
-  <img src={"jbwbu"} className='cursor-pointer w-12 h-12 rounded-full' />
+  <img src={`/team/${post?.from}?id=${post?.from}`} className='cursor-pointer w-12 h-12 rounded-full' />
 
   <div>
     <h2 onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="font-semibold">{'title' in post ? post.title : ''}</h2>
