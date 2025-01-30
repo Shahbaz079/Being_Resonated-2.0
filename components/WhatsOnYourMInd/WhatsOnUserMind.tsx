@@ -38,7 +38,7 @@ const WhatsOnUserMind = () => {
     useEffect(() => {
         if (user) {
             setMongoId(user.publicMetadata.mongoId as string)
-            setUserName(user.fullName)
+            setUserName(user?.username)
         }
     }, [isLoaded, user])
 

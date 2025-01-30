@@ -92,8 +92,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   return (
     <div className="animate-slide-top glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
 
-      {'user' in post && <div>
-        <div className="flex items-start gap-5" onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}>
+      {'user' in post ? <div>
+        <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}>
           <img src={post.user.image} className='cursor-pointer w-12 h-12 rounded-full' />
 
           <div>
@@ -105,7 +105,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </div>
         </div>
 
-      <p>{caption}</p>
+      <p className='px-4 py-2'>{caption}</p>
 
       {image && (
         <div className="relative w-full flex justify-center">
@@ -133,11 +133,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       
       )  }
        </div>
-      }
+      :
 
 
-{'time' in post ? <div>
-        <div className="flex items-start gap-5" onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)}>
+'time' in post ? <div>
+        <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)}>
           <img src={post.eventImg?.image} className='cursor-pointer w-12 h-12 rounded-full' />
 
           <div>
