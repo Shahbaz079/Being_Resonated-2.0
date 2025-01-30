@@ -68,9 +68,9 @@ export async function GET(req: NextRequest, ) {
       return NextResponse.json([],{status:200}); // Return empty array if no interests
     }
 
-    const users = await User.find({});
-    const matchCount = (arr: string[]) => arr.filter(element => referenceArray.includes(element)).length;
-    const sortedUsers = users.sort((a, b) => matchCount(b.interests) - matchCount(a.interests));
+    const users = await User.find({},{projection:{name:1,description:1,email:1,gradYear:1,interests:1,image:1,posts:1}});
+    const matchCount = (arr: string[]) => arr?.filter(element => referenceArray.includes(element)).length;
+    const sortedUsers = users?.sort((a, b) => matchCount(b.interests) - matchCount(a.interests));
 
     const filteredUsers = sortedUsers.filter(user => matchCount(user.interests) > 0 && user._id.toString() !== id);
 
