@@ -69,7 +69,7 @@ const AcademicsPage = () => {
               style={{ animationDelay: `${index * 0.2}s`, width: '40%' }}
             >
               <div className="bg-gray-800 border-2 border-cyan-600 rounded-full p-2 h-full flex flex-col shadow-lg hover:shadow-2xl cursor-pointer hover:bg-gray-700 transition-colors duration-300 dark:bg-gray-700 dark:border-cyan-500">
-                <h2 className="text-xl font-light text-cyan-300 text-center hover:text-cyan-200 transition-colors duration-300" style={{ fontFamily: 'Arial' }}>
+                <h2 className="text-sm md:text-base lg:text-lg xl:text-xl font-light text-cyan-300 text-center hover:text-cyan-200 transition-colors duration-300" style={{ fontFamily: 'Arial' }}>
                   {dept.name}
                 </h2>
               </div>
