@@ -52,6 +52,7 @@ const Home = () => {
                 name: user?.username,
                 email: user?.primaryEmailAddress?.emailAddress,
                 gradYear: user?.primaryEmailAddress?.emailAddress.slice(0, 4),
+                image: user?.imageUrl,
 
               })
             });

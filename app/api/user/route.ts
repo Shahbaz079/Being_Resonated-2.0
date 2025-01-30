@@ -96,7 +96,7 @@ export async function PUT(req:NextRequest){
 
 
 
-                       const user = await users.findOne({ _id: new ObjectId(id) }, {projection:{name:1,desrciption:1,email:1,gradYear:1,interests:1,image:1,posts:1}});
+                       const user = await users.findOne({ _id: new ObjectId(id) }, {projection:{name:1,description:1,email:1,gradYear:1,interests:1,image:1,posts:1}});
                         if (!user) {
                           return NextResponse.json({ error: 'User not found' }, 
                            { status: 404 });

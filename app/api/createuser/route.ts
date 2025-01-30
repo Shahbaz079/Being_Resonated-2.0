@@ -28,9 +28,15 @@ try {
       const db = client.db(dbName!); 
 
       
-      const newUser = { name: body.name as string,
+      const newUser = {
+         name: body.name as string,
+
          email: body.email as string,
+
          image: body.image as string,
+
+          gradYear: Number(body.gradYear)+4,
+
           createdAt: new Date(), 
           updatedAt: new Date() }; 
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { clerkClient } from '@clerk/nextjs/server';
 
 const uri = process.env.MONGO_URI as string;
@@ -17,7 +17,7 @@ export async function PUT(req: NextRequest) {
   let client: MongoClient | null = null;
   try {
     const body = await req.json();
-    const { email, userId,gradYear,username } = body;
+    const { email, userId,gradYear,name,image } = body;
 
     console.log('Received email:', email);
     console.log('Received userId:', userId);
@@ -36,15 +36,15 @@ export async function PUT(req: NextRequest) {
 
     console.log('Retrieving user from MongoDB');
 
-    const existingUser = await users.findOne({ email });
+    const existingUser = await users.findOne({ _id:new ObjectId(userId as string) });
 
     if (!existingUser) {
       return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
 
-    const newGradYear = gradYear;
+    
 
-    await users.updateOne({ email }, { $set: { gradYear,name:username } });
+    await users.updateOne({ email }, { $set: { gradYear,name,image} })
 
     console.log('Found existing user:', existingUser);
 

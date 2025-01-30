@@ -13,7 +13,7 @@ import Form from "./form";
 import AllInterests from "./allInterests";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WhatsOnYourMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
+import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import Layout from "@/components/customLayouts/Layout";
 import PostCard from "@/components/eventCard/PostCard";
 import "./user.css"
@@ -53,7 +53,7 @@ const ProfilePage = () => {
   const [description, setDescription] = useState<string>("");
   const [edit, setEdit] = useState<boolean>(false);
   const [showAllInterests, setShowAllInterests] = useState<boolean>(false);
-  const [owner, setOwner] = useState<boolean>(true);
+  const [owner, setOwner] = useState<boolean>(false);
   const [posts, setPosts] = useState<any[]>([]);
 
 
@@ -223,7 +223,7 @@ const ProfilePage = () => {
               </TabsList>
               <TabsContent value="Posts">
                 <div>
-                  <WhatsOnYourMind></WhatsOnYourMind>
+                {owner &&  <WhatsOnUserMind></WhatsOnUserMind> }
                   {posts?.map((userPost) => (
                     <div className="" key={userPost._id?.toString()}>
                       <PostCard post={userPost} />
