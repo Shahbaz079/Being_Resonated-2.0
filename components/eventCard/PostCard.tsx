@@ -85,19 +85,19 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     setShowCommentBox(false);
   };
 
-  const {user}=useUser();
-  const mongoId=user?.publicMetadata.mongoId;
+  const { user } = useUser();
+  const mongoId = user?.publicMetadata.mongoId;
   console.log(post);
 
   return (
     <div className="animate-slide-top glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
 
       {'user' in post ? <div>
-        <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}>
-          <img src={post.user.image} className='cursor-pointer w-12 h-12 rounded-full' />
+        <div className="border-b-2 mx-1 border-gray-600 pb-4 flex flex-row items-start justify-normal gap-5" onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}>
+          <img src={post.user.image} className='cursor-pointer w-10 h-10 rounded-full' />
 
           <div>
-            <h2 onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)} className="font-semibold">{name ? name : title}</h2>
+            <h2 onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)} className="cursor-pointer font-semibold capitalize">{name ? name : title}</h2>
             {/**  <div className="flex items-center text-gray-500 space-x-1">
             <Clock size={16} />
             <span>{new Date(date).toLocaleString()}</span>
@@ -105,124 +105,121 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </div>
         </div>
 
-      <p className='px-4 py-2'>{caption}</p>
+        <p className='px-1 py-5'>{caption}</p>
 
-      {image && (
-        <div className="relative w-full flex justify-center">
-          <div
-            className="w-full h-70 overflow-hidden rounded-lg"
-            style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-          >
-            <img
-              src={image}
-              alt="Post Image"
-              className="w-full h-full object-cover"
-              loading="lazy"
+        {image && (
+          <div className="relative w-full flex justify-center">
+            <div
+              className="w-full h-70 overflow-hidden rounded-lg"
+              style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            >
+              <img
+                src={image}
+                alt="Post Image"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
 
-              // style={{ display: 'none' }} // 
+                style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
+              />
+            </div>
 
-              onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
 
-              style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
-            />
           </div>
 
 
-        </div>
-       
-      
-      )  }
-       </div>
-      :
+        )}
+      </div>
+        :
 
 
-'time' in post ? <div>
-        <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)}>
-          <img src={post.eventImg?.image} className='cursor-pointer w-12 h-12 rounded-full' />
+        'time' in post ? <div>
+          <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)}>
+            <img src={post.eventImg?.image} className='cursor-pointer w-12 h-12 rounded-full' />
 
-          <div>
-            <h2 onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)} className="font-semibold">{post.title}</h2>
-            {/**  <div className="flex items-center text-gray-500 space-x-1">
+            <div>
+              <h2 onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)} className="font-semibold">{post.title}</h2>
+              {/**  <div className="flex items-center text-gray-500 space-x-1">
             <Clock size={16} />
             <span>{new Date(date).toLocaleString()}</span>
           </div>  */}
-          </div>
-        </div>
-
-      <p className='px-4 py-2'>{caption}</p>
-
-      {image && (
-        <div className="relative w-full flex justify-center">
-          <div
-            className="w-full h-70 overflow-hidden rounded-lg"
-            style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-          >
-            <img
-              src={image}
-              alt="Post Image"
-              className="w-full h-full object-cover"
-              loading="lazy"
-
-              // style={{ display: 'none' }} // 
-
-              onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
-
-              style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
-            />
+            </div>
           </div>
 
+          <p className='px-4 py-2'>{caption}</p>
 
-        </div>
-       
-      
-      )  }
-       </div> : 
+          {image && (
+            <div className="relative w-full flex justify-center">
+              <div
+                className="w-full h-70 overflow-hidden rounded-lg"
+                style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+              >
+                <img
+                  src={image}
+                  alt="Post Image"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
 
-<div>
-<div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}>
-  <img src={`/team/${post?.from}?id=${post?.from}`} className='cursor-pointer w-12 h-12 rounded-full' />
+                  // style={{ display: 'none' }} // 
 
-  <div>
-    <h2 onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="font-semibold">{'title' in post ? post.title : ''}</h2>
-    {/**  <div className="flex items-center text-gray-500 space-x-1">
+                  onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
+
+                  style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
+                />
+              </div>
+
+
+            </div>
+
+
+          )}
+        </div> :
+
+          <div>
+            <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}>
+              <img src={`/team/${post?.from}?id=${post?.from}`} className='cursor-pointer w-12 h-12 rounded-full' />
+
+              <div>
+                <h2 onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="font-semibold">{'title' in post ? post.title : ''}</h2>
+                {/**  <div className="flex items-center text-gray-500 space-x-1">
     <Clock size={16} />
     <span>{new Date(date).toLocaleString()}</span>
   </div>  */}
-  </div>
-</div>
+              </div>
+            </div>
 
-<p className='px-4 py-2'>{caption}</p>
+            <p className='px-4 py-2'>{caption}</p>
 
-{image && (
-<div className="relative w-full flex justify-center">
-  <div
-    className="w-full h-70 overflow-hidden rounded-lg"
-    style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-  >
-    <img
-      src={image}
-      alt="Post Image"
-      className="w-full h-full object-cover"
-      loading="lazy"
+            {image && (
+              <div className="relative w-full flex justify-center">
+                <div
+                  className="w-full h-70 overflow-hidden rounded-lg"
+                  style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                >
+                  <img
+                    src={image}
+                    alt="Post Image"
+                    className="w-full h-full object-cover"
+                    loading="lazy"
 
-      // style={{ display: 'none' }} // 
+                    // style={{ display: 'none' }} // 
 
-      onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
+                    onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
 
-      style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
-    />
-  </div>
-
-
-</div>
+                    style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
+                  />
+                </div>
 
 
-)  }
-</div>
+              </div>
+
+
+            )}
+          </div>
 
       }
 
-           </div>
+    </div>
   );
 };
 
