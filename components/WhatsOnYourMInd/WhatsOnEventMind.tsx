@@ -12,7 +12,7 @@ import { EventPost } from "@/app/becommunity/page";
 
 
 
-const WhatsOnEventMind = ({title,name,location,time,date,eventId}:{title:string,location:string,time:string,date:string,name:string,eventId:string}) => {
+const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { title: string, location: string, time: string, date: string, name: string, eventId: string }) => {
     const [file, setFile] = useState<File>();
     const { edgestore } = useEdgeStore();
     const [caption, setCaption] = useState<string>("");
@@ -22,7 +22,7 @@ const WhatsOnEventMind = ({title,name,location,time,date,eventId}:{title:string,
     const [userName, setUserName] = useState<string | null>("")
     const [posting, setPosting] = useState<boolean>(false);
 
-    
+
 
     const imageUrl = React.useMemo(() => {
         if (typeof file === 'string') {
@@ -55,11 +55,11 @@ const WhatsOnEventMind = ({title,name,location,time,date,eventId}:{title:string,
                         setProgress(progress);
                     },
                 });
-            
+
                 if (response.url) {
                     const res = await fetch(`/api/eventpost`, {
                         method: "POST",
-                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy:mongoId, title: title,Location:location,time,date,eventId,name }),
+                        body: JSON.stringify({ image: response.url, imgThumbnail: response.thumbnailUrl, caption, createdBy: mongoId, title: title, Location: location, time, date, eventId, name }),
                     })
                     if (res.ok) {
                         toast.success("Posted successfully")
@@ -68,10 +68,10 @@ const WhatsOnEventMind = ({title,name,location,time,date,eventId}:{title:string,
                         setPosting(false);
                     }
                 }
-                    
-                }
+
             }
-        
+        }
+
         post();
     }
 
