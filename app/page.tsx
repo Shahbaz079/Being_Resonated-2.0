@@ -43,22 +43,7 @@ const mongoId = user?.publicMetadata?.mongoId as string;
       if (userId) {
         try {
           if (!mongoId) {
-            const result = await fetch('/api/createuser', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: user?.username,
-                email: user?.primaryEmailAddress?.emailAddress,
-                gradYear: user?.primaryEmailAddress?.emailAddress.slice(0, 4),
-                image: user?.imageUrl,
-
-              })
-            });
-            if (result.ok) {
-
-              toast.success('User created successfully');
-              console.log("Done")
-            } else if (result.status === 400) {
+          
 
               const grad = Number(user?.primaryEmailAddress?.emailAddress.slice(0, 4)) + 4;
 
@@ -79,7 +64,7 @@ const mongoId = user?.publicMetadata?.mongoId as string;
 
                 console.log('User retrieved successfully');
               }
-            }
+            
           }
 
 
