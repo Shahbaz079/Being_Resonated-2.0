@@ -35,8 +35,9 @@ type TeamPost = {
 
 
   title: string;
-  from: {
-    _id: ObjectId;
+  from: string;
+  team: {
+    _id: string;
     image: string;
   };
 
@@ -87,7 +88,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
   const { user } = useUser();
   const mongoId = user?.publicMetadata.mongoId;
-  console.log(post);
+ console.log(post)
 
   return (
     <div className="animate-slide-top glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
@@ -176,11 +177,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </div> :
 
           <div>
-            <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}>
-              <img src={`/team/${post?.from}?id=${post?.from}`} className='cursor-pointer w-12 h-12 rounded-full' />
+            <div className="flex flex-row items-center justify-normal gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.team?._id.toString()}`)}>
+              <img src={post?.team?.image} onClick={() => redirect(`/team/${post?.team?._id.toString()}?id=${post?.team?._id.toString()}`)} className='cursor-pointer w-12 h-12 rounded-full' />
 
               <div>
-                <h2 onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="font-semibold">{'title' in post ? post.title : ''}</h2>
+                <h2 onClick={() => redirect(`/team/${post?.team?._id.toString()}?id=${post?.team?._id.toString()}`)} className="font-semibold">{'title' in post ? post.title : ''}</h2>
                 {/**  <div className="flex items-center text-gray-500 space-x-1">
     <Clock size={16} />
     <span>{new Date(date).toLocaleString()}</span>

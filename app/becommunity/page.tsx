@@ -56,7 +56,7 @@ const BeCommunity = () => {
   const {user}=useUser();
 
   //const searchParams = useSearchParams();
-  const mongoId = user?.publicMetadata?.mongoId
+  const mongoId = user?.publicMetadata?.mongoId as string
 
   useEffect(() => {
 
@@ -182,12 +182,12 @@ const BeCommunity = () => {
 
             {render === "users" ? <div>
               <div className="h-fit max-w-[400px] w-[400px] becomphone:w-full mt-3 glass rounded-2xl cbecomn:hidden">
-                <SimPeopleWithSuspense />
+                <SimPeopleWithSuspense id={mongoId} />
               </div>
             </div> : null}
 
             <div className="h-fit min-w-[350px] mt-3 glass rounded-2xl cbecom:hidden">
-              <SimPeopleWithSuspense />
+              <SimPeopleWithSuspense id={mongoId} />
             </div>
 
           </div>

@@ -1,23 +1,26 @@
 'use client'
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+
 import Link from "next/link";
 
 import { ExpandableCardDemo, IUser } from "@/components/expandableCards/card";
+import { useUser } from "@clerk/nextjs";
 
-const SimPeople = () => {
-    const searchParams = useSearchParams();
-    const id = searchParams.get('id') as string;
+const SimPeople = ({id}:{id:string}) => {
+    
     const [similarPeople, setSimilarPeople] = useState<IUser[]>([]);
     const [loggedUser, setLoggedUser] = useState<IUser | null>(null);
     const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
+    const {isLoaded,user} = useUser();
+
+    const mongoId=user?.publicMetadata?.mongoId as string;
 
     useEffect(() => {
         const fetchPeople = async () => {
             setLoadingUsers(true);
             try {
-                const response = await fetch(`/api/people?id=${id}`);
+                const response = await fetch(`/api/people?id=${mongoId}`);
 
                 const data = await response.json();
                 setSimilarPeople(Array.isArray(data) ? data : []);
@@ -25,20 +28,26 @@ const SimPeople = () => {
             } catch (error) { console.error('Error fetching people:', error); }
         };
 
-        fetchPeople();
+        
 
         const fetchCurrentPerson = async () => {
             try {
-                const response = await fetch(`/api/currentperson?id=${id}`);
+                const response = await fetch(`/api/currentperson?id=${mongoId}`);
                 const data = await response.json();
                 setLoggedUser(data);
             } catch (error) {
                 console.error('Error fetching current person:', error);
             }
         }
-        fetchCurrentPerson();
+       
+            if (isLoaded){
+            fetchCurrentPerson();
+            fetchPeople();
+            }
+        
+        
 
-    }, [id]);
+    }, [isLoaded]);
 
     console.log(loggedUser, "")
 
@@ -66,8 +75,8 @@ const SimPeople = () => {
     );
 }
 
-const SimPeopleWithSuspense = () => (
-    <Suspense fallback={<div>Loding</div>}> <SimPeople /></Suspense>
+const SimPeopleWithSuspense = ({ id }: { id: string }) => (
+    <Suspense fallback={<div>Loding</div>}> <SimPeople id={id} /></Suspense>
 )
 
 export default SimPeopleWithSuspense;
