@@ -15,7 +15,7 @@ import { Button } from '../ui/button';
 type ClickType = (user: IUser) => void;
 
 interface SearchPageProps {
-  type: string; click: ClickType ;
+  type: string; click: ClickType | null ;
 }
 
 const SearchPage = ({ type, click }: SearchPageProps) => {
@@ -96,7 +96,7 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
                 </div>
               </div>
 
-            {type==='user'?<Button onClick={()=>click(user)}>Add to Team</Button>: <Link href={`/profile?id=${user._id}`} className="border-2 w-fit self-end border-cyan-700 px-3 py-1 rounded-lg">
+            {type==='user'?<Button onClick={()=>click && click(user)}>Add to Team</Button>: <Link href={`/profile?id=${user._id}`} className="border-2 w-fit self-end border-cyan-700 px-3 py-1 rounded-lg">
                 View
               </Link>}
             </div>
