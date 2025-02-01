@@ -28,7 +28,8 @@ try {
     
      client = new MongoClient(uri!);
       // Use non-null assertion to ensure uri is defined 
-      await connectDB(); 
+   
+      await client.connect();
       const db = client.db(dbName!); 
 
       const { id, email_addresses, username, image_url } = data;
@@ -40,36 +41,48 @@ try {
 
          image: image_url as string,
 
-          gradYear: Number(email_addresses[0].slice(0,4))+4,
+          gradYear: Number(email_addresses.email_address.slice(0,4))+4,
 
           createdAt: new Date(), 
           updatedAt: new Date() }; 
 
       const users = db.collection('users');
 
+      console.log(newUser)
+
       const existingUser = await users.findOne({ email: newUser.email });
       if (existingUser) {
         return NextResponse.json({ error: 'User already exists' }, { status: 400 });
       }
-      const result = await users.insertOne(newUser);
-       if (result.acknowledged) { 
-        // Perform additional actions if needed
-        
-  const client = await clerkClient();
-  const { userId } = await auth() ;
 
-        const res=await client.users.updateUserMetadata(userId!, {
-          publicMetadata: {
-            mongoId: result.insertedId,
-          },
-        })
-
-          if(res) { console.log("updated");}
-        return NextResponse.json(result);
-      } 
-      else{
-        return NextResponse.json({ error: 'Failed to insert user' }, { status: 500 });
+      try {
+        const result = await users.insertOne(newUser);
+        if (result.acknowledged) { 
+         // Perform additional actions if needed
+         
+   const client = await clerkClient();
+   const { userId } = await auth() ;
+ 
+         const res=await client.users.updateUserMetadata(userId!, {
+           publicMetadata: {
+             mongoId: result.insertedId,
+           },
+         })
+ 
+           if(res) { console.log("updated");}
+         return NextResponse.json(result);
+       } 
+       else{
+         return NextResponse.json({ error: 'Failed to insert user' }, { status: 500 });
+       }
+      } catch (error) {
+        console.error('Errorm:', error);
+        if (error instanceof Error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
       }
+
+     
 
 
 }catch (error) { 
