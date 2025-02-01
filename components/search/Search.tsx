@@ -9,12 +9,13 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog'
 import Link from 'next/link';
 import "./search.css"
 import { useUser } from '@clerk/nextjs';
+import { Button } from '../ui/button';
 
 
 type ClickType = (user: IUser) => void;
 
 interface SearchPageProps {
-  type: string; click: ClickType | null;
+  type: string; click: ClickType ;
 }
 
 const SearchPage = ({ type, click }: SearchPageProps) => {
@@ -95,9 +96,9 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
                 </div>
               </div>
 
-              <Link href={`/profile?id=${user._id}`} className="border-2 w-fit self-end border-cyan-700 px-3 py-1 rounded-lg">
+            {type==='user'?<Button onClick={()=>click(user)}>Add to Team</Button>: <Link href={`/profile?id=${user._id}`} className="border-2 w-fit self-end border-cyan-700 px-3 py-1 rounded-lg">
                 View
-              </Link>
+              </Link>}
             </div>
           ))}
         </ul >

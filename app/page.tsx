@@ -19,13 +19,11 @@ const Home = () => {
 
 
   //console.log(sessionId,getToken)
-  const [mongoId, setMongoId] = useState(user?.publicMetadata?.mongoId as string)
+const mongoId = user?.publicMetadata?.mongoId as string;
 
 
 
-  useEffect(() => {
-    setMongoId(user?.publicMetadata?.mongoId as string)
-  }, [isLoaded, userId, user])
+
 
   useEffect(() => {
     const newInterval = setInterval(() => {
@@ -70,7 +68,7 @@ const Home = () => {
                 body: JSON.stringify({
                   name: user?.username,
                   email: user?.primaryEmailAddress?.emailAddress,
-                  userId: userId,
+                  userId: mongoId,
                   image: user?.imageUrl,
                   gradYear: grad,
 
