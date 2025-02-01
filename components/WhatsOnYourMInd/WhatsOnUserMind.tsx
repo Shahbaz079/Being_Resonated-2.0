@@ -22,7 +22,7 @@ const WhatsOnUserMind = () => {
     const [userName, setUserName] = useState<string | null>("")
     const [posting, setPosting] = useState<boolean>(false);
 
-    
+
 
     const imageUrl = React.useMemo(() => {
         if (typeof file === 'string') {
@@ -55,11 +55,11 @@ const WhatsOnUserMind = () => {
                         setProgress(progress);
                     },
                 });
-            
+
                 if (response.url) {
                     const res = await fetch(`/api/userpost`, {
                         method: "POST",
-                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+                        body: JSON.stringify({ image: response.url, imgThumbnail: response.thumbnailUrl, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
                     })
                     if (res.ok) {
                         toast.success("Posted successfully")
@@ -68,15 +68,15 @@ const WhatsOnUserMind = () => {
                         setPosting(false);
                     }
                 }
-                    
-                }
+
             }
-        
+        }
+
         post();
     }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
-        <textarea disabled={posting} value={caption} onChange={(e: any) => setCaption(e.target.value)} placeholder="What's on your mind ?" className="disabled:opacity-50 disabled:cursor-not-allowed placeholder:opacity-80 text-cyan-300 rounded-[2rem] py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
+        <textarea disabled={posting} value={caption} onChange={(e: any) => setCaption(e.target.value)} placeholder="What's on your mind ?" className="disabled:opacity-50 disabled:cursor-not-allowed placeholder:opacity-80 text-cyan-300 rounded-xl py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
         <div className="flex justify-between p-2">
             <div className="flex">
                 <Dialog>

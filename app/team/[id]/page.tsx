@@ -32,6 +32,7 @@ import { Suspense } from "react";
 import Layout from "@/components/customLayouts/Layout";
 import PostCard from "@/components/eventCard/PostCard";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
+import { Label } from "@/components/ui/label";
 
 
 export interface IEvent {
@@ -214,16 +215,61 @@ const TeamPage = () => {
             <Card className="p-3 py-5 glass items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
               <div className="flex gap-6 ctab:flex-col">
                 <div className="h-40 w-40 mx-auto">
-                  {teamImg ? <Image
-                    className="h-40 w-40 rounded-full"
-                    src={teamImg}
-                    alt={teamName}
-                  /> :
-                    <img
-                      className="h-40 w-40 rounded-full"
-                      src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                      alt={"user did'nt provide image"}
-                    />}
+                  {teamImg ?
+                    <div className="relative rounded-full">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button className="opacity-0 text-2xl font-bold hover:opacity-80 absolute bg-black top-0 left-0 h-full w-full flex items-center justify-center cursor-pointer">
+                            Edit
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Event Details</DialogTitle>
+                          </DialogHeader>
+                          <div className="flex flex-col gap-8 mt-6">
+                            <div className="flex flex-col">
+                              <Label>Upload Image</Label>
+                              <input type="file" className="mt-4"></input>
+                              <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      <Image
+                        className="h-40 w-40 rounded-full"
+                        src={teamImg}
+                        alt={teamName}>
+                      </Image>
+                    </div> :
+                    <div className="relative rounded-full">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button className="opacity-0 text-2xl rounded-full font-bold hover:opacity-80 absolute bg-black top-0 left-0 h-full w-full flex items-center justify-center cursor-pointer">
+                            Edit
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Event Details</DialogTitle>
+                          </DialogHeader>
+                          <div className="flex flex-col gap-8 mt-6">
+                            <div className="flex flex-col">
+                              <Label>Upload Image</Label>
+                              <input type="file" className="mt-4"></input>
+                              <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      <img
+                        className="h-40 w-40 rounded-full"
+                        src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                        alt={"user did'nt provide image"}
+                      />
+                    </div>
+                  }
+
                 </div>
 
 
@@ -274,39 +320,39 @@ const TeamPage = () => {
                         <DialogTrigger asChild>
                           <Button>Manage Team Members</Button>
                         </DialogTrigger>
-                        
+
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Requests</DialogTitle>
+                          </DialogHeader>
                           <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Requests</DialogTitle>
-                            </DialogHeader>
-                              <DialogContent>
 
 
-                                <div>
-                                  <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
-                                    {requests?.map((participant) => (
-                                      <div className="flex flex-row justify-start items-center" key={participant?._id?.toString()}>
-                                        <div className="px-2 mx-2">
-                                          <img src={participant?.image} alt={participant?.name} className="object-cover w-[60px] h-[60px]" /></div>
+                            <div>
+                              <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
+                                {requests?.map((participant) => (
+                                  <div className="flex flex-row justify-start items-center" key={participant?._id?.toString()}>
+                                    <div className="px-2 mx-2">
+                                      <img src={participant?.image} alt={participant?.name} className="object-cover w-[60px] h-[60px]" /></div>
 
-                                        <div className="flex flex-col px-2 mx-2">
-                                          <div className="">{participant?.name}</div>
-                                          <div className="">{participant?.gradYear}</div>
-                                        </div>
+                                    <div className="flex flex-col px-2 mx-2">
+                                      <div className="">{participant?.name}</div>
+                                      <div className="">{participant?.gradYear}</div>
+                                    </div>
 
-                                        <button onClick={() => acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
-                                        <button onClick={() => removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
-                                      </div>
-                                    ))}
+                                    <button onClick={() => acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
+                                    <button onClick={() => removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
                                   </div>
-                                </div>
-                              </DialogContent>
+                                ))}
+                              </div>
+                            </div>
+                          </DialogContent>
 
 
 
-                        
 
-                         
+
+
                         </DialogContent>
                       </Dialog>
                     </div>
@@ -321,7 +367,7 @@ const TeamPage = () => {
             <div className="w-full rounded-xl mt-5">
               <Tabs defaultValue="members">
                 <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
-               {isVolunteer &&   <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>}
+                  {isVolunteer && <TabsTrigger value="members" className="mt-1 text-lg">Members</TabsTrigger>}
                   <TabsTrigger value="posts" className="text-lg">Posts</TabsTrigger>
                 </TabsList>
                 {isVolunteer && <TabsContent value="members">

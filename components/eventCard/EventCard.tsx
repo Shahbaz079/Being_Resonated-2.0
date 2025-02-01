@@ -160,6 +160,8 @@ const EventCard = ({ uId }: { uId: string }) => {
             </button>
           </div>
         ))}
+
+        {!loadingEvents && events?.length === 0 ? <h1 className='mt-3 text-gray-400 text-center'>There are no Upcoming Events.</h1> : null}
       </div>
 
       {/* Event Modal */}
