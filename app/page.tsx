@@ -53,7 +53,7 @@ const mongoId = user?.publicMetadata?.mongoId as string;
                 body: JSON.stringify({
                   name: user?.username,
                   email: user?.primaryEmailAddress?.emailAddress,
-                  userId: mongoId,
+                  userId: userId,
                   image: user?.imageUrl,
                   gradYear: grad,
 

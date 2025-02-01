@@ -23,6 +23,8 @@ export async function POST(request:NextRequest){
 
   const body = await request.json();
   const { type, data } = body;
+  console.log('Received type:', type);
+  console.log('Received data:', data);
   if (type === 'user.created'){
 try { 
     
@@ -30,6 +32,7 @@ try {
       // Use non-null assertion to ensure uri is defined 
    
       await client.connect();
+      console.log("connected")
       const db = client.db(dbName!); 
 
       const { id, email_addresses, username, image_url } = data;
@@ -41,14 +44,16 @@ try {
 
          image: image_url as string,
 
-          gradYear: Number(email_addresses.email_address.slice(0,4))+4,
+         
 
           createdAt: new Date(), 
           updatedAt: new Date() }; 
 
+          console.log("newUser",newUser)
+
       const users = db.collection('users');
 
-      console.log(newUser)
+     
 
       const existingUser = await users.findOne({ email: newUser.email });
       if (existingUser) {
@@ -61,9 +66,9 @@ try {
          // Perform additional actions if needed
          
    const client = await clerkClient();
-   const { userId } = await auth() ;
+   
  
-         const res=await client.users.updateUserMetadata(userId!, {
+         const res=await client.users.updateUserMetadata(id!, {
            publicMetadata: {
              mongoId: result.insertedId,
            },

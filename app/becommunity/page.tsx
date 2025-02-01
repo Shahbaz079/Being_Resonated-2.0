@@ -17,6 +17,7 @@ import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
+import { useUser } from "@clerk/nextjs";
 
 
 export interface EventPost {
@@ -52,8 +53,10 @@ const BeCommunity = () => {
   const [finalPosts, setFinalPosts] = useState<any[]>([]);
   const [postsLoading, setPostsLoading] = useState<boolean>(true);
 
-  const searchParams = useSearchParams();
-  const mongoId = searchParams.get("id")
+  const {user}=useUser();
+
+  //const searchParams = useSearchParams();
+  const mongoId = user?.publicMetadata?.mongoId
 
   useEffect(() => {
 

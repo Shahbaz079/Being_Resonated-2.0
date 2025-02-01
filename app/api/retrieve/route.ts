@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest) {
 
     console.log('Retrieving user from MongoDB');
 
-    const existingUser = await users.findOne({ _id:new ObjectId(userId as string) });
+    const existingUser = await users.findOne({ email: email });
 
     if (!existingUser) {
       return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
