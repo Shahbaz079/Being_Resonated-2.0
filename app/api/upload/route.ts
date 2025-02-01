@@ -55,10 +55,14 @@ let client: MongoClient | null = null;
       await client.connect();
 
    const db = client.db(dbName!);
-  
+
+   
+   try {
   
    if(source==="event"){
 
+   
+      
     const events = db.collection('events');
 
     const updatedEvent = await events.updateOne({ _id: new ObjectId(id) }, { $set: { image: imgUrl,imgThumbnail:thumbnailUrl } })
@@ -81,6 +85,10 @@ let client: MongoClient | null = null;
          return NextResponse.json({ filePath: imgUrl, updatedTeam }, { status: 200 });
 
         }
+    } catch (error) {
+      
+    }
+
 
    }
    

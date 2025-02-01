@@ -13,6 +13,8 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+import { useEdgeStore } from "@/lib/edgestore";
+
 import {
   Accordion,
   AccordionContent,
@@ -72,7 +74,13 @@ const TeamPage = () => {
 
 
 
+  const [file, setFile] = useState<File | null>(null);
 
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
+  const [progress, setProgress] = useState<number>(0);
+
+  const [preview, setPreview] = useState<string | null>(null)
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -201,6 +209,50 @@ const TeamPage = () => {
   }
 
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const file = files[0];
+      setFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const { edgestore } = useEdgeStore();
+
+
+  const handleUpload = async () => {
+
+    if (file) {
+
+      const res = await edgestore.mypublicImages.upload({
+        file,
+        onProgressChange: (progress) => {
+          setProgress(progress);
+        }
+      })
+
+
+
+      const response = await fetch(`/api/upload?id=${id}&source=team`, {
+        method: "POST",
+        body: JSON.stringify({ imgUrl: res.url, thumbUrl: res.thumbnailUrl })
+      })
+
+      if (response.ok) {
+        setUploadStatus("Image uploaded successfully")
+        window.location.reload();
+      }
+    }
+
+  }
+
+
+
 
   return (
     <Layout>
@@ -215,7 +267,7 @@ const TeamPage = () => {
             <Card className="p-3 py-5 glass items-center flex ctab:flex-col border-0 ctab:mx-auto w-full">
               <div className="flex gap-6 ctab:flex-col">
                 <div className="h-40 w-40 mx-auto">
-                  {teamImg ?
+                  
                     <div className="relative rounded-full">
                       <Dialog>
                         <DialogTrigger asChild>
@@ -230,45 +282,20 @@ const TeamPage = () => {
                           <div className="flex flex-col gap-8 mt-6">
                             <div className="flex flex-col">
                               <Label>Upload Image</Label>
-                              <input type="file" className="mt-4"></input>
-                              <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                              <input type="file" onChange={handleFileChange}className="mt-4"></input>
+                              <Button    onClick={() => handleUpload()} variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
                             </div>
                           </div>
                         </DialogContent>
                       </Dialog>
                       <Image
                         className="h-40 w-40 rounded-full"
-                        src={teamImg}
+                        width={160}
+                        height={160}
+                        src={teamImg || "/default-image-path.jpg"}
                         alt={teamName}>
                       </Image>
-                    </div> :
-                    <div className="relative rounded-full">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button className="opacity-0 text-2xl rounded-full font-bold hover:opacity-80 absolute bg-black top-0 left-0 h-full w-full flex items-center justify-center cursor-pointer">
-                            Edit
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Event Details</DialogTitle>
-                          </DialogHeader>
-                          <div className="flex flex-col gap-8 mt-6">
-                            <div className="flex flex-col">
-                              <Label>Upload Image</Label>
-                              <input type="file" className="mt-4"></input>
-                              <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <img
-                        className="h-40 w-40 rounded-full"
-                        src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                        alt={"user did'nt provide image"}
-                      />
-                    </div>
-                  }
+                    </div> 
 
                 </div>
 
