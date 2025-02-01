@@ -36,7 +36,7 @@ try {
       const newUser = {
          name: username as string,
 
-         email: email_addresses[0].email as string,
+         email: email_addresses[0].email_address as string,
 
          image: image_url as string,
 
@@ -87,3 +87,6 @@ try {
       } }
     }
 }
+
+
+
