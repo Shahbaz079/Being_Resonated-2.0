@@ -9,7 +9,7 @@ import { IoIosSend } from "react-icons/io";
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
 import { UserPost } from "../eventCard/PostCard";
 import { EventPost } from "@/app/becommunity/page";
-import Editor from "./Editor";
+import EditorBox from "./Editor";
 
 
 
@@ -80,7 +80,7 @@ const WhatsOnTeamMind = ({ title, id }: { title: string, id: string }) => {
     }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
-        <Editor content={caption} setCaption={setCaption}></Editor>
+        <EditorBox content={caption} setCaption={setCaption}></EditorBox>
         <div className="flex justify-between p-2">
             <div className="flex">
                 <Dialog>

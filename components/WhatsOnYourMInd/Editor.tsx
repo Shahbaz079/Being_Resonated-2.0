@@ -86,7 +86,7 @@ const extensions = [
     })
 ]
 
-export default ({ content, setCaption }: { content: string, setCaption: React.Dispatch<React.SetStateAction<string>> }) => {
+const EditorBox = ({ content, setCaption }: { content: string, setCaption: React.Dispatch<React.SetStateAction<string>> }) => {
     const [active, setActive] = useState<boolean>(false);
 
     return (
@@ -103,3 +103,5 @@ export default ({ content, setCaption }: { content: string, setCaption: React.Di
         }} ></ EditorProvider>
     )
 }
+
+export default EditorBox;

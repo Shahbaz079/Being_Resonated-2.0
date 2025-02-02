@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { FaImage } from "react-icons/fa";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IoIosSend } from "react-icons/io";
-import Editor from "./Editor";
+import EditorBox from "./Editor";
 
 
 const WhatsOnUserMind = () => {
@@ -84,7 +84,7 @@ const WhatsOnUserMind = () => {
     }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
-        <Editor content={caption} setCaption={setCaption}></Editor>
+        <EditorBox content={caption} setCaption={setCaption}></EditorBox>
         <div className="flex justify-between p-2">
             <div className="flex">
                 <Dialog>
