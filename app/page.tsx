@@ -19,13 +19,11 @@ const Home = () => {
 
 
   //console.log(sessionId,getToken)
-  const [mongoId, setMongoId] = useState(user?.publicMetadata?.mongoId as string)
+const mongoId = user?.publicMetadata?.mongoId as string;
 
 
 
-  useEffect(() => {
-    setMongoId(user?.publicMetadata?.mongoId as string)
-  }, [isLoaded, userId, user])
+
 
   useEffect(() => {
     const newInterval = setInterval(() => {
@@ -45,22 +43,7 @@ const Home = () => {
       if (userId) {
         try {
           if (!mongoId) {
-            const result = await fetch('/api/createuser', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: user?.username,
-                email: user?.primaryEmailAddress?.emailAddress,
-                gradYear: user?.primaryEmailAddress?.emailAddress.slice(0, 4),
-                image: user?.imageUrl,
-
-              })
-            });
-            if (result.ok) {
-
-              toast.success('User created successfully');
-              console.log("Done")
-            } else if (result.status === 400) {
+          
 
               const grad = Number(user?.primaryEmailAddress?.emailAddress.slice(0, 4)) + 4;
 
@@ -81,7 +64,7 @@ const Home = () => {
 
                 console.log('User retrieved successfully');
               }
-            }
+            
           }
 
 

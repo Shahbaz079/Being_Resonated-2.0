@@ -99,10 +99,20 @@ export async function GET(request: NextRequest) {
     await client.connect();
     const db = client.db(dbName);
     const teamPosts = db.collection('teamposts');
+    const teams = db.collection('teams');
 
     const allTeamPost = await teamPosts.find({}).sort({ createdAt: -1 }).toArray();
 
-    return NextResponse.json(allTeamPost);
+    const finalPosts = await Promise.all(
+      allTeamPost.map(async (post) => {
+        
+        const team = await teams.findOne({ _id:new ObjectId (post?.from as string)  }, { projection: { name: 1, image: 1 } });
+        return { ...post, team };
+      })
+    );
+
+
+    return NextResponse.json(finalPosts);
   } finally {
     if (client) {
       await client.close();
