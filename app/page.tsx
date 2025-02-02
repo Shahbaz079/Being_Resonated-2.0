@@ -122,7 +122,7 @@ const mongoId = user?.publicMetadata?.mongoId as string;
   }, [user?.imageUrl, isLoaded]);
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="home relative h-screen w-full">
 
       <header>
         <div className="logo text-xl text-red-950 font-extrabold">LOGO</div>

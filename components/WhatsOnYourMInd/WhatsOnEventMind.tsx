@@ -9,6 +9,7 @@ import { IoIosSend } from "react-icons/io";
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
 import { UserPost } from "../eventCard/PostCard";
 import { EventPost } from "@/app/becommunity/page";
+import EditorBox from "./Editor";
 
 
 
@@ -76,7 +77,7 @@ const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { titl
     }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
-        <textarea disabled={posting} value={caption} onChange={(e: any) => setCaption(e.target.value)} placeholder="What's on your mind ?" className="disabled:opacity-50 disabled:cursor-not-allowed placeholder:opacity-80 text-cyan-300 rounded-[2rem] py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
+        <EditorBox content={caption} setCaption={setCaption}></EditorBox>
         <div className="flex justify-between p-2">
             <div className="flex">
                 <Dialog>

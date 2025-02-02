@@ -1,0 +1,31 @@
+.control-group .button-group button {
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.control-group .button-group button svg {
+    height: 20px;
+    width: 20px;
+}
+
+pre {
+    background-color: rgb(13, 13, 24);
+    border-radius: 10px;
+    padding: .7rem;
+}
+
+.is-active {
+    background-color: rgb(85, 92, 92);
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    opacity: 80%;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}

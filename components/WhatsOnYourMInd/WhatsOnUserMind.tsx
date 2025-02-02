@@ -1,15 +1,12 @@
 import { useEdgeStore } from "@/lib/edgestore";
 import { useUser } from "@clerk/nextjs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { FaImage } from "react-icons/fa";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IoIosSend } from "react-icons/io";
-import { imageConfigDefault } from "next/dist/shared/lib/image-config";
-import { UserPost } from "../eventCard/PostCard";
-import { EventPost } from "@/app/becommunity/page";
-
+import EditorBox from "./Editor";
 
 
 const WhatsOnUserMind = () => {
@@ -21,6 +18,17 @@ const WhatsOnUserMind = () => {
     const [mongoId, setMongoId] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>("")
     const [posting, setPosting] = useState<boolean>(false);
+    const editor = useRef(null);
+    const placeholder = "What's on your mind ?"
+
+    const config = useMemo(() => ({
+        readonly: false, // all options from https://xdsoft.net/jodit/docs/,
+        placeholder: placeholder || 'Start typings...'
+    }),
+        [placeholder]
+    );
+
+
 
 
 
@@ -76,7 +84,7 @@ const WhatsOnUserMind = () => {
     }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
-        <textarea disabled={posting} value={caption} onChange={(e: any) => setCaption(e.target.value)} placeholder="What's on your mind ?" className="disabled:opacity-50 disabled:cursor-not-allowed placeholder:opacity-80 text-cyan-300 rounded-xl py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
+        <EditorBox content={caption} setCaption={setCaption}></EditorBox>
         <div className="flex justify-between p-2">
             <div className="flex">
                 <Dialog>
