@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-body {
+.home {
     font-family: Poppins;
     margin: 0;
     background-color: #010101;
     color: #eee;
 }
 
-svg {
+.home svg {
     width: 25px;
 }
 
-header {
+.home header {
     width: 95%;
     /* max-width: 95%; */
     margin: auto;
@@ -25,11 +25,11 @@ header {
     z-index: 100;
 }
 
-header .logo {
+.home header .logo {
     font-weight: bold;
 }
 
-header .menu {
+.home header .menu {
     padding: 0;
     margin: 0;
     list-style: none;
@@ -40,13 +40,13 @@ header .menu {
 }
 
 /* css slider */
-.slider {
+.home .slider {
     height: 100svh;
     margin-top: -50px;
     position: relative;
 }
 
-.slider .list .item {
+.home .slider .list .item {
     position: absolute;
     inset: 0 0 0 0;
     overflow: hidden;
@@ -64,7 +64,7 @@ header .menu {
     }
 }
 
-.slider .list .item img {
+.home .slider .list .item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -72,7 +72,7 @@ header .menu {
     animation: bg-animation 30s infinite alternate;
 }
 
-.slider .list .item::after {
+.home .slider .list .item::after {
     content: '';
     width: 100%;
     height: 100%;
@@ -83,7 +83,7 @@ header .menu {
     opacity: 60%;
 }
 
-.slider .list .item .content {
+.home .slider .list .item .content {
     position: absolute;
     left: 10%;
     top: 20%;
@@ -92,18 +92,18 @@ header .menu {
     z-index: 1;
 }
 
-.slider .list .item .content p {
+.home .slider .list .item .content p {
     margin-top: 10px;
     font-size: 17px;
     color: rgb(165 243 252);
 }
 
-.slider .list .item .content h2 {
+.home .slider .list .item .content h2 {
     font-size: 80px;
     margin: 0;
 }
 
-.slider .list .item.active {
+.home .slider .list .item.active {
     opacity: 1;
     z-index: 10;
 }
@@ -116,30 +116,30 @@ header .menu {
     }
 }
 
-.slider .list .item.active h2,
-.slider .list .item.active p {
+.home .slider .list .item.active h2,
+.home .slider .list .item.active p {
     transform: translateY(30px);
     filter: blur(20px);
     opacity: 0;
     animation: showContent .3s ease-in-out 1 forwards;
 }
 
-.slider .list .item.active h2 {
+.home .slider .list .item.active h2 {
     animation-delay: 1s;
 }
 
-.slider .list .item.active p {
+.home .slider .list .item.active p {
     animation-duration: 1.2s;
 }
 
-.arrows {
+.home .arrows {
     position: absolute;
     top: 30%;
     right: 50px;
     z-index: 100;
 }
 
-.arrows button {
+.home .arrows button {
     background-color: #eee5;
     border: none;
     font-family: monospace;
@@ -151,12 +151,12 @@ header .menu {
     transition: .5s;
 }
 
-.arrows button:hover {
+.home .arrows button:hover {
     background-color: #eee;
     color: black;
 }
 
-.thumbnail {
+.home .thumbnail {
     position: absolute;
     bottom: 0;
     z-index: 11;
@@ -172,11 +172,11 @@ header .menu {
     align-items: center;
 }
 
-.thumbnail::-webkit-scrollbar {
+.home .thumbnail::-webkit-scrollbar {
     width: 0;
 }
 
-.thumbnail .item {
+.home .thumbnail .item {
     width: 150px;
     height: 190px;
     filter: brightness(.5);
@@ -184,52 +184,52 @@ header .menu {
     flex-shrink: 0;
 }
 
-.thumbnail .item img {
+.home .thumbnail .item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 10px;
 }
 
-.thumbnail .item.active {
+.home .thumbnail .item.active {
     filter: brightness(1.5);
 }
 
-.thumbnail .item .content {
+.home .thumbnail .item .content {
     position: absolute;
     inset: auto 10px 10px 10px;
 }
 
 @media screen and (max-width: 850px) {
-    .slider .list .item .content h2 {
+    .home .slider .list .item .content h2 {
         font-size: 37px;
     }
 
-    .slider .list .item .content p {
+    .home .slider .list .item .content p {
         font-size: 14x;
     }
 
-    .arrows {
+    .home .arrows {
         top: 10%;
     }
 }
 
 @media screen and (max-width: 850px) {
 
-    .thumbnail {
+    .home .thumbnail {
         /* justify-content: start; */
         padding-left: 20px;
         align-items: flex-end;
         padding-bottom: 25px;
     }
 
-    .thumbnail .item {
+    .home .thumbnail .item {
         height: 70px;
         width: 70px;
         border-radius: 50%;
     }
 
-    .thumbnail .item img {
+    .home .thumbnail .item img {
         height: 70px;
         width: 70px;
         border-radius: 50%;
@@ -237,12 +237,12 @@ header .menu {
 }
 
 @media screen and (max-width: 450px) {
-    .thumbnail {
+    .home .thumbnail {
         justify-content: flex-start;
     }
 }
 
-.glass {
+.home .glass {
     background-color: transparent;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -251,7 +251,7 @@ header .menu {
             rgba(0, 0, 0, .2));
 }
 
-.banner::before {
+.home .banner::before {
     content: '';
     position: absolute;
     inset: 0;

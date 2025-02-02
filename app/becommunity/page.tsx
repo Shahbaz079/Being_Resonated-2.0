@@ -61,16 +61,16 @@ const BeCommunity = () => {
       setPostsLoading(true);
       const eventRes = await fetch("/api/eventpost", { method: "GET" });
       const userRes = await fetch("/api/userpost", { method: "GET" })
-      const teamRes=await fetch("/api/teampost",{method:"GET"})
+      const teamRes = await fetch("/api/teampost", { method: "GET" })
 
       const eventData: [] = await eventRes.json();
       const userData: [] = await userRes.json();
-      const teamData:[]=await teamRes.json()
-      
+      const teamData: [] = await teamRes.json()
+
       setEventPosts(eventData);
 
       setTeamPosts(teamData);
-    
+
       setUserPosts(userData);
 
       setPostsLoading(false);
@@ -81,7 +81,7 @@ const BeCommunity = () => {
 
   useEffect(() => {
     if (!eventPosts || !userPosts) return;
-    const finalPosts = [...eventPosts, ...userPosts,...teamPosts];
+    const finalPosts = [...eventPosts, ...userPosts, ...teamPosts];
     finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
     setFinalPosts(finalPosts);
   }, [eventPosts, userPosts])
@@ -91,7 +91,7 @@ const BeCommunity = () => {
 
   return (
     <Layout>
-      <div className="bg relative min-h-screen">
+      <div className="bg bec relative min-h-screen">
 
 
 
@@ -142,9 +142,9 @@ const BeCommunity = () => {
                   <LoadingAnimation></LoadingAnimation>
                 </div>}
 
-                {finalPosts.map((userPost) => (
-                  <div className="" key={userPost._id?.toString()}>
-                    <PostCard post={userPost} />
+                {finalPosts.map((post) => (
+                  <div className="" key={post._id?.toString()}>
+                    <PostCard post={post} />
                   </div>
                 ))}
               </div>
