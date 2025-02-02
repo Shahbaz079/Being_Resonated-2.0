@@ -9,10 +9,11 @@ import { IoIosSend } from "react-icons/io";
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
 import { UserPost } from "../eventCard/PostCard";
 import { EventPost } from "@/app/becommunity/page";
+import Editor from "./Editor";
 
 
 
-const WhatsOnTeamMind = ({title,id}:{title:string,id:string}) => {
+const WhatsOnTeamMind = ({ title, id }: { title: string, id: string }) => {
     const [file, setFile] = useState<File>();
     const { edgestore } = useEdgeStore();
     const [caption, setCaption] = useState<string>("");
@@ -22,7 +23,7 @@ const WhatsOnTeamMind = ({title,id}:{title:string,id:string}) => {
     const [userName, setUserName] = useState<string | null>("")
     const [posting, setPosting] = useState<boolean>(false);
 
-    
+
 
     const imageUrl = React.useMemo(() => {
         if (typeof file === 'string') {
@@ -55,13 +56,14 @@ const WhatsOnTeamMind = ({title,id}:{title:string,id:string}) => {
                         setProgress(progress);
                     },
                 });
-            
+
                 if (response.url) {
                     const res = await fetch(`/api/teampost`, {
                         method: "POST",
-                        body: JSON.stringify({ image: response.url,imgThumbnail:response.thumbnailUrl, caption, createdBy:mongoId, title: title,teamId:id
+                        body: JSON.stringify({
+                            image: response.url, imgThumbnail: response.thumbnailUrl, caption, createdBy: mongoId, title: title, teamId: id
 
-                         }),
+                        }),
                     })
                     if (res.ok) {
                         toast.success("Posted successfully")
@@ -70,15 +72,15 @@ const WhatsOnTeamMind = ({title,id}:{title:string,id:string}) => {
                         setPosting(false);
                     }
                 }
-                    
-                }
+
             }
-        
+        }
+
         post();
     }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
-        <textarea disabled={posting} value={caption} onChange={(e: any) => setCaption(e.target.value)} placeholder="What's on your mind ?" className="disabled:opacity-50 disabled:cursor-not-allowed placeholder:opacity-80 text-cyan-300 rounded-[2rem] py-3 px-4 w-full bg-transparent border-2 border-cyan-600"></textarea>
+        <Editor content={caption} setCaption={setCaption}></Editor>
         <div className="flex justify-between p-2">
             <div className="flex">
                 <Dialog>

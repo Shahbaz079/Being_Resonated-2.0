@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Users, Clock, Heart, Share2, MessageCircle } from 'lucide-react';
 import { EventPost } from '@/app/becommunity/page';
 import { ObjectId } from 'mongoose';
@@ -66,11 +66,21 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState('');
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [isOverflowing, setIsOverflowing] = useState<boolean>(true);
+  const textRef = useRef(null);
 
   const renderContent = (content: string) => {
     const modifiedHtml = content.replace(/<p><\/p>/g, '<p>&nbsp;</p>');
     return parse(modifiedHtml);
   }
+
+  useEffect(() => {
+    if (textRef.current) {
+      const { scrollHeight, clientHeight } = textRef.current;
+      setIsOverflowing(scrollHeight > clientHeight); // If true, show "Read More"
+    }
+  }, [textRef.current]);
 
   const handleLike = () => {
     setLiked(!liked);
@@ -111,10 +121,12 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </div>
         </div>
 
-        {caption !== undefined ? <div className={`relative px-1 py-5 max-h-[100px] overflow-hidden`}>
-          <p className='absolute bottom-0 text-blue-400 cursor-pointer font-bold text-xl w-full text-center bg-gradient-to-b from-transparent to-black'>Read More...</p>
+        {caption !== undefined ? <div ref={textRef} className={`${isOverflowing ? "line-clamp-3" : ""} relative px-1 py-5 overflow-hidden`}>
           {renderContent(caption)}
         </div> : null}
+        {isOverflowing && <div onClick={() => setIsOverflowing(false)} className='text-blue text-center text-blue-500 cursor-pointer hover:text-blue-400 mt-2 mb-2'>Read More</div>}
+
+
 
         {image && (
           <div className="relative w-full flex justify-center">
@@ -155,7 +167,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </div>
           </div>
 
-          <p className='px-1 py-5'>{caption}</p>
+          {caption !== undefined ? <div ref={textRef} className={`${isOverflowing ? "line-clamp-3" : ""} relative px-1 py-5 overflow-hidden`}>
+            {renderContent(caption)}
+          </div> : null}
+          {isOverflowing && <div onClick={() => setIsOverflowing(false)} className='text-blue text-center text-blue-500 cursor-pointer hover:text-blue-400 mt-2 mb-2'>Read More</div>}
+
 
           {image && (
             <div className="relative w-full flex justify-center">
@@ -197,7 +213,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               </div>
             </div>
 
-            <p className='px-1 py-5'>{caption}</p>
+            {caption !== undefined ? <div ref={textRef} className={`${isOverflowing ? "line-clamp-3" : ""} relative px-1 py-5 overflow-hidden`}>
+              {renderContent(caption)}
+            </div> : null}
+            {isOverflowing && <div onClick={() => setIsOverflowing(false)} className='text-blue text-center text-blue-500 cursor-pointer hover:text-blue-400 mt-2 mb-2'>Read More</div>}
+
 
             {image && (
               <div className="relative w-full flex justify-center">
