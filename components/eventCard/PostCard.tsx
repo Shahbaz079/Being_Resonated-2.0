@@ -36,10 +36,11 @@ type TeamPost = {
 
 
   title: string;
-  from: {
-    _id: ObjectId;
+  from: string;
+  team:{
     image: string;
-  };
+    _id: string;
+  }
 
   caption: string;
   image: string;
@@ -103,7 +104,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
   const { user } = useUser();
   const mongoId = user?.publicMetadata.mongoId;
-  console.log(post);
 
   return (
     <div className="animate-slide-top glass max-w-[600px] mx-auto p-6 rounded-lg shadow space-y-4 mb-4">
@@ -202,7 +202,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
           <div>
             <div className="border-b-2 mx-1 border-gray-600 pb-4 flex flex-row items-start justify-normal gap-5" onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}>
-              <img src={`/team/${post?.from}?id=${post?.from}`} className='cursor-pointer w-10 h-10 rounded-full' />
+              <img src={post?.team?.image} className='cursor-pointer w-10 h-10 rounded-full' />
 
               <div>
                 <h2 onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="text-yellow-300 cursor-pointer font-semibold">{'title' in post ? post.title : ''}</h2>

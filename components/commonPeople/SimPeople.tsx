@@ -49,7 +49,7 @@ const SimPeople = ({id}:{id:string}) => {
 
     }, [isLoaded]);
 
-    console.log(loggedUser, "")
+
 
     return (
         <div className="h-fit px-4 pb-4 items-center">
