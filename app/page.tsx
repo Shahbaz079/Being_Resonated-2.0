@@ -191,7 +191,8 @@ const SliderComponent = ({ mongoId }: { mongoId: string }) => {
           <div className="content rounded-xl p-4 glass">
             <h2 className="leading-none text-orange-500 font-semibold">BEing Resonated</h2>
             <p>
-              An application where students of BE College can form communities, access academic resources, and participate in events by creating teams.
+              An application where students of IIEST,Shibpur can form communities, access academic resources, and participate in events by creating teams. <br />
+              Sign in with your G-Suite Id
             </p>
           </div>
         </div>
