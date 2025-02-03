@@ -15,8 +15,8 @@ if (!dbName) {
 }
 
 export async function GET(req: NextRequest) {
+  const client = new MongoClient(uri);
   try {
-    const client = new MongoClient(uri);
 
 
     await client.connect();
@@ -78,5 +78,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error processing request:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-  }
+  }finally {
+    if (client) {
+      await client.close(); 
+     } }
 }

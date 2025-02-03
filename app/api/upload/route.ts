@@ -23,7 +23,7 @@ import { MongoClient ,ObjectId} from 'mongodb';
 
 
 export async function POST(req: NextRequest) {
-  console.log(req)
+
 
   const { imgUrl ,thumbnailUrl} = await req.json();
 
@@ -86,8 +86,12 @@ let client: MongoClient | null = null;
 
         }
     } catch (error) {
-      
-    }
+      console.error('Error updating document:', error);
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }finally {
+      if (client) {
+        await client.close(); 
+       } }
 
 
    }
