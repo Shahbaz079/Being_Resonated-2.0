@@ -47,7 +47,7 @@ const BeCommunity = () => {
   const [eventPosts, setEventPosts] = useState<EventPost[]>([]);
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [teamPosts, setTeamPosts] = useState<any[]>([]);
-  const [render, setRender] = useState<"posts" | "events" | "users">("posts");
+  const [render, setRender] = useState<"posts" | "events" | "users" | "teams">("posts");
 
 
   const [finalPosts, setFinalPosts] = useState<any[]>([]);
@@ -100,7 +100,7 @@ const BeCommunity = () => {
 
         <div className="relative">
 
-          <div className="cbecomn:hidden tabglass cphone:text-base cphone:gap-12 tabs  flex text-xl gap-20 border-2 w-fit mx-auto px-3 rounded-lg justify-center">
+          <div className="cbecomn:hidden tabglass cphone:text-base cphone:gap-12 cphone:gap-y-3 tabs flex flex-wrap text-xl gap-20 border-2 w-fit mx-auto px-3 rounded-lg justify-center">
 
             <span onClick={() => setRender("events")} className={`${render === "events" ? "active" : ""} relative px-2 pt-3 pb-3 cursor-pointer tab`}>Events
               <div className="absolute anbd"></div>
@@ -109,6 +109,9 @@ const BeCommunity = () => {
               <div className="absolute anbd"></div>
             </span>
             <span onClick={() => setRender("users")} className={`${render === "users" ? "active" : ""}  relative px-2 pt-3 pb-3 cursor-pointer tab`}>Users
+              <div className="absolute anbd"></div>
+            </span>
+            <span onClick={()=>setRender("teams")} className={`${render === "teams" ? "active" : ""} relative px-2 pt-3 pb-3 cursor-pointer tab`}>Teams
               <div className="absolute anbd"></div>
             </span>
 
@@ -124,10 +127,26 @@ const BeCommunity = () => {
               <EventCard uId={mongoId as string} />
             </div> : null}
 
-            <div className="glass rounded-2xl h-fit min-w-[300px] mt-3 cbecom:hidden">
-              <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Upcoming Events</h1>
-              <EventCard uId={mongoId as string} />
+
+            {render === "teams" ? <div className="w-[500px] glass mx-1 rounded-2xl h-fit min-w-[300px] mt-3 cbecomn:hidden">
+              <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
+                <TeamCard></TeamCard>
+              </div> : null
+            }
+
+            <div>
+              <div className="glass rounded-2xl h-fit min-w-[300px] mt-3 cbecom:hidden">
+                <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Upcoming Events</h1>
+                <EventCard uId={mongoId as string} />
+              </div>
+
+              <div className="glass rounded-2xl h-fit min-w-[300px] mt-4 cbecom:hidden">
+                <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
+                <TeamCard></TeamCard>
+              </div>
             </div>
+
+            
 
 
 
@@ -203,6 +222,13 @@ const BeCommunity = () => {
 const BeCommunityWithSuspense = () => (
   <Suspense fallback={<div>Loding</div>}> <BeCommunity /></Suspense>
 )
+
+
+const TeamCard = ()=> {
+  return (
+    <div className="w-full p-4"></div>
+  )
+}
 
 export default BeCommunityWithSuspense;
 

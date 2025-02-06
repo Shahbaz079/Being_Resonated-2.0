@@ -21,7 +21,7 @@ const Header = () => {
 
 
   return (
-    <header className="absolute top-0 right-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between z-50">
+    <header className="absolute top-0 right-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between z-[300]">
       <div className="mx-10">
 
       </div>
