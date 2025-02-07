@@ -36,7 +36,9 @@ const isSensitiveFile = (path: string): boolean => {
     /\.p12$/,              // PKCS12 certificates
     /\.jks$/,              // Java KeyStore files
     /\/\.gcloud\/config$/,     // Google Cloud SDK configurations
-    /\/\.netrc$/              // Netrc files for stored credentials
+    /\/\.netrc$/,              // Netrc files for stored credentials
+    /\/wp-admin\/setup-config\.php$/, // WordPress setup config file
+    /\.php$/                // Any PHP files
   ];
   return sensitiveFiles.some((pattern) => pattern.test(path));
 };
