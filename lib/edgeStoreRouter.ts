@@ -3,5 +3,5 @@
 import { type EdgeStoreRouter}  from "@/lib/edgeStoreClient"
 import { createEdgeStoreProvider } from "@edgestore/react"
 
-export const {EdgeStoreProvider,useEdgeStore}=createEdgeStoreProvider<EdgeStoreRouter>();
 
+export const {EdgeStoreProvider,useEdgeStore}=createEdgeStoreProvider<EdgeStoreRouter>();

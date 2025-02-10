@@ -7,7 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { useState, useEffect, FormEvent } from "react";
 import { IUser } from "@/components/expandableCards/card";
 import ITeam, { Team } from "@/models/Team";
-import { useEdgeStore } from "@/lib/edgestore";
+import { useEdgeStore } from "@/lib/edgeStoreRouter";
 import { IEvent } from "@/app/team/[id]/page";
 import { FaLocationDot, FaMarkdown } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";

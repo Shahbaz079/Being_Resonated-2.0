@@ -1,5 +1,18 @@
+
 import { initEdgeStoreClient } from '@edgestore/server/core';
-import { edgeStoreRouter } from '../app/api/edgestore/[...edgestore]/route'; // Correct import
+ // Import from the separate module
+import { createEdgeStoreProvider } from "@edgestore/react"
+
+import { initEdgeStore } from '@edgestore/server'
+
+const es = initEdgeStore.create();
+
+/**
+ * This is the main router for the Edge Store buckets.
+ */
+export const edgeStoreRouter = es.router({
+  mypublicImages: es.imageBucket(),
+})
 
 export const backendClient = initEdgeStoreClient({
   router: edgeStoreRouter,

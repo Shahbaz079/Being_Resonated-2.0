@@ -8,7 +8,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from 'react-toastify'
 import Header from "@/components/header/header";
 import SubHeader from "@/components/SubHeader/SubHeader";
-import { EdgeStoreProvider } from "@/lib/edgestore";
+import { EdgeStoreProvider } from "@/lib/edgeStoreRouter";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

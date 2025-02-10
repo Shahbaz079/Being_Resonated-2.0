@@ -10,7 +10,7 @@ import {
 import { toast } from "react-toastify";
 
 import { motion } from "framer-motion";
-import { useEdgeStore } from "@/lib/edgestore";
+import { useEdgeStore } from "@/lib/edgeStoreRouter";
 import { useState } from "react";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IEvent } from "@/app/team/[id]/page";

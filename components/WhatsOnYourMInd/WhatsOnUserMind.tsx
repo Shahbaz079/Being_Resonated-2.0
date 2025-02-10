@@ -1,4 +1,4 @@
-import { useEdgeStore } from "@/lib/edgestore";
+import { useEdgeStore } from "@/lib/edgeStoreRouter";
 import { useUser } from "@clerk/nextjs";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
