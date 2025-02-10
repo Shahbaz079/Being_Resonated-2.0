@@ -4,7 +4,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/config/db';
 import { EventPost } from '@/models/EventPost';
-import { backendClient } from '../edgestore/[...edgestore]/route';
+import { backendClient } from '@/lib/edgeStoreClient';
 
 type Data = {
   message: string;

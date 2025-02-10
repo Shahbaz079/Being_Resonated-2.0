@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/config/db';
-import { backendClient } from '../edgestore/[...edgestore]/route';
+import { backendClient } from '@/lib/edgeStoreClient';
 
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;

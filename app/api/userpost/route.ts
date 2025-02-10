@@ -2,7 +2,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/config/db';
 
-import { backendClient } from '../edgestore/[...edgestore]/route';
+import { backendClient } from '@/lib/edgeStoreClient';
 
 
 
