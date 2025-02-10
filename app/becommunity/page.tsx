@@ -14,10 +14,11 @@ import "./becommunity.css";
 
 import Layout from "@/components/customLayouts/Layout";
 import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 import { useUser } from "@clerk/nextjs";
+import ITeam from "@/models/Team";
 
 
 export interface EventPost {
@@ -49,6 +50,7 @@ const BeCommunity = () => {
   const [eventPosts, setEventPosts] = useState<EventPost[]>([]);
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [teamPosts, setTeamPosts] = useState<any[]>([]);
+  const [topTeams,setTopTeams]=useState<ITeam[]>([]);
   const [render, setRender] = useState<"posts" | "events" | "users" | "teams">("posts");
 
 
@@ -67,10 +69,12 @@ const BeCommunity = () => {
       const eventRes = await fetch("/api/eventpost", { method: "GET" });
       const userRes = await fetch("/api/userpost", { method: "GET" })
       const teamRes = await fetch("/api/teampost", { method: "GET" })
+      const topTeamRes=await fetch(`/api/team?type=topTeams`,{method:"GET"});
 
       const eventData: [] = await eventRes.json();
       const userData: [] = await userRes.json();
-      const teamData: [] = await teamRes.json()
+      const teamData: [] = await teamRes.json();
+      const topTeamData:[]=await topTeamRes.json();
 
       setEventPosts(eventData);
 
@@ -79,6 +83,8 @@ const BeCommunity = () => {
       setUserPosts(userData);
 
       setPostsLoading(false);
+
+      setTopTeams(topTeamData);
     }
     fetchPosts();
 
@@ -132,7 +138,13 @@ const BeCommunity = () => {
 
             {render === "teams" ? <div className="w-[500px] glass mx-1 rounded-2xl h-fit min-w-[300px] mt-3 cbecomn:hidden">
               <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
-                <TeamCard></TeamCard>
+              {
+                topTeams.map((team)=>(
+                  <TeamCard {...team} key={team?._id?.toString()}></TeamCard>
+                ))
+
+              }
+                
               </div> : null
             }
 
@@ -144,7 +156,12 @@ const BeCommunity = () => {
 
               <div className="glass rounded-2xl h-fit min-w-[300px] mt-4 cbecom:hidden">
                 <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
-                <TeamCard></TeamCard>
+                {
+                topTeams.map((team)=>(
+                  <TeamCard {...team}  key={team?._id?.toString()}></TeamCard>
+                ))
+
+              }
               </div>
             </div>
 
@@ -226,9 +243,16 @@ const BeCommunityWithSuspense = () => (
 )
 
 
-const TeamCard = ()=> {
+const TeamCard = (team:ITeam)=> {
   return (
-    <div className="w-full p-4"></div>
+    <div className="w-full p-4">
+      <div className="flex flex-row justify-around items-center " onClick={()=>redirect(`/team/${team._id}?id=${team._id}`)}>
+        <div className="">
+          <img src={team.image} alt={team.name} className="w-[50px] h-[50px] rounded-full" />
+        </div>
+        <div className="">{team.name}</div>
+      </div>
+    </div>
   )
 }
 

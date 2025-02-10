@@ -59,6 +59,46 @@ export async function POST(request: NextRequest) {
 
                         export async function GET(request: NextRequest) {
                              let client: MongoClient | null = null;
+                             const type=request.nextUrl.searchParams.get('type') as string;
+                             
+                             if(type==='topTeams'){
+
+                              try {
+                                client = new MongoClient(uri!);
+                                // Use non-null assertion to ensure uri is defined await
+                                 client.connect();
+                                  const db = client.db(dbName!); 
+                                  // Use non-null assertion to ensure dbName is defined 
+
+                                  const teams=db.collection('teams')
+
+                                  const allTeams = await teams.aggregate([
+                                    {
+                                      $addFields: {
+                                        memberCount: { $size: "$members" }
+                                      }
+                                    },
+                                    {
+                                      $sort: { memberCount: -1 }
+                                    }
+                                  ]).toArray();
+                              
+                                
+
+                                  return NextResponse.json(allTeams);
+
+                              } catch (error) {
+                                console.error('Error:', error);
+                                return NextResponse.json({ error: 'Failed to fetch team' },
+                                   { status: 500 });
+                                
+                              }finally { 
+                                if (client) { await client.close(); }
+                               }
+
+
+                             }else{
+                             
                               try { 
                                const id = request.nextUrl.searchParams.get('id') as string;
                                 // Extract `id` from query params
@@ -120,7 +160,10 @@ export async function POST(request: NextRequest) {
                                            console.error('Error:', error);
                                             return NextResponse.json({ error: 'Failed to fetch team' },
                                                { status: 500 }); } finally { 
-                                                if (client) { await client.close(); } } }
+                                                if (client) { await client.close(); } }
+                                              
+                                               }
+                                              }
 
 
 
