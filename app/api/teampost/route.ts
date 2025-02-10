@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/config/db';
-
+import { backendClient } from '../edgestore/[...edgestore]/route';
 
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;
@@ -119,3 +119,71 @@ export async function GET(request: NextRequest) {
     }
   }
 }
+
+
+
+
+export async function DELETE(request:NextRequest){
+  let client: MongoClient | null = null;
+  try {
+    const { searchParams } = new URL(request.url);
+    const postId = searchParams.get('id') as string;
+    client = new MongoClient(uri);
+    await client.connect();
+    const db = client.db(dbName);
+    const teamposts = db.collection('teamposts');
+    const teams=db.collection('teams');
+  
+
+    const post = await teamposts.findOne({ _id: new ObjectId(postId as string) });
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+    const team = await teams.findOne({ _id: post.from });
+    if (!team) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const updatedPosts = team.posts.filter((p: ObjectId) => p.toString() !== postId);
+
+    const postImage=post.image;
+
+    const result = await teamposts.findOneAndDelete({ _id: new ObjectId(postId as string) });
+
+
+
+    if (result && result._id) {
+
+      const res=await backendClient.mypublicImages.deleteFile({url:postImage});
+
+      const teamUpdateResult = await teams.findOneAndUpdate(
+        { _id: post.createdBy },
+        {
+          $set: {
+            posts: updatedPosts,
+          },
+        },
+        { returnDocument: 'after' } // ensures you get the updated document
+      );
+  
+      if ( teamUpdateResult && teamUpdateResult._id) {
+        return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
+      } else {
+        throw new Error('Failed to update user posts');
+      }
+    } else {
+      throw new Error('Failed to delete post');
+            
+
+  }
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}
+
+

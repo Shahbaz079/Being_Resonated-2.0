@@ -21,7 +21,8 @@ const userSchema=new mongoose.Schema({
   authProviderId:{type:String},
   posts:[{type:String,required:false}],
   participations:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Events"}],
-  eventRequests:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Events"}]
+  eventRequests:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"Events"}],
+  postLikes:[{type:mongoose.Schema.Types.ObjectId,required:false,ref:"EventPost"}],
 
 },{timestamps:true})
 

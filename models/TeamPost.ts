@@ -6,7 +6,7 @@ const TeamPostSchema = new mongoose.Schema(
     from:{type:mongoose.Schema.Types.ObjectId,ref:"Team", required:true},
     caption:{type:String,required:false},
     image: { type: String, required: true },
-    likes: { type: Number, default: 0 },
+    likes:[{type:mongoose.Schema.Types.ObjectId,ref:"User",required:false}],
     imgThumbnail: { type: String, required: false },
    
 
