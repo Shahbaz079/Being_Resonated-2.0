@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     const finalPosts = await Promise.all(
       allTeamPost.map(async (post) => {
         
-        const team = await teams.findOne({ _id:new ObjectId (post?.from as string)  }, { projection: { name: 1, image: 1 } });
+        const team = await teams.findOne({ _id:new ObjectId (post?.from as string)  }, { projection: { name: 1, image: 1 ,leaders:1} });
         return { ...post, team };
       })
     );

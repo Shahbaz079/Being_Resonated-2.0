@@ -3,7 +3,7 @@
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople"
 
 import { useEffect, useState } from "react"
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongoose";
 
 import EventCard from "@/components/eventCard/EventCard";
 import PostCard from "@/components/eventCard/PostCard";
@@ -25,8 +25,10 @@ export interface EventPost {
   title: string;
   caption?: string;
   image: string;
+ 
   eventImg: {
     image: string;
+    leaders:[ObjectId]
   };
   imgThumbnail?: string;
   likes?: number; // Default value is 0

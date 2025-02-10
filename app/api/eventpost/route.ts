@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
     const finalPosts = await Promise.all(
       allEventpost.map(async (post) => {
         const { from } = post;
-        const eventImg = await events.findOne({ _id: from }, { projection: { image: 1 } });
+        const eventImg = await events.findOne({ _id: from }, { projection: { image: 1 ,leaders:1} });
         return { ...post, eventImg };
       })
     );
