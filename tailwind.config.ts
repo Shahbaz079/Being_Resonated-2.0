@@ -17,6 +17,9 @@ export default {
 				cphone: {
 					max: '600px'
 				},
+				cphone_small: {
+					max: '400px'
+				},
 				cbecom: {
 					max: "1150px"
 				},

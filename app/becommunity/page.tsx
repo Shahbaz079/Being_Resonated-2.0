@@ -108,7 +108,7 @@ const BeCommunity = () => {
 
         <div className="relative">
 
-          <div className="cbecomn:hidden tabglass cphone:text-base cphone:gap-12 cphone:gap-y-3 tabs flex flex-wrap text-xl gap-20 border-2 w-fit mx-auto px-3 rounded-lg justify-center">
+          <div className="cbecomn:hidden tabglass cphone:text-base cphone:gap-12 cphone_small:gap-7 cphone_small:text-sm cphone:gap-y-3 tabs flex flex-wrap text-xl gap-20 border-2 w-fit mx-auto px-3 rounded-lg justify-center">
 
             <span onClick={() => setRender("events")} className={`${render === "events" ? "active" : ""} relative px-2 pt-3 pb-3 cursor-pointer tab`}>Events
               <div className="absolute anbd"></div>
