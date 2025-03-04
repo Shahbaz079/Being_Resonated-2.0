@@ -108,9 +108,7 @@ const SubHeader = () => {
                   <h3 className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left">
                     {team.name}
                   </h3>
-                  <p className="text-neutral-600 dark:text-neutral-400 text-center md:text-left">
-                    {team.description}
-                  </p>
+                
                 </div>
               </div>
               <Link
@@ -159,9 +157,7 @@ const SubHeader = () => {
                   <h3 className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left">
                     {event.name}
                   </h3>
-                  <p className="text-neutral-600 dark:text-neutral-400 text-center md:text-left">
-                    {event.description}
-                  </p>
+                
                 </div>
               </div>
               <Link

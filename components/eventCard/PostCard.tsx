@@ -199,7 +199,7 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
           <img src={post.user.image} className='cursor-pointer w-10 h-10 rounded-full' onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}/>
 
           <div className='flex flex-row justify-between items-center w-[80%]'>
-            <h2 onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)} className="text-green-300 cursor-pointer font-semibold capitalize" >{name ? name : title}</h2>
+            <button onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)} className="text-green-300 cursor-pointer font-semibold capitalize" >{name ? name : title}</button>
          {userPostOwner &&  <div className="flex items-center text-gray-500 space-x-1 ml-10" onClick={()=>setModal(!modal)}>
            <CiMenuKebab />
            {
@@ -254,7 +254,7 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
             <img src={post.eventImg?.image} className='cursor-pointer w-10 h-10 rounded-full' onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)}/>
 
             <div className='flex flex-row justify-between items-center w-[80%]'>
-              <h2 onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)} className="text-purple-300 cursor-pointer font-semibold">{post.title}</h2>
+              <button onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)} className="text-purple-300 cursor-pointer font-semibold">{post.title}</button>
              {teamPostOwner &&  <div className="flex items-center text-gray-500 space-x-1" onClick={()=>setModal(!modal)}>
                <CiMenuKebab />
            {
@@ -319,14 +319,14 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
               <img src={post?.team?.image} className='cursor-pointer w-10 h-10 rounded-full' onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}/>
 
               <div className='flex flex-row justify-between items-center w-[80%]'>
-                <h2 onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="text-yellow-300 cursor-pointer font-semibold">{'title' in post ? post.title : ''}</h2>
+                <button onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="text-yellow-300 cursor-pointer font-semibold">{'title' in post ? post.title : ''}</button>
 
              {teamPostOwner &&   <div className="flex items-center text-gray-500 space-x-1" onClick={()=>setModal(!modal)}>
                 <CiMenuKebab />
            {
             modal && <div className="fixed top-[10%]   w-[40%]">
               <button onClick={()=>{
-               console.log(post._id,"team Post Id")
+              
              if(post._id)teamPostDeleteHandler(post._id.toString());
                 
                 }} className='bg-red-500 rounded-lg text-white px-4 py-2'>Delete</button>
