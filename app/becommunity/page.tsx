@@ -26,7 +26,7 @@ export interface EventPost {
   title: string;
   caption?: string;
   image: string;
- 
+ vid:boolean;
   eventImg: {
     image: string;
     leaders:[ObjectId]

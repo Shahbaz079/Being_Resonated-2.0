@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Users, Clock, Heart, Share2, MessageCircle } from 'lucide-react';
 import { CiMenuKebab } from "react-icons/ci"
 import { EventPost } from '@/app/becommunity/page';
-import mongoose from 'mongoose';
+
 
 import { UserPost } from '@/models/UserPost';
 import { redirect } from 'next/navigation';
@@ -72,11 +72,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 const createdBy='createdBy' in post?post.createdBy:undefined;
 
 
-  const isEventPost: boolean = 'isEventPost' in post ? (post as EventPost).isEventPost : false;
   const [liked, setLiked] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState('');
-  const [expanded, setExpanded] = useState<boolean>(false);
+
   const [isOverflowing, setIsOverflowing] = useState<boolean>(true);
   const textRef = useRef(null);
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -124,10 +123,10 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
 
   useEffect(() => {
     if (post) {
-      if ('team' in post) {
+      if ( 'eventImg' in post) {
+         setTeamLeaders(post.eventImg.leaders || []);
+      } else if ('team' in post) {
         setTeamLeaders(post.team.leaders || []);
-      } else if ('eventImg' in post) {
-        setTeamLeaders(post.eventImg.leaders || []);
       }
 
       if ('user' in post) {
@@ -214,7 +213,7 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
           <img src={post.user.image} className='cursor-pointer w-10 h-10 rounded-full' onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)}/>
 
           <div className='flex flex-row justify-between items-center w-[80%]'>
-            <h2 onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)} className="text-green-300 cursor-pointer font-semibold capitalize" >{name ? name : title}</h2>
+            <button onClick={() => redirect(`/profile?id=${post.createdBy.toString()}`)} className="text-green-300 cursor-pointer font-semibold capitalize" >{name ? name : title}</button>
          {userPostOwner &&  <div className="flex items-center text-gray-500 space-x-1 ml-10" onClick={()=>setModal(!modal)}>
            <CiMenuKebab />
            {
@@ -269,7 +268,7 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
             <img src={post.eventImg?.image} className='cursor-pointer w-10 h-10 rounded-full' onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)}/>
 
             <div className='flex flex-row justify-between items-center w-[80%]'>
-              <h2 onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)} className="text-purple-300 cursor-pointer font-semibold">{post.title}</h2>
+              <button onClick={() => redirect(`/event/${post?.from}?uid=${mongoId}`)} className="text-purple-300 cursor-pointer font-semibold">{post.title}</button>
              {teamPostOwner &&  <div className="flex items-center text-gray-500 space-x-1" onClick={()=>setModal(!modal)}>
                <CiMenuKebab />
            {
@@ -299,7 +298,13 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
                 className="w-full h-70 overflow-hidden rounded-lg"
                 style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
               >
-                <img
+           {post.vid?  <video width="640" height="360" controls>
+    <source src={image} type="video/mp4" />
+    
+    Your browser does not support the video tag.
+  </video>
+   : 
+   <img
                   src={image}
                   alt="Post Image"
                   className="w-full h-full object-cover"
@@ -310,7 +315,10 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
                   onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
 
                   style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
-                />
+                />}
+
+                  
+
               </div>
 
 
@@ -325,14 +333,14 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
               <img src={post?.team?.image} className='cursor-pointer w-10 h-10 rounded-full' onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)}/>
 
               <div className='flex flex-row justify-between items-center w-[80%]'>
-                <h2 onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="text-yellow-300 cursor-pointer font-semibold">{'title' in post ? post.title : ''}</h2>
+                <button onClick={() => redirect(`/team/${post?.from?.toString()}?id=${post?.from?.toString()}`)} className="text-yellow-300 cursor-pointer font-semibold">{'title' in post ? post.title : ''}</button>
 
              {teamPostOwner &&   <div className="flex items-center text-gray-500 space-x-1" onClick={()=>setModal(!modal)}>
                 <CiMenuKebab />
            {
             modal && <div className="fixed top-[10%]   w-[40%]">
               <button onClick={()=>{
-               console.log(post._id,"team Post Id")
+              
              if(post._id)teamPostDeleteHandler(post._id.toString());
                 
                 }} className='bg-red-500 rounded-lg text-white px-4 py-2'>Delete</button>

@@ -1,7 +1,7 @@
 "use server"
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
-import { newMember } from '@/components/expandableCards/card';
+
 
 const uri = process.env.MONGO_URI as string;
 const dbName = process.env.DB_NAME;

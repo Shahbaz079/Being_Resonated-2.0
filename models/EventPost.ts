@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { boolean } from "zod";
+
 
 const EventPostSchema = new mongoose.Schema(
   {
@@ -8,6 +8,7 @@ const EventPostSchema = new mongoose.Schema(
     team:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"Team"},
     caption:{type:String,required:false},
     Image: { type: String, required: true },
+    vid:{ type: Boolean,required:false},
     imgThumbnail: { type: String, required: false },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" ,required:false}],
     location: { type: String, required: true },

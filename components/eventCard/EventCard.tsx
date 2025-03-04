@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { MapPin, Clock } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { ObjectId } from 'mongoose';
-import Image from 'next/image';
+
 import { toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
 import { IEvent } from '@/app/team/[id]/page';
@@ -123,9 +123,9 @@ const EventCard = ({ uId }: { uId: string }) => {
 
               />
               <div className="flex-1 min-w-0">
-                <h3 className="text-white font-semibold text-sm mb-1"
+                <button className="text-white font-semibold text-sm mb-1"
                   onClick={() => redirect(`/event/${event._id.toString()}?uid=${uId}`)}
-                >{event?.name}</h3>
+                >{event?.name}</button>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-gray-400 text-xs">
                     <MapPin size={12} />
