@@ -11,6 +11,7 @@ import { IUser } from '../expandableCards/card'
 import { IEvent } from '@/app/team/[id]/page'
 import Image from 'next/image'
 import SearchPage from '../search/Search'
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 
 
 const SubHeader = () => {
@@ -77,7 +78,7 @@ const SubHeader = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => handleOpenTeamModal()}>
+              <button onClick={handleOpenTeamModal}>
                 <Users className="w-6 h-6" />
               </button>
             </TooltipTrigger>
@@ -86,57 +87,70 @@ const SubHeader = () => {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <Modal isOpen={teamModal} onClose={handleCloseTeamModal}>
-          {teams?.length > 0 && (teams?.map((team) => (
-            team._id && <div className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer" key={team._id.toString()}>
-              <div className="flex gap-4 flex-col  md:flex-row ">
+        <Dialog open={teamModal} onOpenChange={setTeamModal}>
+          <DialogContent className="bg-slate-950 opacity-75">
+            <DialogHeader>
+            <DialogTitle>Affiliated Teams</DialogTitle>
+          </DialogHeader>
+
+          <div className='mt-5'>
+            {teams?.length > 0 && (teams?.map((team) => (
+            team._id && <div className="flex cursor-pointer p-2 rounded-xl justify-between items-center hover:bg-gray-700" key={team._id.toString()}>
+              <div className="flex gap-4">
                 <div>
                   {team.image ? <Image
                     width={100}
                     height={100}
                     src={team.image}
                     alt={team.name}
+                    className='h-12 w-12 rounded-full'
                   /> :
                     <img
                       width={100}
                       height={100}
+                      className='h-12 w-12 rounded-full'
                       src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
                       alt={"team didn't provide image"}
                     />}
                 </div>
-                <div className="">
-                  <h3 className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left">
+                <div>
+                  <h3 className="text-center text-cyan-300 text-md">
                     {team.name}
                   </h3>
-                
+                 
                 </div>
               </div>
-              <Link
-                onClick={() => setTeamModal(false)}
-                href={`/team/${team._id}?id=${team._id}`}
-                className="addButton px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0"
-              >
-                View Team
-              </Link>
+              <div><Link href={`/team/${team._id}?id=${team._id}`} className="border-2 border-cyan-500 text-cyan-500 w-fit px-2 py-1 mt-5 hover:opacity-70">View</Link></div>
+               
+              
             </div>
           )))}
-        </Modal>
+          </div>
+          </DialogContent>
+        </Dialog>
       </div>
+
       <div className="mx-[5%]">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => handleOpenEventModal()}>
-                <Calendar className="w-6 h-6" />
-              </button>
+                <button onClick={handleOpenEventModal}>
+                  <Calendar className="w-6 h-6" />
+                </button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Affiliated Events</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <Modal isOpen={eventModal} onClose={handleCloseEventModal}>
-          {events?.length > 0 && (events?.map((event) => (
+        <Dialog open={eventModal} onOpenChange={setEventModal}>
+          <DialogContent className="bg-slate-950 opacity-75">
+              <DialogHeader>
+                <DialogTitle>Affiliated Events</DialogTitle>
+            </DialogHeader>
+
+            <div>
+              {events?.length > 0 && (events?.map((event) => (
             event._id && <div className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer" key={event._id.toString()}>
               <div className="flex gap-4 flex-col  md:flex-row ">
                 <div>
@@ -145,31 +159,34 @@ const SubHeader = () => {
                     height={100}
                     src={event.image}
                     alt={event.name}
+                    className='h-12 w-12 rounded-full'
                   /> :
                     <img
                       width={100}
                       height={100}
                       src={'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
                       alt={"event didn't provide image"}
+                      className='h-12 w-12 rounded-full'
                     />}
                 </div>
                 <div className="">
-                  <h3 className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left">
+                  <h3 className="text-center text-cyan-300 text-md">
                     {event.name}
                   </h3>
-                
                 </div>
               </div>
               <Link
                 onClick={() => setEventModal(false)}
                 href={`/event/${event._id}?uid=${mongoId}`}
-                className="addButton px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0"
+                className="border-2 border-cyan-500 text-cyan-500 w-fit px-2 py-1 mt-5 hover:opacity-70"
               >
-                View Event
+                View
               </Link>
             </div>
           )))}
-        </Modal>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <SearchPage type={'all'} click={null} />
