@@ -490,7 +490,7 @@ const EventPage = () => {
         </CardHeader>
       </Card>}
 
-      {!loading && <Card className="glass animate-slide-top">
+      {/**  !loading && <Card className="glass animate-slide-top">
         <CardHeader>
           <CardTitle className="text-2xl text-cyan-200">Rewards</CardTitle>
         </CardHeader>
@@ -502,7 +502,7 @@ const EventPage = () => {
             <PrizeCard position="Fastest Coding Team" content="Headphones"></PrizeCard>
           </div>
         </CardContent>
-      </Card>}
+      </Card> */}
 
 
 

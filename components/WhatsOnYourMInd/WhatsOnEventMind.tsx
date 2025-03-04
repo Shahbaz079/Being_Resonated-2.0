@@ -10,11 +10,12 @@ import { imageConfigDefault } from "next/dist/shared/lib/image-config";
 import { UserPost } from "../eventCard/PostCard";
 import { EventPost } from "@/app/becommunity/page";
 import EditorBox from "./Editor";
-
+import { GoVideo } from "react-icons/go"
 
 
 const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { title: string, location: string, time: string, date: string, name: string, eventId: string }) => {
     const [file, setFile] = useState<File>();
+    
     const { edgestore } = useEdgeStore();
     const [caption, setCaption] = useState<string>("");
     const [progress, setProgress] = useState<number>(0);
@@ -60,7 +61,7 @@ const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { titl
                 if (response.url) {
                     const res = await fetch(`/api/eventpost`, {
                         method: "POST",
-                        body: JSON.stringify({ image: response.url, imgThumbnail: response.thumbnailUrl, caption, createdBy: mongoId, title: title, Location: location, time, date, eventId, name }),
+                        body: JSON.stringify({ image: response.url, imgThumbnail: response.thumbnailUrl,vid:false, caption, createdBy: mongoId, title: title, Location: location, time, date, eventId, name }),
                     })
                     if (res.ok) {
                         toast.success("Posted successfully")
@@ -74,6 +75,36 @@ const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { titl
         }
 
         post();
+    }
+
+    const videoUploadHandler=async () => {
+        if (file) {
+          const res = await edgestore.mypublicVideos.upload({
+            file,
+            onProgressChange: (progress) => {
+              // you can use this to show a progress bar
+              console.log(progress);
+            },
+
+            
+          });
+          // you can run some server action or api here
+          // to add the necessary data to your database
+        if(res.url){
+          const response = await fetch(`/api/eventpost`, {
+            method: "POST",
+            body: JSON.stringify({ image: res.url, caption,vid:true, createdBy: mongoId, title: title, Location: location, time, date, eventId, name }),
+          })
+          if (response.ok) {
+              toast.success("Posted successfully")
+              setFile(undefined);
+              setCaption("");
+              setPosting(false);
+          }
+                      
+
+        }
+      }
     }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
@@ -96,6 +127,30 @@ const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { titl
                         </div>
                     </DialogContent>
                 </Dialog>
+
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <GoVideo className="cursor-pointer w-7 h-7 ml-2 fill-cyan-500 hover:fill-cyan-300"></GoVideo>
+                    </DialogTrigger>
+                    <DialogContent className="bg-slate-950 opacity-75">
+                        <DialogTitle>Select Video</DialogTitle>
+                        <div className="flex justify-center">
+                        <input
+                             type="file"
+                            onChange={(e) => {
+                              setFile(e.target.files?.[0]);
+                         }}
+                        />
+      <button
+        onClick={()=>videoUploadHandler()}
+      >
+        Upload
+      </button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
+
 
 
                 {imageUrl ? <img onClick={() => setFile(undefined)} src={imageUrl} className="cursor-pointer ml-3 h-10 w-10 hover:border-2 hover:border-red-600"></img> : null}

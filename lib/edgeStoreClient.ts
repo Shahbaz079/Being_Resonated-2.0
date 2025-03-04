@@ -12,7 +12,12 @@ const es = initEdgeStore.create();
  */
 export const edgeStoreRouter = es.router({
   mypublicImages: es.imageBucket(),
-  mypublicFiles: es.fileBucket(),
+
+  mypublicVideos: es.fileBucket({
+    maxSize: 1024 * 1024 * 80, // 80MB
+    accept: ['video/*'], // Accept all video formats
+}),
+
 })
 
 export const backendClient = initEdgeStoreClient({

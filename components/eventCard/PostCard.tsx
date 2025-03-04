@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Users, Clock, Heart, Share2, MessageCircle } from 'lucide-react';
 import { CiMenuKebab } from "react-icons/ci"
 import { EventPost } from '@/app/becommunity/page';
-import mongoose from 'mongoose';
+
 
 import { UserPost } from '@/models/UserPost';
 import { redirect } from 'next/navigation';
@@ -71,11 +71,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 const createdBy='createdBy' in post?post.createdBy:undefined;
 
 
-  const isEventPost: boolean = 'isEventPost' in post ? (post as EventPost).isEventPost : false;
   const [liked, setLiked] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState('');
-  const [expanded, setExpanded] = useState<boolean>(false);
+
   const [isOverflowing, setIsOverflowing] = useState<boolean>(true);
   const textRef = useRef(null);
 
@@ -121,10 +120,10 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
 
   useEffect(() => {
     if (post) {
-      if ('team' in post) {
+      if ( 'eventImg' in post) {
+         setTeamLeaders(post.eventImg.leaders || []);
+      } else if ('team' in post) {
         setTeamLeaders(post.team.leaders || []);
-      } else if ('eventImg' in post) {
-        setTeamLeaders(post.eventImg.leaders || []);
       }
 
       if ('user' in post) {
@@ -136,7 +135,7 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
         }
       }
     }
-  }, [post, createdBy, mongoId, teamLeaders]);
+  }, [post, createdBy, mongoId]);
 
   
 
@@ -285,7 +284,13 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
                 className="w-full h-70 overflow-hidden rounded-lg"
                 style={{ backgroundImage: `url(${imgThumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
               >
-                <img
+           {post.vid?  <video width="640" height="360" controls>
+    <source src={image} type="video/mp4" />
+    
+    Your browser does not support the video tag.
+  </video>
+   : 
+   <img
                   src={image}
                   alt="Post Image"
                   className="w-full h-full object-cover"
@@ -296,7 +301,10 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
                   onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
 
                   style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out' }} // Add transition for smooth loading
-                />
+                />}
+
+                  
+
               </div>
 
 
