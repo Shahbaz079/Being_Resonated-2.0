@@ -1,67 +1,43 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse, NextRequest } from 'next/server';
+import arcjet, { shield } from "@arcjet/next";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-// Define public routes
-const isPublicRoute = (path: string): boolean => {
-  const publicRoutes = [
-    /^\/sign-in(.*)$/,
-    /^\/api\/webhooks(.*)$/,
-    /^\/sign-up(.*)$/,
-    /^\/$/,
-    /^\/login$/,
-    /^\/register$/,
-    /^\/aboutus$/
-  ];
-  return publicRoutes.some((route) => route.test(path));
+export const config = {
+  // Protects all routes, including api/trpc.
+  // See https://clerk.com/docs/references/nextjs/clerk-middleware
+  // for more information about configuring your Middleware
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
 
-// Define a regex to match sensitive file extensions
-const isSensitiveFile = (path: string): boolean => {
-  const sensitiveFiles = [
-    /\.json$/,
-    /\.env$/,
-    /\.ssh\/id_ecdsa$/,
-    /\.ssh\/id_ecdsa\.pub$/,
-    /\.ssh\/id_ed255$/,
-    /\/server\.key$/,
-    /\.backup$/,
-    /\/\.kube\/config$/,
-    /\.pem$/,              // Private keys
-    /\.crt$/,              // SSL certificates
-    /\.key$/,              // Private keys
-    /\/config\/secrets\.yml$/, // Custom secrets files
-    /\/docker-compose\.yml$/,  // Docker configurations
-    /\/\.git\/config$/,        // Git configurations
-    /\/\.aws\/credentials$/,   // AWS credentials
-    /\.p12$/,              // PKCS12 certificates
-    /\.jks$/,              // Java KeyStore files
-    /\/\.gcloud\/config$/,     // Google Cloud SDK configurations
-    /\/\.netrc$/,              // Netrc files for stored credentials
-    /\/wp-admin\/setup-config\.php$/, // WordPress setup config file
-    /\.php$/                // Any PHP files
-  ];
-  return sensitiveFiles.some((pattern) => pattern.test(path));
-};
+const aj = arcjet({
+  // Get your site key from https://app.arcjet.com
+  // and set it as an environment variable rather than hard coding.
+  // See: https://nextjs.org/docs/app/building-your-application/configuring/environment-variables
+  key: process.env.ARCJET_KEY!,
+  rules: [
+    // Protect against common attacks with Arcjet Shield
+    shield({
+      mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
+    }),
+  ],
+});
 
-export default clerkMiddleware(async (auth, request: NextRequest) => {
-  const url = request.nextUrl.pathname;
+const isProtectedRoute = createRouteMatcher(["/api/private"]);
 
-  // Block access to sensitive files
-  if (isSensitiveFile(url)) {
-    return NextResponse.rewrite(new URL('/403', request.url)); // Redirect to a 403 Forbidden page
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)','/api/webhooks(.*)', '/sign-up(.*)', '/', '/login', '/register','/aboutus']);
+
+// Arcjet runs first to protect all routes defined in the matcher config above.
+// Then if the request is allowed, Clerk runs
+export default clerkMiddleware(async (auth, req) => {
+  const decision = await aj.protect(req);
+
+  if (decision.isDenied()) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Protect routes that are not public
-  if (!isPublicRoute(url)) {
+  if (!isPublicRoute(req)) {
     await auth.protect();
   }
 
   return NextResponse.next();
 });
-
-export const config = {
-  matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    '/(api|trpc)(.*)',
-  ],
-};

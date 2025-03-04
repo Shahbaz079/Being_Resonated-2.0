@@ -12,6 +12,7 @@ const es = initEdgeStore.create();
  */
 export const edgeStoreRouter = es.router({
   mypublicImages: es.imageBucket(),
+  mypublicFiles: es.fileBucket(),
 })
 
 export const backendClient = initEdgeStoreClient({
