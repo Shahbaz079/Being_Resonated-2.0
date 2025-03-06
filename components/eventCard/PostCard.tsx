@@ -148,7 +148,7 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
       //post likes
       if(post.likes){
         setPostLikeCount(post.likes.length);
-        const isLiked = post.likes.some((like) => like._id.toString() === mongoId);
+        const isLiked = post?.likes.some((like) => like?._id?.toString() === mongoId);
         setIsLiked(isLiked);
       }
 
