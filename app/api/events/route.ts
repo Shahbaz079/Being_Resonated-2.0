@@ -140,6 +140,20 @@ export async function GET(request: NextRequest) {
       { _id: { $in: event?.posts } }
     ).toArray() : [];
 
+    const finalPosts = await Promise.all(
+      posts.map(async (post) => {
+        const { from } = post;
+        const eventImg = await events.findOne({ _id: from }, { projection: { image: 1 ,leaders:1} });
+    
+        post.likes = post?.likes ? await users.find(
+          { _id: { $in: post?.likes } },
+          { projection: { _id:1,image:1,name:1 } }
+        ).toArray() : [];
+
+        return { ...post, eventImg };
+      })
+    );
+
     const team = event?.team ? await teams.findOne(
       { _id: event?.team }
     ) : null;
@@ -160,7 +174,7 @@ export async function GET(request: NextRequest) {
       team,
       requests: eventRequests,
       participated: eventParticipations,
-      posts,
+      posts: finalPosts,
     };
 
     return NextResponse.json(eventData);

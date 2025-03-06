@@ -74,7 +74,7 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const { caption, image, likes, imgThumbnail } = post;
+  const { caption, image, imgThumbnail } = post;
 
   const name = 'name' in post ? post.name : '';
   const title = 'title' in post ? post.title : '';
