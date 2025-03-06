@@ -225,7 +225,7 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
 
       setIsLiked(true);
       setPostLikeCount(postLikeCount+1);
-      const newlike={_id: mongoId as ObjectId , name: user?.username as string, };
+      const newlike={_id: mongoId as ObjectId , name: user?.username as string,image:user?.imageUrl as string};
       const updatedLikes =post?.likes? [...post.likes,newlike]:[newlike];
       post.likes = updatedLikes ;
       const fetchedLikes = updatedLikes?.map((like) => like._id.toString()) || [];
@@ -463,8 +463,9 @@ const createdBy='createdBy' in post?post.createdBy:undefined;
       }
 
       <div className='border-t-2 border-gray-600 pt-3 flex items-center gap-2'>
-        <FaHeart className={`${isLiked ? "fill-[#40acbf]" : "fill-[#5b6a76]"} h-5 w-5 cursor-pointer`} onClick={handleLikeClick}></FaHeart>
-        <span className='mt-[-1px] text-gray-400'>{postLikeCount}</span>
+        <FaHeart className={`${isLiked ? "fill-[#40acbf]" : "fill-[#5b6a76]"} h-8 w-8 cursor-pointer text-2xl`} onClick={handleLikeClick}></FaHeart>
+        <span className='mt-[-1px] text-gray-400'>{postLikeCount}</span> 
+
         <AnimatedTooltip items={post?.likes?.map((like, index) => ({
           id: index,
           name: like.name,
