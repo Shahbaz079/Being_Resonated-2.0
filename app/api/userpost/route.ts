@@ -35,14 +35,14 @@ export async function POST(req: NextRequest) {
     
     const users = db.collection('users');
     
-    const { name, image,imgThumbnail, caption, createdBy } = body;
+    const { name, image,imgThumbnail, caption, createdBy,vid } = body;
     
     const user = await users.findOne({ _id: new ObjectId(createdBy as string) }); 
     
     if (!user) { 
       return NextResponse.json({ error: 'User not found' }, { status: 404 }); } 
       
-      const post = { name, image, caption,imgThumbnail, createdBy: new ObjectId(createdBy as string), 
+      const post = { name, image,vid, caption,imgThumbnail, createdBy: new ObjectId(createdBy as string), 
         createdAt: new Date(), 
         updatedAt: new Date() 
       };
@@ -90,6 +90,13 @@ export async function GET(request: NextRequest) {
       allUserPosts.map(async (post) => {
         const { createdBy } = post;
         const user = await users.findOne({ _id: createdBy }, { projection: { name: 1, image: 1 } });
+
+
+        post.likes = post?.likes ? await users.find(
+          { _id: { $in: post?.likes } },
+          { projection: { _id:1,image:1,name:1 } }
+        ).toArray() : [];
+
         return { ...post, user };
       })
     );
@@ -101,9 +108,7 @@ export async function GET(request: NextRequest) {
       if (client) { await client.close(); } }
 }
 
-export async function PUT(request:NextRequest){
-  
-}
+
 
 
 export async function DELETE(request:NextRequest){
@@ -170,3 +175,43 @@ export async function DELETE(request:NextRequest){
 }
 
 
+export async function PUT(request:NextRequest){
+  let client: MongoClient | null = null;
+  try {
+    const { searchParams } = new URL(request.url);
+    const postId = searchParams.get('id') as string;
+    const body = await request.json();
+    const {likes}=body;
+
+    client = new MongoClient(uri);
+    await client.connect();
+    const db = client.db(dbName);
+    const userposts = db.collection('userposts');
+   
+    const post = await userposts.findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+   
+    
+    const newLikes = likes.map((like: string) =>new ObjectId(like));
+
+
+
+    const result = await userposts.updateOne(
+      { _id: new ObjectId(postId as string) },
+      { $set: { likes: newLikes } }
+    );
+    if(result.acknowledged){
+      return NextResponse.json({ message: 'Post updated successfully' }, { status: 200 });
+    }
+      
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}

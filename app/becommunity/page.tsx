@@ -14,7 +14,7 @@ import "./becommunity.css";
 
 import Layout from "@/components/customLayouts/Layout";
 import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
-import { redirect, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 import { useUser } from "@clerk/nextjs";
@@ -29,10 +29,14 @@ export interface EventPost {
  vid:boolean;
   eventImg: {
     image: string;
-    leaders:[ObjectId]
+    leaders:ObjectId[]
   };
   imgThumbnail?: string;
-  likes?: number; // Default value is 0
+  likes?: {
+    image?: string;
+    _id: ObjectId;
+    name: string;
+  }[]; 
   location: string;
   date: Date;
   time: string;
@@ -47,7 +51,7 @@ export interface EventPost {
 
 const BeCommunity = () => {
 
-  const [eventPosts, setEventPosts] = useState<EventPost[]>([]);
+  const [eventPosts, setEventPosts] = useState<EventPost[]>([])
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [teamPosts, setTeamPosts] = useState<any[]>([]);
   const [topTeams,setTopTeams]=useState<ITeam[]>([]);

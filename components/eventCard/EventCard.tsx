@@ -116,7 +116,7 @@ const EventCard = ({ uId }: { uId: string }) => {
 
           >
             <div className="flex gap-3">
-              <img onClick={() => redirect(`/event/${event._id.toString()}?uid=${uId}`)}
+              <img onClick={() => redirect(`/event/${event._id.toString()}`)}
                 src={event.image}
                 alt={event.name}
                 className="w-[60px] h-[60px] object-cover rounded-lg"
@@ -124,7 +124,7 @@ const EventCard = ({ uId }: { uId: string }) => {
               />
               <div className="flex-1 min-w-0">
                 <button className="text-white font-semibold text-sm mb-1"
-                  onClick={() => redirect(`/event/${event._id.toString()}?uid=${uId}`)}
+                  onClick={() => redirect(`/event/${event._id.toString()}`)}
                 >{event?.name}</button>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-gray-400 text-xs">

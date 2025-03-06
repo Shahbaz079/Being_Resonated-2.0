@@ -1,6 +1,6 @@
 'use client'
 
-import { redirect, useSearchParams } from "next/navigation";
+
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from "@clerk/nextjs";
@@ -21,9 +21,9 @@ import { RiAttachment2 } from "react-icons/ri";
 import { HiMiniTrophy } from "react-icons/hi2";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ObjectId } from "mongoose";
+
 import "./event.css"
-import SubHeader from "@/components/SubHeader/SubHeader";
+
 import { FaImage, FaInfoCircle } from "react-icons/fa";
 
 import WhatsOnEventMind from "@/components/WhatsOnYourMInd/WhatsOnEventMind";
@@ -123,8 +123,8 @@ const EventPage = () => {
 
   }
 
-  const searchParams = useSearchParams();
-  const uid = searchParams.get("uid");
+
+
 
   const { user, isLoaded } = useUser();
   const mongoId = user?.publicMetadata.mongoId as string;

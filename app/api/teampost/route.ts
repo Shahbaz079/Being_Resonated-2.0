@@ -100,6 +100,7 @@ export async function GET(request: NextRequest) {
     const db = client.db(dbName);
     const teamPosts = db.collection('teamposts');
     const teams = db.collection('teams');
+    const users = db.collection('users');
 
     const allTeamPost = await teamPosts.find({}).sort({ createdAt: -1 }).toArray();
 
@@ -107,6 +108,12 @@ export async function GET(request: NextRequest) {
       allTeamPost.map(async (post) => {
         
         const team = await teams.findOne({ _id:new ObjectId (post?.from as string)  }, { projection: { name: 1, image: 1 ,leaders:1} });
+
+        post.likes = post?.likes ? await users.find(
+          { _id: { $in: post?.likes } },
+          { projection: { _id:1,image:1,name:1 } }
+        ).toArray() : [];
+
         return { ...post, team };
       })
     );
@@ -187,3 +194,45 @@ export async function DELETE(request:NextRequest){
 }
 
 
+
+
+export async function PUT(request:NextRequest){
+  let client: MongoClient | null = null;
+  try {
+    const { searchParams } = new URL(request.url);
+    const postId = searchParams.get('id') as string;
+    const body = await request.json();
+    const {likes}=body;
+
+    client = new MongoClient(uri);
+    await client.connect();
+    const db = client.db(dbName);
+    const teamposts = db.collection('teamposts');
+   
+    const post = await teamposts.findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+   
+    
+    const newLikes = likes.map((like: string) =>new ObjectId(like));
+
+
+
+    const result = await teamposts.updateOne(
+      { _id: new ObjectId(postId as string) },
+      { $set: { likes: newLikes } }
+    );
+    if(result.acknowledged){
+      return NextResponse.json({ message: 'Post updated successfully' }, { status: 200 });
+    }
+      
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}

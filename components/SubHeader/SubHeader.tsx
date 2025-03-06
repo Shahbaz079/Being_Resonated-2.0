@@ -24,15 +24,13 @@ const SubHeader = () => {
   const [teamModal, setTeamModal] = useState(false);
   const [eventModal, setEventModal] = useState(false);
 
-  const handleCloseEventModal = () => { setEventModal(false) }
+  
   const handleOpenEventModal = () => { setEventModal(true) }
 
   const handleOpenTeamModal = () => {
     setTeamModal(true)
   }
-  const handleCloseTeamModal = () => {
-    setTeamModal(false)
-  }
+  
 
   useEffect(() => {
     const handleTeamsData = () => {
@@ -177,7 +175,7 @@ const SubHeader = () => {
               </div>
               <Link
                 onClick={() => setEventModal(false)}
-                href={`/event/${event._id}?uid=${mongoId}`}
+                href={`/event/${event._id}`}
                 className="border-2 border-cyan-500 text-cyan-500 w-fit px-2 py-1 mt-5 hover:opacity-70"
               >
                 View

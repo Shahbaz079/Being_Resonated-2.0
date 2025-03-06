@@ -7,7 +7,7 @@ import { FaImage } from "react-icons/fa";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IoIosSend } from "react-icons/io";
 import EditorBox from "./Editor";
-
+import { GoVideo } from "react-icons/go"
 
 const WhatsOnUserMind = () => {
     const [file, setFile] = useState<File>();
@@ -57,31 +57,69 @@ const WhatsOnUserMind = () => {
 
         const post = async () => {
             if (file) {
-                const response = await edgestore.mypublicImages.upload({
-                    file,
-                    onProgressChange: (progress) => {
-                        setProgress(progress);
-                    },
-                });
-
-                if (response.url) {
-                    const res = await fetch(`/api/userpost`, {
-                        method: "POST",
-                        body: JSON.stringify({ image: response.url, imgThumbnail: response.thumbnailUrl, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
-                    })
-                    if (res.ok) {
-                        toast.success("Posted successfully")
-                        setFile(undefined);
-                        setCaption("");
-                        setPosting(false);
+                const mimeType = file.type;
+                if (mimeType.startsWith("image/")){
+                    const response = await edgestore.mypublicImages.upload({
+                        file,
+                        onProgressChange: (progress) => {
+                            setProgress(progress);
+                        },
+                    });
+    
+                    if (response.url) {
+                        const res = await fetch(`/api/userpost`, {
+                            method: "POST",
+                            body: JSON.stringify({ image: response.url,
+                                vid:false,
+                                imgThumbnail: response.thumbnailUrl, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+                        })
+                        if (res.ok) {
+                            toast.success("Posted successfully")
+                            setFile(undefined);
+                            setCaption("");
+                            setPosting(false);
+                        }
                     }
-                }
+                }else if(mimeType.startsWith("video/")){
+                    videoUploadHandler();
+                } 
+                
 
             }
         }
 
         post();
     }
+
+    const videoUploadHandler=async () => {
+            if (file) {
+              const res = await edgestore.mypublicVideos.upload({
+                file,
+                onProgressChange: (progress) => {
+                  // you can use this to show a progress bar
+                  console.log(progress);
+                },
+    
+                
+              });
+              // you can run some server action or api here
+              // to add the necessary data to your database
+            if(res.url){
+              const response = await fetch(`/api/userpost`, {
+                method: "POST",
+                body: JSON.stringify({ image: res.url,vid:true, caption, createdBy: user?.publicMetadata.mongoId, name: userName }),
+              })
+              if (response.ok) {
+                  toast.success("Posted successfully")
+                  setFile(undefined);
+                  setCaption("");
+                  setPosting(false);
+              }
+                          
+    
+            }
+          }
+        }
 
     return (<div className="bg-slate-900 rounded-xl w-full p-4 max-w-[600px] mx-auto mb-10 h-fit flex flex-col gap-5">
         <EditorBox content={caption} setCaption={setCaption}></EditorBox>
@@ -103,6 +141,24 @@ const WhatsOnUserMind = () => {
                         </div>
                     </DialogContent>
                 </Dialog>
+
+                  <Dialog>
+                                    <DialogTrigger asChild>
+                                        <GoVideo className="cursor-pointer w-7 h-7 ml-2 fill-cyan-500 hover:fill-cyan-300"></GoVideo>
+                                    </DialogTrigger>
+                                    <DialogContent className="bg-slate-950 opacity-75">
+                                        <DialogTitle>Select Video</DialogTitle>
+                                        <div className="flex justify-center">
+                                        <input
+                                             type="file"
+                                            onChange={(e) => {
+                                              setFile(e.target.files?.[0]);
+                                         }}
+                                        />
+                     
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
 
 
                 {imageUrl ? <img onClick={() => setFile(undefined)} src={imageUrl} className="cursor-pointer ml-3 h-10 w-10 hover:border-2 hover:border-red-600"></img> : null}

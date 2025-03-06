@@ -109,6 +109,7 @@ export async function GET(request: NextRequest) {
     const db = client.db(dbName);
     const eventposts = db.collection('eventposts');
     const events=db.collection('events')
+    const users=db.collection('users')
 
     const allEventpost = await eventposts.find({}).sort({date: -1 }).toArray();
 
@@ -116,6 +117,12 @@ export async function GET(request: NextRequest) {
       allEventpost.map(async (post) => {
         const { from } = post;
         const eventImg = await events.findOne({ _id: from }, { projection: { image: 1 ,leaders:1} });
+    
+        post.likes = post?.likes ? await users.find(
+          { _id: { $in: post?.likes } },
+          { projection: { _id:1,image:1,name:1 } }
+        ).toArray() : [];
+
         return { ...post, eventImg };
       })
     );
@@ -126,138 +133,6 @@ export async function GET(request: NextRequest) {
       await client.close();
     }
   }
-}
-
-export async function PUT(request:NextRequest){
-  let client: MongoClient | null = null;
-  const searchParams = new URLSearchParams(request.url);
-  const type = searchParams.get('type');
-  
-  const body = await request.json();
-    if (!body) {
-      return NextResponse.json({ error: 'No data found' }, { status: 400 });
-    }
-    if(type==='like'){
-  try {
-    
-
-    const { postId,userId,} = body;
-
-    client = new MongoClient(uri);
-    await client.connect();
-    const db = client.db(dbName);
-    const eventposts = db.collection('eventposts');
-    const users = db.collection('users');
-
-    const user = await users.findOne({ _id: new ObjectId(userId as string) });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    const post = await eventposts.findOne({ _id: new ObjectId(postId as string) });
-
-
-
-    const likes = post?.likes || []
-  const newLikes = likes.push(new ObjectId(userId as string));
-
-  const userLikes=user.postLikes || [];
-  const newUserLikes=userLikes.push(new ObjectId(postId as string));
-
-    const result = await eventposts.findOneAndUpdate(
-      { _id: new ObjectId(postId as string) },
-      {
-        $set: {
-        likes:newLikes,
-          updatedAt: new Date(),
-        },
-      }
-    );
-
-  if (result && result.lastErrorObject.n > 0) {
-  const userUpdateResult = await users.findOneAndUpdate(
-    { _id: new ObjectId(userId as string) },
-    {
-      $set: {
-        postLikes: newUserLikes,
-      },
-    },
-    { returnDocument: 'after' } // ensures you get the updated document
-  );
-
-  if (userUpdateResult && userUpdateResult.lastErrorObject.n > 0) {
-    return NextResponse.json({ message: 'Post liked successfully' }, { status: 200 });
-  } else {
-    throw new Error('Failed to update user post likes');
-  }
-} else {
-  throw new Error('Failed to like post');
-}
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-  } finally {
-    if (client) {
-      await client.close();
-    }
-  }
-}
-if(type==='unlike'){
-  try {
-    
-
-    const { postId,userId,} = body;
-
-    client = new MongoClient(uri);
-    await client.connect();
-    const db = client.db(dbName);
-    const eventposts = db.collection('eventposts');
-    const users = db.collection('users');
-
-    const user = await users.findOne({ _id: new ObjectId(userId as string) });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    const post = await eventposts.findOne({ _id: new ObjectId(postId as string) });
-    const likes = post?.likes || [];
-    const newLikes=likes.filter((like:ObjectId)=>like.toString()!==userId);
-
-    const userLikes=user.postLikes || [];
-    const newUserLikes=userLikes.filter((like:ObjectId)=>like.toString()!==postId);
-
-    const result = await eventposts.findOneAndUpdate(
-      { _id: new ObjectId(postId as string) },
-      {
-        $set: {
-        likes:newLikes,
-          updatedAt: new Date(),
-        },
-      }
-    );
-    if(result && result.ok){
-      await users.findOneAndUpdate(
-        { _id: new ObjectId(userId as string) },
-        {
-          $set: {
-            postLikes:newUserLikes,
-          },
-        }
-      );
-      return NextResponse.json({ message: 'Post unliked successfully' }, { status: 200 });
-    }
-
-  }catch (error) {
-    console.error(error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-  }finally{
-    if(client){
-      await client.close();
-    }
-  }
-}
-
-  
 }
 
 export async function DELETE(request:NextRequest){
@@ -308,6 +183,50 @@ export async function DELETE(request:NextRequest){
     } else {
       throw new Error('Failed to delete post');
     }
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}
+
+
+
+
+export async function PUT(request:NextRequest){
+  let client: MongoClient | null = null;
+  try {
+    const { searchParams } = new URL(request.url);
+    const postId = searchParams.get('id') as string;
+    const body = await request.json();
+    const {likes}=body;
+
+    client = new MongoClient(uri);
+    await client.connect();
+    const db = client.db(dbName);
+    const eventposts = db.collection('eventposts');
+   
+    const post = await eventposts.findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+   
+    
+    const newLikes = likes.map((like: string) =>new ObjectId(like));
+
+
+
+    const result = await eventposts.updateOne(
+      { _id: new ObjectId(postId as string) },
+      { $set: { likes: newLikes } }
+    );
+    if(result.acknowledged){
+      return NextResponse.json({ message: 'Post updated successfully' }, { status: 200 });
+    }
+      
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

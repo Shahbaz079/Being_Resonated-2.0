@@ -6,9 +6,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { FaImage } from "react-icons/fa";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IoIosSend } from "react-icons/io";
-import { imageConfigDefault } from "next/dist/shared/lib/image-config";
-import { UserPost } from "../eventCard/PostCard";
-import { EventPost } from "@/app/becommunity/page";
+
 import EditorBox from "./Editor";
 import { GoVideo } from "react-icons/go"
 
@@ -44,32 +42,44 @@ const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { titl
         }
     }, [isLoaded, user])
 
+ 
+
+
     const handlePost = () => {
         if (posting) return;
 
         setPosting(true);
 
         const post = async () => {
+            
             if (file) {
-                const response = await edgestore.mypublicImages.upload({
-                    file,
-                    onProgressChange: (progress) => {
-                        setProgress(progress);
-                    },
-                });
+                const mimeType = file.type;
+                if (mimeType.startsWith("image/")){
 
-                if (response.url) {
-                    const res = await fetch(`/api/eventpost`, {
-                        method: "POST",
-                        body: JSON.stringify({ image: response.url, imgThumbnail: response.thumbnailUrl,vid:false, caption, createdBy: mongoId, title: title, Location: location, time, date, eventId, name }),
-                    })
-                    if (res.ok) {
-                        toast.success("Posted successfully")
-                        setFile(undefined);
-                        setCaption("");
-                        setPosting(false);
+                    const response = await edgestore.mypublicImages.upload({
+                        file,
+                        onProgressChange: (progress) => {
+                            setProgress(progress);
+                        },
+                    });
+    
+                    if (response.url) {
+                        const res = await fetch(`/api/eventpost`, {
+                            method: "POST",
+                            body: JSON.stringify({ image: response.url, imgThumbnail: response.thumbnailUrl,vid:false, caption, createdBy: mongoId, title: title, Location: location, time, date, eventId, name }),
+                        })
+                        if (res.ok) {
+                            toast.success("Posted successfully")
+                            setFile(undefined);
+                            setCaption("");
+                            setPosting(false);
+                        }
                     }
+                }else if (mimeType.startsWith("video/")) {
+                    videoUploadHandler();
                 }
+                    
+                
 
             }
         }
@@ -141,11 +151,7 @@ const WhatsOnEventMind = ({ title, name, location, time, date, eventId }: { titl
                               setFile(e.target.files?.[0]);
                          }}
                         />
-      <button
-        onClick={()=>videoUploadHandler()}
-      >
-        Upload
-      </button>
+     
                         </div>
                     </DialogContent>
                 </Dialog>
