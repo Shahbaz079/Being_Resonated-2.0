@@ -11,13 +11,17 @@ import {
 
 export const AnimatedTooltip = ({
   items,
+  likesModalOpen,
+  setLikesModalOpen,
 }: {
   items: {
     id: number;
     name: string;
-    
+
     image: string;
   }[];
+  likesModalOpen: boolean;
+  setLikesModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const springConfig = { stiffness: 100, damping: 5 };
@@ -37,7 +41,7 @@ export const AnimatedTooltip = ({
     x.set(event.nativeEvent.offsetX - halfWidth); // set the x value, which is then used in transform and rotate
   };
 
-  const newItems=items.slice(0,5);
+  const newItems = items.slice(0, 5);
 
   return (
     <>
@@ -75,7 +79,6 @@ export const AnimatedTooltip = ({
                 <div className="font-bold text-white relative z-30 text-base">
                   {item.name}
                 </div>
-              
               </motion.div>
             )}
           </AnimatePresence>
@@ -85,7 +88,8 @@ export const AnimatedTooltip = ({
             width={50}
             src={item.image}
             alt={item.name}
-            className="object-cover !m-0 !p-0 object-top rounded-full h-10 w-10 border-2 group-hover:scale-105 group-hover:z-30 border-white  relative transition duration-500"
+            onClick={() => setLikesModalOpen(true)}
+            className="object-cover !m-0 !p-0 object-top rounded-full h-9 w-9 cursor-pointer border-2 group-hover:scale-105 group-hover:z-30 border-white  relative transition duration-500"
           />
         </div>
       ))}
