@@ -140,7 +140,7 @@ const BeCommunity = () => {
             </div> : null}
 
 
-            {render === "teams" ? <div className="w-[500px] glass mx-1 rounded-2xl h-fit min-w-[300px] mt-3 cbecomn:hidden">
+            {render === "teams" ? <div className="w-[500px] glass mx-1 rounded-2xl h-fit min-w-[300px] mt-3 cbecomn:hidden pb-3">
               <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
               {
                 topTeams.map((team)=>(
@@ -158,7 +158,7 @@ const BeCommunity = () => {
                 <EventCard uId={mongoId as string} />
               </div>
 
-              <div className="glass rounded-2xl h-fit min-w-[300px] mt-4 cbecom:hidden">
+              <div className="glass rounded-2xl h-fit min-w-[300px] mt-3 cbecom:hidden pb-3">
                 <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
                 {
                 topTeams.map((team)=>(
@@ -249,12 +249,10 @@ const BeCommunityWithSuspense = () => (
 
 const TeamCard = (team:ITeam)=> {
   return (
-    <div className="w-full p-4">
-      <div className="flex flex-row justify-around items-center " onClick={()=>redirect(`/team/${team._id}?id=${team._id}`)}>
-        <div className="">
+    <div className="w-full px-4 py-1">
+      <div className="rounded-lg flex flex-row justify-start gap-5 items-center p-3 cursor-pointer transform transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-700" onClick={()=>redirect(`/team/${team._id}?id=${team._id}`)}>
           <img src={team.image} alt={team.name} className="w-[50px] h-[50px] rounded-full" />
-        </div>
-        <div className="">{team.name}</div>
+          <span className="">{team.name}</span>
       </div>
     </div>
   )
