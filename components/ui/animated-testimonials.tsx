@@ -39,7 +39,7 @@ export const AnimatedTestimonials = ({
       const interval = setInterval(handleNext, 5000);
       return () => clearInterval(interval);
     }
-  }, [autoplay]);
+  }, [autoplay, handleNext]);
 
   const randomRotateY = () => {
     return Math.floor(Math.random() * 21) - 10;
@@ -153,7 +153,6 @@ export const AnimatedTestimonials = ({
                   <IoLogoLinkedin className="cursor-pointer fill-gray-400 hover:fill-cyan-300 hover:opacity-60 mt-3 w-10 h-10 ml-[-4px]"></IoLogoLinkedin>
                 </a>
               </motion.span>
-
             </motion.p>
           </motion.div>
           <div className="flex gap-4 pt-12 md:pt-0 mt-5">
