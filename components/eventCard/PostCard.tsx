@@ -576,7 +576,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </DialogHeader>
           <div className="p-3 overflow-y-scroll max-h-[500px] scrollbar-thin scrollbar-thumb-cyan-500 scrollbar-track-slate-950">
             {post?.likes?.map((like, index) => (
-              <div className="flex gap-5 mt-3 p-1 items-center cursor-pointer hover:bg-gray-700 hover:scale-[1.05] rounded-lg transform transition-all duration-100">
+              <div
+                key={index}
+                className="flex gap-5 mt-3 p-1 items-center cursor-pointer hover:bg-gray-700 hover:scale-[1.05] rounded-lg transform transition-all duration-100"
+              >
                 <img
                   src={like.image}
                   alt={like.name}
