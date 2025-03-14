@@ -94,6 +94,22 @@ export async function GET(request: NextRequest) {
   let client: MongoClient | null = null;
 
   
+  const { searchParams } = new URL(request.url);
+  const pageParam = searchParams.get('page')?.trim() || '1'; // Trim and set default
+  const limitParam = searchParams.get('limit')?.trim() || '2'; // Trim and set default
+
+ 
+
+
+  const page = Number(pageParam);
+  const limit = Number(limitParam);
+
+  // Validate parsed values
+  if (isNaN(page) || page < 1) throw new Error("Invalid 'page' parameter");
+  if (isNaN(limit) || limit < 1) throw new Error("Invalid 'limit' parameter");
+
+  const skip=(page-1)*limit;
+  
   try {
     client = new MongoClient(uri);
     await client.connect();
@@ -102,7 +118,7 @@ export async function GET(request: NextRequest) {
     const teams = db.collection('teams');
     const users = db.collection('users');
 
-    const allTeamPost = await teamPosts.find({}).sort({ createdAt: -1 }).toArray();
+    const allTeamPost = await teamPosts.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray();
 
     const finalPosts = await Promise.all(
       allTeamPost.map(async (post) => {

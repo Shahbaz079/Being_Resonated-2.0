@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const { name, description, members, leaders, image,createdBy,requests } = await request.json();
      client = new MongoClient(uri!);
       // Use non-null assertion to ensure uri is defined 
-      await client.connect(); 
+      await client.connect();
       const db = client.db(dbName!); 
       // Use non-null assertion to ensure dbName is defined
        const teams = db.collection('teams'); 

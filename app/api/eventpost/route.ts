@@ -102,6 +102,22 @@ export async function POST(req: NextRequest) {
 export async function GET(request: NextRequest) {
   let client: MongoClient | null = null;
 
+  const { searchParams } = new URL(request.url);
+  const pageParam = searchParams.get('page')?.trim() || '1'; // Trim and set default
+  const limitParam = searchParams.get('limit')?.trim() || '2'; // Trim and set default
+
+ 
+
+
+  const page = Number(pageParam);
+  const limit = Number(limitParam);
+
+  // Validate parsed values
+  if (isNaN(page) || page < 1) throw new Error("Invalid 'page' parameter");
+  if (isNaN(limit) || limit < 1) throw new Error("Invalid 'limit' parameter");
+
+  const skip=(page-1)*limit;
+
   
   try {
     client = new MongoClient(uri);
@@ -111,7 +127,13 @@ export async function GET(request: NextRequest) {
     const events=db.collection('events')
     const users=db.collection('users')
 
-    const allEventpost = await eventposts.find({}).sort({date: -1 }).toArray();
+
+
+   
+
+    const allEventpost = await eventposts.find({}).sort({createdAt: -1 }).skip(skip).limit(limit).toArray();
+
+   
 
     const finalPosts = await Promise.all(
       allEventpost.map(async (post) => {
@@ -126,6 +148,8 @@ export async function GET(request: NextRequest) {
         return { ...post, eventImg };
       })
     );
+
+
 
     return NextResponse.json(finalPosts);
   } finally {

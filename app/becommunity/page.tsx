@@ -2,7 +2,7 @@
 
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState ,useRef} from "react"
 import { ObjectId } from "mongoose";
 
 import EventCard from "@/components/eventCard/EventCard";
@@ -66,33 +66,60 @@ const BeCommunity = () => {
   //const searchParams = useSearchParams();
   const mongoId = user?.publicMetadata?.mongoId as string
 
+  const [page, setPage] = useState(1); // Current page number
+  const [limit, setLimit] = useState(2); // Number of posts per page
+  const [hasMore, setHasMore] = useState(true); // To track if there are more posts to load
+
+  const fetchPostsCalled = useRef(false); // Prevent duplicate calls
+  
   useEffect(() => {
 
     const fetchPosts = async () => {
+      
       setPostsLoading(true);
-      const eventRes = await fetch("/api/eventpost", { method: "GET" });
-      const userRes = await fetch("/api/userpost", { method: "GET" })
-      const teamRes = await fetch("/api/teampost", { method: "GET" })
-      const topTeamRes=await fetch(`/api/team?type=topTeams`,{method:"GET"});
-
-      const eventData: [] = await eventRes.json();
-      const userData: [] = await userRes.json();
-      const teamData: [] = await teamRes.json();
-      const topTeamData:[]=await topTeamRes.json();
-
-      setEventPosts(eventData);
-
-      setTeamPosts(teamData);
-
-      setUserPosts(userData);
-
+  
+      try {
+        const eventRes = await fetch(`/api/eventpost?page=${page}&limit=${limit}`, { method: "GET" });
+        const userRes = await fetch(`/api/userpost?page=${page}&limit=${limit}`, { method: "GET" });
+        const teamRes = await fetch(`/api/teampost?page=${page}&limit=${limit}`, { method: "GET" });
+        const topTeamRes = await fetch(`/api/team?type=topTeams`, { method: "GET" });
+  
+        const eventData = await eventRes.json();
+        const userData = await userRes.json();
+        const teamData = await teamRes.json();
+        const topTeamData = await topTeamRes.json();
+  
+        // Append new posts to existing ones for infinite scrolling
+        setEventPosts(prev => [...prev, ...eventData]);
+        setUserPosts(prev => [...prev, ...userData]);
+        setTeamPosts(prev => [...prev, ...teamData]);
+       setTopTeams(topTeamData);
+  
+        // Check if there are more posts to load
+        if (eventData.length < limit && userData.length < limit && teamData.length < limit ) {
+          setHasMore(false);
+        }
+  
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
       setPostsLoading(false);
-
-      setTopTeams(topTeamData);
+      }
+    };
+  
+    if (hasMore && !fetchPostsCalled.current) {
+      fetchPosts();
+      fetchPostsCalled.current = true
     }
-    fetchPosts();
+ 
+  }, [page]); // Trigger fetching when page changes
+  
+  // Function to load the next page
+  const loadMore = () => {
+    setPage(prev => prev + 1);
+    fetchPostsCalled.current = false;
+  };
 
-  }, []);
 
   useEffect(() => {
     if (!eventPosts || !userPosts) return;
@@ -187,11 +214,22 @@ const BeCommunity = () => {
                   <LoadingAnimation></LoadingAnimation>
                 </div>}
 
-                {finalPosts.map((post) => (
+                {finalPosts?.map((post) => (
                   <div className="" key={post._id?.toString()}>
                     <PostCard post={post} />
                   </div>
                 ))}
+                {hasMore && (
+        <button
+          onClick={() => loadMore()}
+          className="load-more-btn bg-blue-500 text-white p-2 rounded mt-4 mx-auto block"
+        >
+          Load More
+        </button>
+      )}
+
+      {!hasMore && <p className="text-center mt-4">No more posts to load.</p>}
+
               </div>
             </div> : null}
 
@@ -213,7 +251,23 @@ const BeCommunity = () => {
                   <div className="" key={userPost._id?.toString()}>
                     <PostCard post={userPost} />
                   </div>
+                
                 ))}
+                {hasMore && (
+        <button
+          onClick={() => {
+            loadMore();
+          
+          }}
+          className="load-more-btn bg-blue-500 text-white p-2 rounded mt-4 mx-auto block"
+        >
+          Load More
+        </button>
+      )}
+
+      {!hasMore && <p className="text-center mt-4">No more posts to load.</p>}
+
+
               </div>
             </div>
 
