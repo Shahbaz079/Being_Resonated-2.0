@@ -1,6 +1,6 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import arcjet, { shield } from "@arcjet/next";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 // Configuration for rate limiting
@@ -35,9 +35,34 @@ const aj = arcjet({
 
 const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/api/webhooks(.*)', '/sign-up(.*)', '/', '/login', '/register', '/aboutus']);
 
+
+const isProtectedRoute = createRouteMatcher([
+  '/.env(.*)',               // Environment files
+  '/.json(.*)',              // JSON configuration files
+  '/config.yml',         // YAML configuration files
+  '/.git',               // Git metadata
+  '/.htaccess',          // Apache configuration
+  '/.htpasswd',          // Authentication details
+  '/node_modules',       // Dependencies
+  '/package-lock.json',  // Package manager lock file
+  '/package.json',       // Package manager file
+  '/Dockerfile',         // Docker configuration
+  '/docker-compose.yml', // Docker Compose configuration
+  '/.DS_Store',          // macOS directory metadata
+  '/.idea',              // JetBrains IDE configuration
+  '/.vscode',            // Visual Studio Code configuration
+  '/backup/',            // Backups
+  '/logs/',              // Log files
+  '/.ssh(.*)',               // SSH keys
+  '/credentials'         // AWS credentials or similar files
+]);
+
+
 export default clerkMiddleware(async (auth, req) => {
   const clientIp = getClientIp(req); // Extract client IP
   // Rate Limiter check
+
+
   try {
     await rateLimiter.consume(clientIp); // req.ip should provide the client's IP address
   } catch (rateLimiterRes) {
@@ -49,9 +74,20 @@ export default clerkMiddleware(async (auth, req) => {
 
   const decision = await aj.protect(req);
 
-  if (decision.isDenied()) {
+  if(isProtectedRoute(req) || decision.isDenied()) {
+    const {userId}=getAuth(req)
+    
+    // Get email if available
+
+    console.error(`Unauthorized access attempt:
+      - IP: ${clientIp}
+      - User ID: ${userId || "Unauthenticated"}
+      
+      - URL: ${req.url}`);
+
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+
 
   if (!isPublicRoute(req)) {
     await auth.protect();
