@@ -1,0 +1,99 @@
+@font-face {
+    font-family: 'icons';
+    src: url('../icons.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+* {
+    font-family: icons;
+}
+.background{
+    width: 100%;
+    min-height:100vh;
+    background-image: url('bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+    background-color: rgba(0,0,0,0.85);
+    background-blend-mode: overlay;
+    display: flex;
+}
+.sections{
+    margin: auto;
+    margin-top: calc((100vh - min(140vw, 85vh)) / 2);
+    background-color: rgba(50, 72, 72, 0.3);
+    width: 95%;
+    min-height: min(140vw, 85vh);
+    border-radius: 20px;
+    background-blend-mode: overlay;
+
+}
+
+.heading{
+    padding: min(4vw, 20px);
+    text-align: center;
+    /* width: fit-content; */
+    font-size: min(6vw, 50px);
+}
+.pyq{
+    margin-top: 50px;
+    font-size: min(4vw, 30px);
+    padding-left: min(4vw, 40px);
+}
+.title_year{
+    margin-top: 20px;
+    font-size: min(4vw, 30px);
+    padding-left: min(4vw, 40px);
+}
+
+.notes{
+    margin-top: 50px;
+    position: relative;
+    font-size: min(4vw, 30px);
+    padding-left: min(9vw, 80px);
+}
+/* .sems{
+    visibility: hidden;
+    max-height: 0;
+} */
+.sems, .year {
+    padding-top: 10px;
+    padding-left: min(10vw, 80px);
+    font-size: min(3vw, 20px);
+    max-height: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in, visibility 0.3s ease-in;
+}
+.pyq_page_years{
+    margin: auto;
+    padding-left: min(5vw, 80px);
+
+    /* text-align: center; */
+    .title{
+        padding-top: min(7vw, 60px);
+        padding-bottom: min(2vw, 20px);
+        font-size: min(6vw, 50px);
+        /* text-align: center; */
+    }
+    p{
+        margin-top: 20px;
+        font-size: min(4vw, 30px);
+    }
+  
+}
+.sems p, .year p{
+    margin-top: 10px;
+}
+.sems.open, .year.open {
+    max-height: 500px;
+    
+    /* height: fit-content; */
+    visibility: visible;
+}
+
+.note-icon{
+    position: absolute;
+    top: -2px;
+    left: min(4vw, 40px);
+}
