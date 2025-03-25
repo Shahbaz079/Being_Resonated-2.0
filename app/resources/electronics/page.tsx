@@ -7,15 +7,17 @@ import { usePathname } from "next/navigation";
 const ETCPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenNOTES, setIsOpenNOTES] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
-    document.body.classList.add("background");
-
-    return () => {
-      document.body.classList.remove("background");
-    };
-  }, [pathname]);
+    if (typeof window !== "undefined" && window.localStorage) {
+      if (!localStorage.getItem("reload")) {
+        localStorage.setItem("reload", "true");
+        window.location.reload();
+      } else {
+        localStorage.removeItem("reload");
+      }
+    }
+  }, []);
   return (
     <div className="background">
       <div className="sections">

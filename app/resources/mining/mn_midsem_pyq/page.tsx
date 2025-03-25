@@ -21,7 +21,8 @@ export default function Page() {
                     </button>
                     <div className={`sems ${isOpenFirstYear ? "open" : ""}`}>
                         <p><Link href="/resources/electrical/ee_midsem_pyq/">1st Semester</Link></p>
-                        <p><Link href="/resources/electrical/ee_midsem_pyq/">2nd Semester</Link></p>
+                        <p><Link href="/resources/electrical/ee_midsem_pyq/"><Link href="https://drive.google.com/drive/u/2/folders/1Ms7oVGunQYwpDwQ9JDs99NBw3fQdoHZH">2nd Semester</Link></Link></p>
+
                     </div>
                 </div>
 
