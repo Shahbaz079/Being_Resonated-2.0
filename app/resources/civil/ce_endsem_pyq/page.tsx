@@ -43,7 +43,7 @@ export default function Page() {
                     </button>
                     <div className={`sems ${isOpenThirdYear ? "open" : ""}`}>
                         <p><Link href="/resources/information-technology/it_midsem_pyq/">5th Semester</Link></p>
-                        <p><Link href="/resources/information-technology/it_midsem_pyq/">6th Semester</Link></p>
+                        <p><Link href="https://drive.google.com/drive/u/2/folders/1Q2n_ItqHBwQwaYKRdvh9bVL5BLXJMjJT">6th Semester</Link></p>
                     </div>
                 </div>
 
