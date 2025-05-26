@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 
 interface Department {
   name: string;
@@ -21,36 +21,8 @@ const departments: Department[] = [
 ];
 
 const AcademicsPage = () => {
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      if (!localStorage.getItem("reload")) {
-        localStorage.setItem("reload", "true");
-        window.location.reload();
-      } else {
-        localStorage.removeItem("reload");
-      }
-    }
-  }, []);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isHeadingVisible, setIsHeadingVisible] = useState(false);
-  const router = useRouter();
 
-  useEffect(() => {
-    const headingTimer = setTimeout(() => setIsHeadingVisible(true), 500);
-    const mountedTimer = setTimeout(() => setIsMounted(true), 100);
-    return () => {
-      clearTimeout(headingTimer);
-      clearTimeout(mountedTimer);
-    };
-  }, []);
 
-  const handleNavigation = (path: string) => {
-    if (path.startsWith("http")) {
-      window.open(path, "_blank");
-    } else {
-      router.push(path);
-    }
-  };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black">
@@ -66,14 +38,14 @@ const AcademicsPage = () => {
 
         <div className="flex flex-col space-y-4" style={{textAlign: "center"}}>
           {departments.map((dept, index) => (
-            <button
+            <Link href={dept.path}
               key={index}
-              onClick={() => handleNavigation(dept.path)}
+         
               className="bg-gray-800 border-2 border-cyan-600 rounded-full px-4 py-3 text-cyan-300 font-medium text-lg shadow-lg hover:shadow-2xl hover:bg-gray-700 transition duration-300 cursor-pointer w-fit"
               style={{ minWidth: "300px" ,textAlign: "center", margin: "auto", marginTop: "20px" }}
             >
               {dept.name}
-            </button>
+            </Link>
           ))}
         </div>
       </div>

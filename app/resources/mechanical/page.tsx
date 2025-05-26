@@ -1,48 +1,64 @@
 "use client";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import './style.css'
-import Link from 'next/link';
-import { usePathname } from "next/navigation";
-const EEPage = () => {
+import React, { useState } from "react";
+import "./style.css";
+import Link from "next/link";
+
+const MEPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenNOTES, setIsOpenNOTES] = useState(false);
+  const [modalType, setModalType] = useState<"mid" | "end" | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      if (!localStorage.getItem("reload")) {
-        localStorage.setItem("reload", "true");
-        window.location.reload();
-      } else {
-        localStorage.removeItem("reload");
-      }
-    }
-  }, []);
+  const closeModal = () => setModalType(null);
+
   return (
     <div className="background">
       <div className="sections">
-        <div className="heading">Department of Mechanical Engineering</div>
+        <div className="heading">
+          Department of Mechanical Engineering
+        </div>
+
+        {/* PYQ Section */}
         <div>
           <button className="pyq" onClick={() => setIsOpen(!isOpen)}>
             󱄶 Previous Year Questions {isOpen ? "󰄿" : "󰄼"}
           </button>
-          <div className={`sems ${isOpen ? "open" : ""}`}>
-            <p><Link href="/resources/mechanical/me_midsem_pyq/">Mid-Semester</Link></p>
-            <p><Link href="/resources/mechanical/me_endsem_pyq/">End-Semester</Link></p>
-
+          <div className={`flex flex-col justify-start items-start sems ${isOpen ? "open" : ""}`}>
+            <button onClick={() => setModalType("mid")}>Mid-Semester</button>
+            <button onClick={() => setModalType("end")}>End-Semester</button>
           </div>
         </div>
-        <button className="notes" onClick={() => setIsOpenNOTES(!isOpenNOTES)}><span className="note-icon"></span> Notes & Materials {isOpenNOTES ? "󰄿" : "󰄼"}</button>
-        <div className={`year ${isOpenNOTES ? "open" : ""}`}>
-          <p>1st Year</p>
-          <p>2nd Year</p>
-          <p>3rd Year</p>
-          <p>4th Year</p>
 
+        {/* Modal */}
+        {modalType && (
+          <div className={`model ${modalType=="mid"?"bg-[#64de4caf]":"bg-[#dfa9a9a4]"} rounded-lg px-2 py-4 relative left-[20%] top-[-20%] w-[300px] h-auto`}>
+            <div className="model-content">
+              <button className="close" onClick={closeModal}>X</button>
+              <h2 className="flex flex-col justify-center items-center">
+                {Array.from({ length: 8 }, (_, i) => (
+                  <Link
+                    key={i}
+                    href={`/academics/me?sem=${i + 1}&ex=${modalType}`}
+                  >
+                    {i + 1} Sem
+                  </Link>
+                ))}
+              </h2>
+            </div>
+          </div>
+        )}
+
+        {/* Notes Section */}
+        <button className="notes" onClick={() => setIsOpenNOTES(!isOpenNOTES)}>
+          <span className="note-icon"></span> Notes & Materials {isOpenNOTES ? "󰄿" : "󰄼"}
+        </button>
+        <div className={`year ${isOpenNOTES ? "open" : ""}`}>
+          {Array.from({ length: 8 }, (_, i) => (
+            <p key={i}>{i + 1} sem</p>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default EEPage;
+export default MEPage;
