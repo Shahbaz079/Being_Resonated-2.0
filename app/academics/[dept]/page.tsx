@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 
+import MeditatingPanda from "@/components/Animations/FloatingPanda";
+
 // Google Drive Embed URL
 const getEmbedUrl = (fileId: string) =>
   `https://drive.google.com/file/d/${fileId}/preview`;
@@ -183,6 +185,9 @@ const DocumentPage = () => {
                   className="w-full h-full rounded-md"
                   allow="autoplay"
                 />
+              </div>
+              <div className="w-[30vw] h-full">
+                <MeditatingPanda fileId={selectedDoc.fileId}/>
               </div>
             </motion.div>
           </motion.div>
