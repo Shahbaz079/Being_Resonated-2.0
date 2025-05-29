@@ -5,18 +5,15 @@ import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.js";
 
 export async function extractTextFromPdfBuffer(buffer: Uint8Array): Promise<string> {
   try {
-    const pdf = await pdfjsLib.getDocument({
-      data: buffer,
-      // 👇 Vercel-safe: disables the need for a real worker
-      useWorkerFetch: false,
-      disableFontFace: true,
-    //  nativeImageDecoderSupport: "none",
-      isEvalSupported: false,
-      cMapPacked: true,
-      // 👇 Disable worker on server
-   //   fakeWorker: true,
-    }).promise;
-
+   const pdf = await pdfjsLib.getDocument({
+  data: buffer,
+  useWorkerFetch: false,
+  disableFontFace: true,
+  isEvalSupported: false,
+  cMapPacked: true,
+  // @ts-ignore - `fakeWorker` is not typed but works in Node environments
+  fakeWorker: true,
+} as any).promise;
     let text = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {
