@@ -38,6 +38,8 @@ let document = "";
 
 try {
   document = await extractTextFromPdfBuffer(new Uint8Array(buffer));
+
+  
 } catch (err) {
   console.error("Failed to parse PDF buffer:", err);
   return NextResponse.json({ error: "PDF parsing failed" }, { status: 500 });
