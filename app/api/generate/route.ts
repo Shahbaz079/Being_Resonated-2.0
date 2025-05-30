@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-// @ts-ignore
+
 
 
 import Together from "together-ai";
