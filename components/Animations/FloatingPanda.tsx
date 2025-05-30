@@ -1,5 +1,6 @@
 // components/MeditatingPanda.tsx
 'use client'
+import { extractTextFromBase64 } from "@/lib/pdfParser";
 
 import Lottie from 'lottie-react'
 import pandaAnimation from "@/public/lottie-animations/Animation - 1748338496917.json"
@@ -12,15 +13,21 @@ export default function MeditatingPanda({fileId}: { fileId: string }) {
   const [response, setResponse] = useState('');
 const [loading, setLoading] = useState(false);
 
+
   const handleSubmit=async()=> {
     setLoading(true);
     setResponse('');
     try {
     //  const docText=await extractTextFromPdfDriveFile(fileId)
 
+    const response = await fetch(`/api/getdoc?fileId=${fileId}`);
+    const { base64 } = await response.json();
+    const text = await extractTextFromBase64(base64);
+    console.log("Extracted Text:", text);
+
       const res = await fetch("/api/generate", {
       method: 'POST',
-      body: JSON.stringify({ prompt: input , fileId}),
+      body: JSON.stringify({ prompt: input , document: text }),
       headers: { 'Content-Type': 'application/json' },
     });
 
