@@ -288,7 +288,7 @@ useEffect(() => {
 }
 
 
-export function AnimatedOneLiner() {
+const AnimatedOneLiner=()=> {
   const lines = [
     "Where Connections Shape Futures",
     "Empowering Students Through Community & AI",
