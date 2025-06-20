@@ -324,13 +324,13 @@ const AnimatedOneLiner=()=> {
 
 
 
-export  function SliderSection({
+const SliderSection=({
  
   mongoId
 }: {
  
   mongoId: string
-}) {
+}) =>{
  
 
   return (
