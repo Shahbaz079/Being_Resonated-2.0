@@ -35,7 +35,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="dark">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased inset-0 bg-gradient-to-br from-black via-gray-900 to-black`}
         >
           <SessionProvider>
             <ToastContainer />

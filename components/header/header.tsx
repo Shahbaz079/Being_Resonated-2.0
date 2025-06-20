@@ -8,30 +8,32 @@ import Link from 'next/link';
 
 
 
-const DotIcon = () => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-      <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
-    </svg>
-  )
-}
+
 
 
 const Header = () => {
 
 
   return (
-    <header className="absolute top-0 right-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between z-[300]">
-      <div className="mx-10">
+    <header className="fixed top-0 right-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between z-[300]">
+      
+      <div className="">
+       <SignedOut>
+  <div className="bg-orange-400 hover:bg-orange-500 text-black font-semibold py-2 px-4 rounded-full text-lg">
+    <SignInButton />
+  </div>
+</SignedOut>
 
-      </div>
-      <div className="absolute top-0 right-[2%] py-[1%] left-[90%] flex justify-between">
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+<SignedIn>
+  <UserButton 
+    appearance={{
+      elements: {
+        userButtonAvatarBox: "w-10 h-10"  // default is ~32px, so this makes it ~48px
+      }
+    }}
+  />
+</SignedIn>
+
       </div>
 
     </header>
