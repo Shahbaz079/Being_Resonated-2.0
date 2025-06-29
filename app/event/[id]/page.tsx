@@ -1,6 +1,6 @@
 'use client'
 
-
+import React from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from "@clerk/nextjs";
@@ -31,56 +31,85 @@ import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 import Layout from "@/components/customLayouts/Layout";
 import PostCard from "@/components/eventCard/PostCard";
+import { useQuery,useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface EventUpdateType {
-  date: string;
-  description: string;
-  name: string;
-  time: string;
-  location: string;
-}
 
-const emptyEventUpdateData = {
-  date: "",
-  description: "",
-  name: "",
-  time: "",
-  location: "",
-}
 
-const EventPage = () => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [members, setMembers] = useState<IUser[] | null>([]);
-  const [leaders, setLeaders] = useState<IUser[] | null>([]);
-  const [participants, setParticipants] = useState<IUser[] | null>([]);
-  const [requests, setRequests] = useState<IUser[] | null>();
-  const [image, setImage] = useState('');
-  const [createdBy, setCreatedBy] = useState<IUser | null>();
-  const [team, setTeam] = useState<ITeam | null>();
-  const [time, setTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [loading, setLoading] = useState<boolean>(true);
 
-  const [edit, setEdit] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null)
+export const getEventById = async (id: string):Promise<IEvent> => {
+  const res = await fetch(`/api/events?id=${id}`);
+  if (!res.ok) throw new Error("Failed to fetch event data");
+  return res.json();
+};
 
+export const acceptParticipant = async ({
+  eventId,
+  userId,
+}: { eventId: string; userId: string }) => {
+  const res = await fetch(`/api/participate?eid=${eventId}&id=${userId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error("Failed to accept participant");
+};
+
+export const removeParticipant = async ({
+  eventId,
+  participantId,
+}: { eventId: string; participantId: string }) => {
+  const res = await fetch(`/api/events?id=${eventId}&type=remparticipant`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: participantId }),
+  });
+  if (!res.ok) throw new Error("Failed to remove participant");
+};
+
+export const removeRequests = async ({
+  eventId,
+  requestId,
+}: { eventId: string; requestId:string }) => {
+  const res = await fetch(`/api/events?id=${eventId}&type=remrequest`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: requestId }),
+  });
+  if (!res.ok) throw new Error("Failed to update requests");
+};
+
+export const sendParticipationRequest = async ({
+  id,
+  mongoId,
+}: { id: string; mongoId: string }) => {
+  const res = await fetch(`/api/events?type=participate&id=${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: mongoId }),
+  });
+  if (!res.ok) throw new Error("Failed to send participation request");
+};
+
+const EventPage = ({eventId}:{eventId:string}) => {
+  
   const [file, setFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [event, setEvent] = useState<IEvent | null>(null);
-  const [eventId, setEventId] = useState<string>("");
-  const [progress, setProgress] = useState<number>(0);
 
-  const [live, setLive] = useState<boolean>(false);
-  const [editEvent, setEditEvent] = useState<boolean>(false);
-  const [teamId,setTeamId] = useState<string>("");
-  const [teamName,setTeamName]=useState<string>("")
+  
 
-  const [eventUpdateData, setEventUpdateData] = useState<EventUpdateType>(emptyEventUpdateData);
-  const [posts, setPosts] = useState<any[]>([]);
+  //const [eventUpdateData, setEventUpdateData] = useState<EventUpdateType>(emptyEventUpdateData);
 
 
+   const { user, isLoaded } = useUser();
+
+const { data: eventData, isLoading, isError } = useQuery({
+  queryKey: ['event', eventId],
+  queryFn: () => getEventById(eventId),
+  enabled: !!eventId && isLoaded, // ensures query runs only when eventId exists
+  refetchOnWindowFocus: false, 
+});
+
+const [preview, setPreview] = useState<string | null>(null);
 
   const { edgestore } = useEdgeStore();
 
@@ -97,203 +126,125 @@ const EventPage = () => {
     }
   };
 
-  const handleUpload = async () => {
+const queryClient = useQueryClient();
 
-    if (file) {
+const uploadMutation = useMutation({
+  mutationFn: async () => {
+    if (!file) return;
+    const res = await edgestore.mypublicImages.upload({ file});
+    const uploadRes = await fetch(`/api/upload?id=${eventId}&source=event`, {
+      method: "POST",
+      body: JSON.stringify({ imgUrl: res.url, thumbUrl: res.thumbnailUrl }),
+    });
+    if (!uploadRes.ok) throw new Error("Upload failed");
+    return uploadRes;
+  },
+  onSuccess: () => {
+    setUploadStatus("Image uploaded successfully");
+    queryClient.invalidateQueries({ queryKey: ['event', eventId] }); // refetch event data
+  },
+});
 
-      const res = await edgestore.mypublicImages.upload({
-        file,
-        onProgressChange: (progress) => {
-          setProgress(progress);
-        }
-      })
-
-
-
-      const response = await fetch(`/api/upload?id=${eventId}&source=event`, {
-        method: "POST",
-        body: JSON.stringify({ imgUrl: res.url, thumbUrl: res.thumbnailUrl })
-      })
-
-      if (response.ok) {
-        setUploadStatus("Image uploaded successfully")
-        window.location.reload();
-      }
-    }
-
-  }
+const handleUpload = () => {
+  if (file) uploadMutation.mutate();
+};
 
 
 
 
-  const { user, isLoaded } = useUser();
+
+
+ 
   const mongoId = user?.publicMetadata.mongoId as string;
 
 
 
-  const isLeader = leaders?.some((leader) => leader._id.toString() === mongoId);
-  const isVolunteer = members?.some((member) => member._id.toString() === mongoId);
+  const isLeader = eventData?.leaders?.some((leader) => leader._id.toString() === mongoId);
+  const isVolunteer = eventData?.members?.some((member) => member._id.toString() === mongoId);
 
-  useEffect(() => {
 
-    setEventId(window.location.pathname.split('/')[2]);
+   // setEventId(window.location.pathname.split('/')[2]);
     console.log(eventId, "eventid")
-  }, [isLoaded])
+
+const acceptParticipantMutation = useMutation({
+  mutationFn: acceptParticipant,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    toast.success("Participant added successfully");
+  },
+});
+
+const removeParticipantMutation = useMutation({
+  mutationFn: removeParticipant,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    toast.success("Participant removed successfully");
+  },
+});
+
+const declineRequestMutation = useMutation({
+  mutationFn: removeRequests,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    toast.success("Request declined");
+  },
+});
+
+const participationRequestMutation = useMutation({
+  mutationFn: sendParticipationRequest,
+  onSuccess: () => toast.success("Request sent successfully"),
+  onError: () => toast.error("Request failed"),
+});
+
+const acceptRequestHandler = (newParticipant: IUser) => {
 
 
-  useEffect(() => {
+  acceptParticipantMutation.mutate({ eventId, userId: newParticipant._id.toString() });
+};
 
-    const handleEventData = async () => {
-      setLoading(true);
-      const res = await fetch(`/api/events?id=${eventId}`, {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json'
-        }
+const removeParticipantHandler = (newParticipant: IUser) => {
 
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setName(data.name);
-        setDescription(data.description);
-        setDate(data.date);
-        setImage(data.image);
-        setMembers(data.members);
-        setLeaders(data.leaders);
-        setCreatedBy(data.createdBy);
-        setTime(data.time);
-        setLocation(data.location);
-        setTeam(data.team);
-        setTeamId(data.team?._id.toString());
-        setTeamName(data.team?.name);
-        setLive(data.isLive);
-        setRequests(data.requests);
-        setParticipants(data.participated);
-        setEvent(data)
-        setPosts(data.posts);
-        setEventUpdateData({ name: data.name, date: data.date, description: data.description, location: data.location, time: data.time });
-        setLoading(false);
-      } else {
-        toast.error("Failed to fetch event data");
-      }
-    };
-
-    if (eventId) {
-      handleEventData();
-    }
+  removeParticipantMutation.mutate({ eventId, participantId: newParticipant._id.toString() });
+}
 
 
-  }, [isLoaded, user, eventId]);
+const removeRequestHandler = (newParticipant: IUser) => {
+ 
+  declineRequestMutation.mutate({ eventId, requestId: newParticipant._id.toString() });
+};
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const res = await fetch(`/api/events?id=${eventId}`, {
-      method: "PUT",
-      body: JSON.stringify({ name, description, date, time, location, members, leaders })
-    })
+
+
+const handleParticipation = () => {
+  participationRequestMutation.mutate({ id: eventId, mongoId });
+};
+
+const [eventUpdateData, setEventUpdateData] = useState({
+  id: '', // make sure 'id' is available
+  name: '',
+  location: '',
+  time: '',
+  date: '',
+})
+
+
+const { mutate: updateEvent } = useMutation({
+  mutationFn: async () => {
+  
+   const response= await fetch(`/api/events?id=${eventId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: eventUpdateData.name, location: eventUpdateData.location, time: eventUpdateData.time, date: eventUpdateData.date }),})
+
+    return response.json();
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({queryKey:['events',eventId]}) // Adjust to your query key
   }
-
-  const acceptRequestHandler = (newParticipant: IUser) => {
-
-    const updatedParticipants = participants ? [...participants, newParticipant] : [newParticipant];
-    setParticipants(updatedParticipants);
-
-    const updatedRequests = requests?.filter((request) => request._id.toString() !== newParticipant._id.toString())
-    setRequests(updatedRequests);
-
-    const updateParticipants = async () => {
-      const res = await fetch(`/api/participate?eid=${eventId}&id=${newParticipant._id.toString()}`, {
-        method: "PUT",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-      })
-
-      const data = res.json();
-      if (res.ok) {
-        toast.success("Participant added successfully");
-      }
-    }
-    updateParticipants();
-  }
-
-  const removeParticipantHandler = (newParticipant: IUser) => {
+})
 
 
 
-    const updatedParticipants = participants?.filter((participant) => participant._id.toString() !== newParticipant._id.toString())
-    setParticipants(updatedParticipants || []);
-
-    const updateParticipants = async () => {
-      const res = await fetch(`/api/events?id=${eventId}`, {
-        method: "PUT",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ participated: updatedParticipants })
-      })
-
-      const data = res.json();
-      if (res.ok) {
-        toast.success("Participant Removed successfully");
-      }
-    }
-    updateParticipants();
-  }
-
-
-  const removeAcceptHandler = (newParticipant: IUser) => {
-
-
-
-    const updatedRequests = requests?.filter((request) => request._id.toString() !== newParticipant._id.toString())
-    setRequests(updatedRequests || []);
-
-    const updateParticipants = async () => {
-      const res = await fetch(`/api/events?id=${eventId}`, {
-        method: "PUT",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ requests: updatedRequests })
-      })
-
-      const data = res.json();
-      if (res.ok) {
-        toast.success("Participant Removed successfully");
-      }
-    }
-    updateParticipants();
-  }
-
-
-  const handleParticipation = (id: string) => {
-    try {
-
-      const participate = async () => {
-        const res = await fetch(`/api/events?type=participate&id=${id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userId: mongoId }),
-
-        })
-        const data = await res.json();
-        if (res) {
-          toast.success("Request sent successfully")
-        } else {
-          toast.error("Request failed")
-        }
-      }
-      participate();
-
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
 
   return (
@@ -303,10 +254,10 @@ const EventPage = () => {
 
       
 
-      {loading && <div className="mt-44">
+      {isLoading && <div className="mt-44">
         <LoadingAnimation></LoadingAnimation></div>}
 
-      {!loading && <Card className="glass mt-10 animate-slide-top">
+      {!isLoading && <Card className="glass mt-10 animate-slide-top">
         <CardHeader>
           <div className="relative h-fit w-fit">
             {isLeader &&
@@ -332,18 +283,18 @@ const EventPage = () => {
             }
             <img
               className="w-32 h-32 rounded-lg"
-              src={image || 'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-              alt={name || "user did'nt provide image"}
+              src={eventData?.image || 'https://plus.unsplash.com/premium_vector-1683141200177-9575262876f7?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+              alt={eventData?.name || "user did'nt provide image"}
             />
           </div>
-          <h1 className="text-7xl mt-4 cphone:text-5xl text-cyan-200">{name}</h1>
+          <h1 className="text-7xl mt-4 cphone:text-5xl text-cyan-200">{eventData?.name}</h1>
           <Dialog>
             <DialogTrigger asChild><FaInfoCircle className="w-5 h-5 mt-4 cursor-pointer fill-cyan-200 hover:opacity-70"></FaInfoCircle></DialogTrigger>
             <DialogContent className="bg-slate-950 opacity-90">
               <DialogHeader>
                 <DialogTitle>Description</DialogTitle>
               </DialogHeader>
-              <p>{description}</p>
+              <p>{eventData?.description}</p>
             </DialogContent>
           </Dialog>
 
@@ -352,15 +303,15 @@ const EventPage = () => {
         <CardContent>
           <div className="flex items-center gap-2">
             <SlCalender></SlCalender>
-            <p className="text-xl">Date: {date}</p>
+            <p className="text-xl">Date: {eventData?.date}</p>
           </div>
           <div className="flex items-center gap-2">
             <IoTimeOutline></IoTimeOutline>
-            <p className="text-xl">{time}</p>
+            <p className="text-xl">{eventData?.time}</p>
           </div>
           <div className="flex items-center gap-2">
             <FaLocationDot></FaLocationDot>
-            <p className="text-xl">{location}</p>
+            <p className="text-xl">{eventData?.location}</p>
           </div>
         </CardContent>
 
@@ -391,74 +342,116 @@ const EventPage = () => {
                     <Label>Date</Label>
                     <input className="p-1 border-2 bg-black rounded-md mt-1" value={eventUpdateData.date} onChange={(e) => setEventUpdateData({ ...eventUpdateData, date: e.target.value })} type="date" />
                   </div>
-                  <Button variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                  <Button
+  onClick={() => updateEvent()}
+  disabled={isLoading}
+  className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end"
+>
+  {isLoading ? 'Saving...' : 'Save'}
+</Button>
+
                 </div>
               </DialogContent>
             </Dialog>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="ml-4">Manage Participants</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Participants and Requests</DialogTitle></DialogHeader>
-                <DialogFooter>
-                  <div className="max-h-[80vh] ">
-                    <div className="flex flex-col w-[40vw] max-h-[60vh]">
-                      <h2>Requests</h2>
-                      <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
-                        {requests?.map((participant) => (
-                          <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
-                            <div className="px-2 mx-2">
-                              <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
+           <Dialog>
+  <DialogTrigger asChild>
+    <Button className="ml-4">Manage Participants</Button>
+  </DialogTrigger>
+  <DialogContent className="max-w-5xl w-full">
+    <DialogHeader>
+      <DialogTitle className="text-2xl text-center">Participants & Requests</DialogTitle>
+    </DialogHeader>
 
-                            <div className="flex flex-col px-2 mx-2">
-                              <div className="">{participant.name}</div>
-                              <div className="">{participant?.gradYear}</div>
-                            </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto px-2">
+      {/* Requests Section */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4 text-center">Join Requests</h2>
+        <div className="space-y-4">
+          {eventData?.requests?.map((participant) => (
+            <div
+              key={participant._id.toString()}
+              className="flex items-center justify-between p-4 bg-slate-800 rounded-lg shadow-md"
+            >
+              <div className="flex items-center space-x-4">
+                <img
+                  src={participant?.image}
+                  alt={participant.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-sm font-medium">{participant.name}</p>
+                  <p className="text-xs text-gray-400">{participant.gradYear}</p>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 text-sm"
+                  onClick={() => acceptRequestHandler(participant)}
+                >
+                  Accept
+                </Button>
+                <Button
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm"
+                  onClick={() => removeRequestHandler(participant)}
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
+          ))}
+          {eventData?.requests?.length === 0 && (
+            <p className="text-center text-gray-400 text-sm">No requests yet.</p>
+          )}
+        </div>
+      </div>
 
-                            <button onClick={() => acceptRequestHandler(participant)} className="px-2 mx-2 bg-[#3bc249] py-1 rounded-md">Accept</button>
-                            <button onClick={() => removeAcceptHandler(participant)} className="px-2 mx-2 bg-red-500 py-2 rounded-full">X</button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+      {/* Participants Section */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4 text-center">Participants</h2>
+        <div className="space-y-4">
+          {eventData?.participated?.map((participant) => (
+            <div
+              key={participant._id.toString()}
+              className="flex items-center justify-between p-4 bg-slate-800 rounded-lg shadow-md"
+            >
+              <div className="flex items-center space-x-4">
+                <img
+                  src={participant?.image}
+                  alt={participant.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-sm font-medium">{participant.name}</p>
+                  <p className="text-xs text-gray-400">{participant.gradYear}</p>
+                </div>
+              </div>
+              <Button
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm"
+                onClick={() => removeParticipantHandler(participant)}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          {eventData?.participated?.length === 0 && (
+            <p className="text-center text-gray-400 text-sm">No participants added yet.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
 
-
-                    <div className="flex flex-col w-[40vw] h-[60vh]">
-                      <h2>Participants</h2>
-                      <div className="w-[100%] height-[100px] max-h-[50vh] overflow-y-scroll ">
-                        {participants?.map((participant) => (
-                          <div className="flex flex-row justify-start items-center" key={participant._id.toString()}>
-                            <div className="px-2 mx-2">
-                              <img src={participant?.image} alt={participant.name} className="object-cover w-[60px] h-[60px]" /></div>
-
-                            <div className="flex flex-col px-2 mx-2">
-                              <div className="">{participant.name}</div>
-                              <div className="">{participant?.gradYear}</div>
-                            </div>
-
-                            <button className="px-2 mx-2 bg-red-500 py-2 rounded-full" onClick={() => removeParticipantHandler(participant)}>X</button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-                </DialogFooter>
-
-              </DialogContent>
-            </Dialog>
           </>
           }
-          <Button onClick={() => handleParticipation(eventId!)} variant={"default"} className="ml-4 bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Participate</Button>
+          <Button onClick={() => handleParticipation()} variant={"default"} className="ml-4 bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Participate</Button>
         </CardFooter>
 
       </Card>}
 
 
-      {!loading && <Card className="glass animate-slide-top">
+      {!isLoading && <Card className="glass animate-slide-top">
         <CardHeader>
           <Tabs defaultValue="Organisers">
             <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
@@ -468,7 +461,7 @@ const EventPage = () => {
             </TabsList>
             <TabsContent value="Organisers" className="mt-7">
               <div className="flex gap-3 flex-wrap">
-                {leaders?.map((leader) => (
+                {eventData?.leaders?.map((leader) => (
                   <OrganiserCard key={leader.email.toString()} number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
                 ))}
               </div>
@@ -476,9 +469,9 @@ const EventPage = () => {
             <TabsContent value="Posts">
               {isLeader && <div>
                 
-                  <WhatsOnEventMind title={teamId} name={name} location={location} time={time} date={date} eventId={eventId} />
+                  <WhatsOnEventMind title={eventData?.team.toString()!} name={eventData?.name!} location={eventData?.location!} time={eventData?.time!} date={eventData?.date!} eventId={eventId!} />
               </div>}
-              {posts?.map((userPost) => (
+              {eventData?.posts?.map((userPost) => (
                     <div className="" key={userPost._id?.toString()}>
                       <PostCard post={userPost} />
                     </div>
@@ -540,8 +533,12 @@ const PrizeCard = ({ position, content }: { position: string, content: string })
 
 
 
-const EventPagewithSuspense = () => (
-  <Suspense fallback={<div>Loding</div>}> <EventPage /></Suspense>
+const EventPagewithSuspense = (props: { params: Promise<{ id: string }> }) =>{
+    const { id } = React.use(props.params)
+
+  return (
+  <Suspense fallback={<div>Loding</div>}> <EventPage eventId={id}/></Suspense>
 )
 
+}
 export default EventPagewithSuspense;

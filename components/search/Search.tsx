@@ -60,7 +60,7 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
         onChange={(e) => setSearchTerm(e.target.value)}
         onBlur={() => setSearchTerm("")}
         placeholder="Search users, events, teams"
-        className='h-12'
+        className='w-[35vw] h-12'
       />
       <div className='absolute spglass z-[50] w-[500px] max-h-[500px] ctab:w-[400px] cphone:w-[100vw] cphone:fixed cphone:left-0 mt-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-cyan-300 scrollbar-track-transparent'>
 

@@ -1,8 +1,7 @@
 'use client'
 import React from 'react'
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { useUser } from '@clerk/nextjs';
-import Link from 'next/link';
+
 
 
 
@@ -15,7 +14,7 @@ const Header = () => {
 
 
   return (
-    <header className="fixed top-0 right-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between z-[300]">
+    <header className="fixed top-0 right-[4%] my-4 rounded-full items-center text-white flex flex-row justify-between z-[999]">
       
       <div className="">
        <SignedOut>

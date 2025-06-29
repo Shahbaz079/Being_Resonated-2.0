@@ -20,7 +20,8 @@ if (!dbName) {
 export async function POST(request: NextRequest) {
   let client: MongoClient | null = null;
   try {
-    const { name, description, date, members, leaders, image, createdBy, team, time, location } = await request.json();
+    const { name, description, date, members, leaders, image, createdBy, team, time, location,dateTime } = await request.json();
+
     client = new MongoClient(uri!);
     await connectDB();
     const db = client.db(dbName!);
@@ -39,7 +40,8 @@ export async function POST(request: NextRequest) {
       time,
       location,
       createdAt: new Date(), 
-      updatedAt: new Date() 
+      updatedAt: new Date(),
+       dateTime: new Date(dateTime), // store as real Date object 
     };
 
     const reqTeam = await teams.findOne({ _id: new ObjectId(team as string) });
@@ -181,9 +183,14 @@ export async function GET(request: NextRequest) {
   
   }else{
       
-      const allEvents = await events.find({}).sort({createdAt:-1}).toArray();
+ 
+
+      const upcomingEvents =await events.find({
+  dateTime: { $gte: new Date() },
+}).sort({ dateTime: 1 }).toArray();
+
       
-      return NextResponse.json(allEvents)
+      return NextResponse.json(upcomingEvents)
     }
   } finally {
     if (client) {
@@ -224,7 +231,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    if(type==='participate'){
+    if(type==='remparticipant'){
     
      
       
@@ -234,25 +241,121 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
 
-      const updatedRequests = event.requests || [];
-      updatedRequests.push(new ObjectId(userId as string));
+      const updatedParticipations = user?.participations || [];
+    const finalParticipations=updatedParticipations.filter((e:any)=>{
+            e.toString()!==eventId
+          })
 
-      const result = await events.updateOne(
-        { _id: new ObjectId(eventId as string) },
-        { $set: { requests: updatedRequests } }
-      );
+      const updatedParticipated = event?.participated || [];
+    
+    const finalParticipated = updatedParticipated.filter((e:any)=>{
+      e.toString()!==userId
+    })
 
-      if(result.acknowledged){
-        const requestEvents=user.requestEvents || [];
-        requestEvents.push(new ObjectId(eventId as string));
-        await users.updateOne(
-          { _id: new ObjectId(userId as string) },
-          { $set: { requestEvents } }
-        );
-        return NextResponse.json({ message: 'Request sent' });
-      }else{
-        return NextResponse.json({ error: 'Failed to sent requests' }, { status: 500 });
+
+      const userUpdateResult = await users.updateOne(
+            { _id: new ObjectId(userId as string) },
+            { $set: { participations: finalParticipations } }
+          );
+      
+          if (userUpdateResult.acknowledged) {
+
+            const eventUpdateResult = await events.updateOne(
+              { _id: new ObjectId(eventId as string) },
+              { $set: { participated: finalParticipated } }
+            );
+      
+            if (eventUpdateResult.acknowledged) {
+              return NextResponse.json({ message: 'User removed form event successfully' }, { status: 200 });
+            } else {
+              return NextResponse.json({ error: 'Failed to remove user from event' }, { status: 500 });
+            }
+          } else {
+            return NextResponse.json({ error: 'Failed to update status of user regarding event participation' }, { status: 500 });
+          }
+
+    }
+
+
+    if(type==='remrequest'){
+    
+     
+      
+      const user = await users.findOne({ _id: new ObjectId(userId as string) });
+
+      if(!user){
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
+
+     const userUpdatedRequests = user?.requestEvents || [];
+    const finalUserRequests = userUpdatedRequests.filter((e: any) => e.toString() !== eventId);
+
+
+    const eventUpdatedRequests = event?.requests || [];
+    const finalEventRequests = eventUpdatedRequests.filter((e: any) => e.toString() !== userId);
+
+      const userUpdateResult = await users.updateOne(
+            { _id: new ObjectId(userId as string) },
+            { $set: { requestEvents: finalUserRequests } }
+          );
+      
+          if (userUpdateResult.acknowledged) {
+
+            const eventUpdateResult = await events.updateOne(
+              { _id: new ObjectId(eventId as string) },
+              { $set: { requests:finalEventRequests } }
+            );
+      
+            if (eventUpdateResult.acknowledged) {
+              return NextResponse.json({ message: 'Request to participate declined successfully' }, { status: 200 });
+            } else {
+              return NextResponse.json({ error: 'Failed to decline request of participants' }, { status: 500 });
+            }
+          } else {
+            return NextResponse.json({ error: 'Failed to update status of user regarding event participation' }, { status: 500 });
+          }
+
+    }
+
+
+    
+    if(type==='addrequest'){
+    
+     
+      
+      const user = await users.findOne({ _id: new ObjectId(userId as string) });
+
+      if(!user){
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+
+     const userUpdatedRequests:ObjectId[] = user?.requestEvents || [];
+    const finalUserRequests:ObjectId[] =userUpdatedRequests.length>0? [...userUpdatedRequests, new ObjectId(eventId as string)]:[new ObjectId(eventId as string)];
+
+
+    const eventUpdatedRequests = event?.requests || [];
+    const finalEventRequests = eventUpdatedRequests.length>0? [...eventUpdatedRequests, new ObjectId(userId as string)]:[new ObjectId(userId as string)];
+
+      const userUpdateResult = await users.updateOne(
+            { _id: new ObjectId(userId as string) },
+            { $set: { requestEvents: finalUserRequests } }
+          );
+      
+          if (userUpdateResult.acknowledged) {
+
+            const eventUpdateResult = await events.updateOne(
+              { _id: new ObjectId(eventId as string) },
+              { $set: { requests:finalEventRequests } }
+            );
+      
+            if (eventUpdateResult.acknowledged) {
+              return NextResponse.json({ message: 'Request to participate declined successfully' }, { status: 200 });
+            } else {
+              return NextResponse.json({ error: 'Failed to decline request of participants' }, { status: 500 });
+            }
+          } else {
+            return NextResponse.json({ error: 'Failed to update status of user regarding event participation' }, { status: 500 });
+          }
 
     }
 

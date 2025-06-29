@@ -2,12 +2,12 @@
 
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople"
 
-import { useEffect, useState ,useRef} from "react"
+import { useState } from "react"
 import { ObjectId } from "mongoose";
 
 import EventCard from "@/components/eventCard/EventCard";
 import PostCard from "@/components/eventCard/PostCard";
-import { UserPost } from "@/components/eventCard/PostCard";
+
 ;
 
 import "./becommunity.css";
@@ -19,6 +19,18 @@ import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
 import { useUser } from "@clerk/nextjs";
 import ITeam from "@/models/Team";
+
+import {
+  useQuery,
+  useInfiniteQuery
+} from '@tanstack/react-query';
+
+import {
+  fetchEventPosts,
+  fetchUserPosts,
+  fetchTeamPosts,
+  fetchTopTeams
+} from "@/lib/fetchPosts";
 
 
 export interface EventPost {
@@ -51,89 +63,85 @@ export interface EventPost {
 
 const BeCommunity = () => {
 
-  const [eventPosts, setEventPosts] = useState<EventPost[]>([])
-  const [userPosts, setUserPosts] = useState<UserPost[]>([]);
-  const [teamPosts, setTeamPosts] = useState<any[]>([]);
-  const [topTeams,setTopTeams]=useState<ITeam[]>([]);
-  const [render, setRender] = useState<"posts" | "events" | "users" | "teams">("posts");
-
-
-  const [finalPosts, setFinalPosts] = useState<any[]>([]);
-  const [postsLoading, setPostsLoading] = useState<boolean>(true);
+  
+const [render, setRender] = useState<"posts" | "events" | "users" | "teams">("posts");
 
   const {user}=useUser();
+
+
 
   //const searchParams = useSearchParams();
   const mongoId = user?.publicMetadata?.mongoId as string
 
-  const [page, setPage] = useState(1); // Current page number
-  const [limit, setLimit] = useState(2); // Number of posts per page
-  const [hasMore, setHasMore] = useState(true); // To track if there are more posts to load
+// Fetch Top Teams (non-paginated)
+  const { data: topTeams = []} = useQuery({
+    queryKey: ['topTeams'],
+    queryFn: fetchTopTeams,
+  });
 
-  const fetchPostsCalled = useRef(false); // Prevent duplicate calls
-  
-  useEffect(() => {
+  // Infinite Event Posts
+  const {
+    data: eventPages,
+    fetchNextPage: fetchNextPageEvent,
+    hasNextPage: hasNextPageEvent,
+    isFetchingNextPage: isFetchingNextPageEvent,
+    status: eventStatus,
+    isLoading: isLoadingEvent
+  } = useInfiniteQuery({
+    queryKey: ['eventPosts'],
+    queryFn: ({ pageParam = 1 }) => fetchEventPosts({ page: pageParam, limit: 2 }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length < 2 ? undefined : allPages.length + 1,
+    refetchOnWindowFocus: false, 
+    staleTime: 1000 * 60 * 1, // 5 minutes
+  });
 
-    const fetchPosts = async () => {
-      
-      setPostsLoading(true);
-  
-      try {
-        const eventRes = await fetch(`/api/eventpost?page=${page}&limit=${limit}`, { method: "GET" });
-        const userRes = await fetch(`/api/userpost?page=${page}&limit=${limit}`, { method: "GET" });
-        const teamRes = await fetch(`/api/teampost?page=${page}&limit=${limit}`, { method: "GET" });
-        const topTeamRes = await fetch(`/api/team?type=topTeams`, { method: "GET" });
-  
-        const eventData = await eventRes.json();
-        const userData = await userRes.json();
-        const teamData = await teamRes.json();
-        const topTeamData = await topTeamRes.json();
-  
-        // Append new posts to existing ones for infinite scrolling
-        setEventPosts(prev => [...prev, ...eventData]);
-        setUserPosts(prev => [...prev, ...userData]);
-        setTeamPosts(prev => [...prev, ...teamData]);
-       setTopTeams(topTeamData);
-  
-        // Check if there are more posts to load
-        if (eventData.length < limit && userData.length < limit && teamData.length < limit ) {
-          setHasMore(false);
-        }
-  
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      } finally {
-      setPostsLoading(false);
-      }
-    };
-  
-    if (hasMore && !fetchPostsCalled.current) {
-      fetchPosts();
-      fetchPostsCalled.current = true
-    }
- 
-  }, [page]); // Trigger fetching when page changes
-  
-  // Function to load the next page
-  const loadMore = () => {
-    setPage(prev => prev + 1);
-    fetchPostsCalled.current = false;
-  };
+  // Same for user and team posts
+  const { data: userPages 
+    ,fetchNextPage: fetchNextPageUser,
+    hasNextPage: hasNextPageUser,
+    isFetchingNextPage: isFetchingNextPageUser,
+    isLoading: isLoadingUser,
+    status: userStatus
+  } = useInfiniteQuery({
+    queryKey: ['userPosts'],
+    queryFn: ({ pageParam = 1 }) => fetchUserPosts({ page: pageParam, limit: 2 }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length < 2 ? undefined : allPages.length + 1,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 1, // 1 minutes
+  });
 
+  const { data: teamPages 
+    ,fetchNextPage: fetchNextPageTeam,
+    hasNextPage: hasNextPageTeam,
+    isFetchingNextPage: isFetchingNextPageTeam,
+    status: teamStatus,
+    isLoading: isLoadingTeam
+  } = useInfiniteQuery({
+    queryKey: ['teamPosts'],
+    queryFn: ({ pageParam = 1 }) => fetchTeamPosts({ page: pageParam, limit: 2 }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length < 2 ? undefined : allPages.length + 1,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 1, // 1 minutes
+  });
 
-  useEffect(() => {
-    if (!eventPosts || !userPosts) return;
-    const finalPosts = [...eventPosts, ...userPosts, ...teamPosts];
-    finalPosts.sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
-    setFinalPosts(finalPosts);
-  }, [eventPosts, userPosts])
-
+  // Combine and sort posts
+  const finalPosts = [
+    ...(eventPages?.pages.flat() ?? []),
+    ...(userPages?.pages.flat() ?? []),
+    ...(teamPages?.pages.flat() ?? [])
+  ].sort((a, b) => (a?.createdAt ?? 0) > (b?.createdAt ?? 0) ? -1 : 1);
 
 
 
   return (
     <Layout>
-      <div className="bg bec relative min-h-screen">
+      <div className="bg bec relative min-h-screen pt-[100px]">
 
 
 
@@ -210,7 +218,7 @@ const BeCommunity = () => {
 
                 ))  */}
 
-                {postsLoading && <div>
+                {( isLoadingEvent ||isLoadingTeam || isLoadingUser) && <div>
                   <LoadingAnimation></LoadingAnimation>
                 </div>}
 
@@ -219,16 +227,21 @@ const BeCommunity = () => {
                     <PostCard post={post} />
                   </div>
                 ))}
-                {hasMore && (
-        <button
-          onClick={() => loadMore()}
-          className="load-more-btn bg-blue-500 text-white p-2 rounded mt-4 mx-auto block"
-        >
-          Load More
-        </button>
-      )}
+        {(hasNextPageEvent || hasNextPageTeam || hasNextPageUser) && (
+      <button
+        onClick={() => fetchNextPageEvent()
+          || fetchNextPageUser()
+          || fetchNextPageTeam()
+        }
+        className="load-more-btn bg-blue-500 text-white p-2 rounded mt-4 mx-auto block"
+      >
+        {isFetchingNextPageEvent || isFetchingNextPageTeam || isFetchingNextPageUser ? 'Loading...' : 'Load More'}
+      </button>
+    )}
 
-      {!hasMore && <p className="text-center mt-4">No more posts to load.</p>}
+    {(!hasNextPageEvent || !hasNextPageTeam || !hasNextPageUser) && (
+      <p className="text-center mt-4 text-sm text-gray-400">No more posts to load.</p>
+    )}
 
               </div>
             </div> : null}
@@ -243,7 +256,7 @@ const BeCommunity = () => {
 
                 ))*/}
 
-                {postsLoading && <div>
+                {( isLoadingEvent ||isLoadingTeam || isLoadingUser) && <div>
                   <LoadingAnimation></LoadingAnimation>
                 </div>}
 
@@ -253,19 +266,19 @@ const BeCommunity = () => {
                   </div>
                 
                 ))}
-                {hasMore && (
-        <button
-          onClick={() => {
-            loadMore();
-          
-          }}
-          className="load-more-btn bg-blue-500 text-white p-2 rounded mt-4 mx-auto block"
-        >
-          Load More
-        </button>
-      )}
+                 {(hasNextPageEvent || hasNextPageTeam || hasNextPageUser) && (
+      <button
+        onClick={() =>  fetchNextPageEvent()|| fetchNextPageUser() || fetchNextPageTeam()}
+        disabled={!hasNextPageEvent && !hasNextPageTeam && !hasNextPageUser}
+        className="load-more-btn bg-blue-500 text-white p-2 rounded mt-4 mx-auto block"
+      >
+        { isFetchingNextPageEvent || isFetchingNextPageTeam || isFetchingNextPageUser? 'Loading...' : 'Load More'}
+      </button>
+    )}
 
-      {!hasMore && <p className="text-center mt-4">No more posts to load.</p>}
+    { (!hasNextPageEvent || !hasNextPageTeam || !hasNextPageUser)&& (
+      <p className="text-center mt-4 text-sm text-gray-400">No more posts to load.</p>
+    )}
 
 
               </div>

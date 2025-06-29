@@ -7,8 +7,10 @@ import { SessionProvider } from "next-auth/react"
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from 'react-toastify'
 import Header from "@/components/header/header";
-import SubHeader from "@/components/SubHeader/SubHeader";
+
 import { EdgeStoreProvider } from "@/lib/edgeStoreRouter";
+import Providers from "./providers";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,6 +33,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <ClerkProvider>
       <html lang="en" className="dark">
@@ -39,10 +42,13 @@ export default function RootLayout({
         >
           <SessionProvider>
             <ToastContainer />
+           
+              <Providers>
             <EdgeStoreProvider>
               <Header/>
               {children}
             </EdgeStoreProvider>
+              </Providers>
             <ToastContainer />
           </SessionProvider>
 

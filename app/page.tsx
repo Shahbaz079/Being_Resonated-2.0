@@ -203,7 +203,7 @@ useEffect(() => {
         />
         <span className="text-orange-400 font-extrabold text-xl group-hover:tracking-widest transition-all duration-300">BEing Resonated</span>
       </div>
-      <nav className="hidden md:flex gap-8 text-white font-medium">
+      <nav className="hidden md:flex gap-8 text-white font-medium mr-[10vw]">
         {[
           { href: `/becommunity?id=${mongoId}`, label: "BeCommunity" },
           { href: `/academics`, label: "Academics" }

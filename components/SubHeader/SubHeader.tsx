@@ -11,14 +11,21 @@ import { IEvent } from '@/app/team/[id]/page'
 import Image from 'next/image'
 import SearchPage from '../search/Search'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
+import { useQuery } from '@tanstack/react-query'
 
+const fetchTeamsAndEvents = async (id: string):Promise<{ teams: ITeam[]; events: IEvent[]}> => {
+  const res = await fetch(`/api/currentperson?id=${id}&type=eandt`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!res.ok) throw new Error('Failed to fetch data')
+  return res.json()
+}
 
 const SubHeader = () => {
   const { user, isLoaded } = useUser();
   const mongoId = user?.publicMetadata.mongoId as string
-  const [teamIds, setTeamIds] = useState<string[] | null>(null);
-  const [teams, setTeams] = useState<ITeam[]>([]);
-  const [events, setEvents] = useState<IEvent[]>([]);
+
 
   const [teamModal, setTeamModal] = useState(false);
   const [eventModal, setEventModal] = useState(false);
@@ -30,38 +37,18 @@ const SubHeader = () => {
     setTeamModal(true)
   }
   
+  const { data:userData={teams:[],events:[]}, isLoading, error } = useQuery({
+  queryKey: ['teamsAndEvents', mongoId],
+  queryFn: () => fetchTeamsAndEvents(mongoId),
+  enabled: isLoaded && !!mongoId,
+  refetchOnWindowFocus: false, // optional: to avoid refetching on window focus
+  staleTime:1000*60*1 // optional: data will be considered fresh for 1 minute
+})
 
-  useEffect(() => {
-    const handleTeamsData = () => {
-      const fetchData = async () => {
-        if (isLoaded && user && mongoId) {
-          try {
-            const result = await fetch(`/api/currentperson?id=${mongoId}&type=eandt`, {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json' },
-            });
-            const data = await result.json();
-            setTeams(data.teams);
-            setEvents(data.events);
 
-            if (result.ok) {
-              console.log('teams & events retrieved successfully');
-            } else {
-              console.error('Failed to retrieve teams');
-            }
-          } catch (error) {
-            console.error('Error:', error);
-          }
-        }
-      }
-      fetchData();
-    }
-
-    handleTeamsData();
-  }, [isLoaded, user, mongoId]);
 
   return (
-    <div className='relative top-0 left-[4%] w-[65vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] my-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
+    <div className='fixed z-[990] top-0 left-[4%] right-[4%] pr-[35vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] mb-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
 
       <Link href={'/'}>
         <Home className="w-6 h-6" />
@@ -91,7 +78,7 @@ const SubHeader = () => {
           </DialogHeader>
 
           <div className='mt-5'>
-            {teams?.length > 0 && (teams?.map((team) => (
+            {userData?.teams?.length > 0 && (userData?.teams?.map((team) => (
             team._id && <div className="flex cursor-pointer p-2 rounded-xl justify-between items-center hover:bg-gray-700" key={team._id.toString()}>
               <div className="flex gap-4">
                 <div>
@@ -147,7 +134,7 @@ const SubHeader = () => {
             </DialogHeader>
 
             <div>
-              {events?.length > 0 && (events?.map((event) => (
+              {userData?.events?.length > 0 && (userData?.events?.map((event) => (
             event._id && <div className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer" key={event._id.toString()}>
               <div className="flex gap-4 flex-col  md:flex-row ">
                 <div>
