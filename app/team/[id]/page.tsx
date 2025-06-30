@@ -158,13 +158,13 @@ const TeamPage = () => {
                         </DialogHeader>
                       </DialogContent>
                     </Dialog>
-                    <Image
+                    {team && <Image
                       className="rounded-full h-40 w-40"
                       width={160}
                       height={160}
                       src={team?.image || '/default-image-path.jpg'}
-                      alt={team?.name!}
-                    />
+                      alt={team.name}
+                    />}
                   </div>
 
                   <div className="flex flex-col gap-3">
