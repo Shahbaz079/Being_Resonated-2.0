@@ -36,13 +36,13 @@ import { useQuery,useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 
-export const getEventById = async (id: string):Promise<IEvent> => {
+ const getEventById = async (id: string):Promise<IEvent> => {
   const res = await fetch(`/api/events?id=${id}`);
   if (!res.ok) throw new Error("Failed to fetch event data");
   return res.json();
 };
 
-export const acceptParticipant = async ({
+ const acceptParticipant = async ({
   eventId,
   userId,
 }: { eventId: string; userId: string }) => {
@@ -53,7 +53,7 @@ export const acceptParticipant = async ({
   if (!res.ok) throw new Error("Failed to accept participant");
 };
 
-export const removeParticipant = async ({
+ const removeParticipant = async ({
   eventId,
   participantId,
 }: { eventId: string; participantId: string }) => {
@@ -65,7 +65,7 @@ export const removeParticipant = async ({
   if (!res.ok) throw new Error("Failed to remove participant");
 };
 
-export const removeRequests = async ({
+const removeRequests = async ({
   eventId,
   requestId,
 }: { eventId: string; requestId:string }) => {
@@ -77,7 +77,7 @@ export const removeRequests = async ({
   if (!res.ok) throw new Error("Failed to update requests");
 };
 
-export const sendParticipationRequest = async ({
+ const sendParticipationRequest = async ({
   id,
   mongoId,
 }: { id: string; mongoId: string }) => {
