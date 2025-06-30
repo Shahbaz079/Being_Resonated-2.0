@@ -467,9 +467,9 @@ const { mutate: updateEvent } = useMutation({
               </div>
             </TabsContent>
             <TabsContent value="Posts">
-              {isLeader && <div>
+              {isLeader && eventData && <div>
                 
-                  <WhatsOnEventMind title={eventData?.team.toString()!} name={eventData?.name!} location={eventData?.location!} time={eventData?.time!} date={eventData?.date!} eventId={eventId!} />
+                  <WhatsOnEventMind title={eventData.team.toString()!} name={eventData.name!} location={eventData.location!} time={eventData.time!} date={eventData.date!} eventId={eventId!} />
               </div>}
               {eventData?.posts?.map((userPost) => (
                     <div className="" key={userPost._id?.toString()}>

@@ -242,15 +242,15 @@ export async function PUT(request: NextRequest) {
       }
 
       const updatedParticipations = user?.participations || [];
-    const finalParticipations=updatedParticipations.filter((e:any)=>{
+    const finalParticipations=updatedParticipations.filter((e:any)=>(
             e.toString()!==eventId
-          })
+    ))
 
       const updatedParticipated = event?.participated || [];
     
-    const finalParticipated = updatedParticipated.filter((e:any)=>{
+    const finalParticipated = updatedParticipated.filter((e:any)=>(
       e.toString()!==userId
-    })
+    ))
 
 
       const userUpdateResult = await users.updateOne(

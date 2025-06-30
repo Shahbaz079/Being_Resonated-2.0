@@ -318,7 +318,7 @@ const TeamPage = () => {
                   <TeamMembersCard members={team?.members ?? []} />
                 </TabsContent>
                 <TabsContent value="posts">
-                  {isLeader && <WhatsOnTeamMind id={id!} title={team?.name!} />}
+                  {isLeader&& team && <WhatsOnTeamMind id={id!} title={team.name!} />}
                   {team?.posts.map(post => <PostCard key={post._id} post={post} />)}
                 </TabsContent>
               </Tabs>

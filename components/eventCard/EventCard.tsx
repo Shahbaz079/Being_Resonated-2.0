@@ -97,9 +97,25 @@ const { mutate: participateInEvent } = useMutation({
 const isParticipated = participationData?.participations?.includes(eventId)
 const isRequested = participationData?.eventRequests?.includes(eventId)
 
-const date = new Date(event?.dateTime!);
-const readableDate = date.toLocaleDateString();
-const readableTime = date.toLocaleTimeString().slice(0, 4); // Format to HH:MM
+if (!event?.dateTime) {
+  throw new Error("Missing event dateTime");
+}
+
+const date = new Date(event.dateTime);
+
+// Format date and time safely
+const readableDate = date.toLocaleDateString("en-IN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const readableTime = date.toLocaleTimeString("en-IN", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
+
 
 
           return(
