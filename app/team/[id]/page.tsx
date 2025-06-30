@@ -88,6 +88,10 @@ const TeamPage = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
 
+  if(!id){
+    throw new Error("Team ID is required");
+  }
+
   const { data: team, isLoading } = useQuery({
     queryKey: ['team', id],
     queryFn: () => fetchTeamData(id!),
@@ -318,7 +322,7 @@ const TeamPage = () => {
                   <TeamMembersCard members={team?.members ?? []} />
                 </TabsContent>
                 <TabsContent value="posts">
-                  {isLeader&& team && <WhatsOnTeamMind id={id!} title={team.name!} />}
+                  {isLeader&& team && id && <WhatsOnTeamMind id={id!} title={team.name!} />}
                   {team?.posts.map(post => <PostCard key={post._id} post={post} />)}
                 </TabsContent>
               </Tabs>
