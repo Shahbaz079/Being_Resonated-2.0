@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
 
     const posts = event?.posts ? await eventPosts.find(
       { _id: { $in: event?.posts } }
-    ).toArray() : [];
+    ).sort({createdAt:-1}).toArray() : [];
 
     const finalPosts = await Promise.all(
       posts.map(async (post) => {

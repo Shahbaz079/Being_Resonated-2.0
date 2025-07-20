@@ -10,7 +10,7 @@ const rateLimiter = new RateLimiterMemory({
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/(api|trpc)(.*)"],
 };
 
 // Helper function to extract IP
@@ -60,7 +60,7 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   const clientIp = getClientIp(req); // Extract client IP
-  // Rate Limiter check
+  // Rate Limiter 
 
 
   try {
@@ -75,7 +75,7 @@ export default clerkMiddleware(async (auth, req) => {
   const decision = await aj.protect(req);
 
   if(isProtectedRoute(req) || decision.isDenied()) {
-    const {userId}=getAuth(req)
+  const { userId } =await auth();
     
     // Get email if available
 

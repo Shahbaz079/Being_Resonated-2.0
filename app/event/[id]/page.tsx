@@ -12,7 +12,7 @@ import { IEvent } from "@/app/team/[id]/page";
 import { FaLocationDot, FaMarkdown } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import { IoTimeOutline } from "react-icons/io5";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, TeamMembersCard } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
@@ -244,20 +244,23 @@ const { mutate: updateEvent } = useMutation({
 })
 
 
-
+if(isLoading || !isLoaded) {
+  return <div className="mt-44 min-h-screen ">
+    <LoadingAnimation></LoadingAnimation>
+  </div>
+}
 
 
   return (
 
     <Layout>
-    <div className="bg min-h-screen flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
+    <div className="mt-8 bg min-h-screen flex flex-col gap-5 px-40 ctab:px-12 cphone:px-4">
 
       
 
-      {isLoading && <div className="mt-44">
-        <LoadingAnimation></LoadingAnimation></div>}
+      
 
-      {!isLoading && <Card className="glass mt-10 animate-slide-top">
+       <Card className="glass mt-10 animate-slide-top">
         <CardHeader>
           <div className="relative h-fit w-fit">
             {isLeader &&
@@ -275,7 +278,11 @@ const { mutate: updateEvent } = useMutation({
                     <div className="flex flex-col">
                       <Label>Upload Image</Label>
                       <input type="file" className="mt-4" onChange={handleFileChange}></input>
-                      <Button onClick={() => handleUpload()} variant={"default"} className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Save</Button>
+                      <Button onClick={() => handleUpload()} variant={"default"} 
+                      disabled={!file || uploadMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700 w-20 right-0 self-end">
+                        {uploadMutation.isPending ? "Uploading..." : "Upload"}
+                        </Button>
                     </div>
                   </div>
                 </DialogContent>
@@ -387,15 +394,17 @@ const { mutate: updateEvent } = useMutation({
               <div className="flex space-x-2">
                 <Button
                   className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 text-sm"
+                  disabled={acceptParticipantMutation.isPending}
                   onClick={() => acceptRequestHandler(participant)}
                 >
-                  Accept
+                  {acceptParticipantMutation.isPending ? "Accepting..." : "Accept"}
                 </Button>
                 <Button
                   className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm"
+                  disabled={declineRequestMutation.isPending}
                   onClick={() => removeRequestHandler(participant)}
                 >
-                  Remove
+                  {declineRequestMutation.isPending ? "Declining..." : "Decline"}
                 </Button>
               </div>
             </div>
@@ -428,9 +437,10 @@ const { mutate: updateEvent } = useMutation({
               </div>
               <Button
                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm"
+                disabled={removeParticipantMutation.isPending}
                 onClick={() => removeParticipantHandler(participant)}
               >
-                Remove
+                {removeParticipantMutation.isPending ? "Removing..." : "Remove"}
               </Button>
             </div>
           ))}
@@ -448,10 +458,10 @@ const { mutate: updateEvent } = useMutation({
           <Button onClick={() => handleParticipation()} variant={"default"} className="ml-4 bg-green-600 hover:bg-green-700 w-20 right-0 self-end">Participate</Button>
         </CardFooter>
 
-      </Card>}
+      </Card>
 
 
-      {!isLoading && <Card className="glass animate-slide-top">
+      <Card className="glass animate-slide-top">
         <CardHeader>
           <Tabs defaultValue="Organisers">
             <TabsList className="flex items-center justify-center bg-transparent flex-wrap h-auto space-y-1">
@@ -461,9 +471,8 @@ const { mutate: updateEvent } = useMutation({
             </TabsList>
             <TabsContent value="Organisers" className="mt-7">
               <div className="flex gap-3 flex-wrap">
-                {eventData?.leaders?.map((leader) => (
-                  <OrganiserCard key={leader.email.toString()} number="+91 7908529703" name={leader.name} email={leader.email}></OrganiserCard>
-                ))}
+
+                {eventData && <TeamMembersCard members={eventData.leaders!}/>}
               </div>
             </TabsContent>
             <TabsContent value="Posts">
@@ -478,58 +487,20 @@ const { mutate: updateEvent } = useMutation({
                   ))}
               
             </TabsContent>
-            <TabsContent value="Members"></TabsContent>
+            <TabsContent value="EventMembers">
+              <div className="flex gap-3 flex-wrap">
+                {eventData && <TeamMembersCard members={eventData.members!} />}
+              </div>
+            </TabsContent>
           </Tabs>
         </CardHeader>
-      </Card>}
-
-      {/**  !loading && <Card className="glass animate-slide-top">
-        <CardHeader>
-          <CardTitle className="text-2xl text-cyan-200">Rewards</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 flex-wrap">
-            <PrizeCard position="Winner" content="Asus Keyboard + Mouse + 5000 Rs"></PrizeCard>
-            <PrizeCard position="First Runner Up" content="Asus Keyboard + Mouse"></PrizeCard>
-            <PrizeCard position="Second Runner Up" content="2 month Leetcode Prime"></PrizeCard>
-            <PrizeCard position="Fastest Coding Team" content="Headphones"></PrizeCard>
-          </div>
-        </CardContent>
-      </Card> */}
-
-
-
-
-
+      </Card>
 
     </div >
     </Layout>
   );
 }
 
-const OrganiserCard = ({ name, email, number }: { name: string, email: string, number: string }) => (
-  <div className="h-fit hover:bg-accent w-fit p-3 rounded-xl">
-    <h1 className="text-xl">{name}</h1>
-    <p className="mt-1 text-sm text-gray-400">{email}</p>
-  </div>
-)
-
-const AttachmentCard = ({ name }: { name: string }) => (
-  <div className="border-2 flex items-center text-lg gap-5 hover:bg-accent w-fit px-3 py-2 rounded-xl hover:cursor-pointer">
-    <RiAttachment2 className="mt-[2px]"></RiAttachment2>
-    <span>{name}</span>
-  </div>
-)
-
-const PrizeCard = ({ position, content }: { position: string, content: string }) => (
-  <div className="hover:bg-slate-700 border-2 border-cyan-700 p-4 cursor-pointer rounded-xl flex items-center w-fit max-w-[400px] gap-4">
-    <div>
-      <h1 className="text-2xl text-wrap">{position}</h1>
-      <p className="mt-2 text-gray-400">{content}</p>
-    </div>
-    <HiMiniTrophy className="h-20 w-20"></HiMiniTrophy>
-  </div>
-)
 
 
 

@@ -3,9 +3,9 @@
 
 import { useState, Suspense,useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useUser, useSession } from "@clerk/nextjs";
+import { useUser} from "@clerk/nextjs";
 import Image from "next/image";
-import Link from "next/link";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import Layout from "@/components/customLayouts/Layout";
@@ -19,6 +19,8 @@ import { Card, CardHeader } from "@/components/ui/card";
 import AllInterests from "./allInterests";
 import "./user.css";
 import { SlOptions } from "react-icons/sl";
+import Link from "next/link";
+import { IoArrowBack } from "react-icons/io5";
 
 const fetchUser = async (id: string) => {
   const res = await fetch(`/api/user?id=${id}`);
@@ -116,7 +118,7 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen flex flex-col items-center p-2">
+      <div className="min-h-screen relative flex flex-col items-center p-2">
         {owner && !edit && (
           <button
             onClick={() => setEdit(true)}
@@ -126,44 +128,65 @@ const ProfilePage = () => {
           </button>
         )}
 
-        <div className="animate-slide-top glass rounded-xl w-full text-gray-300 h-fit mt-[10vh] flex flex-col max-w-[600px] items-center py-2">
-          <div className="w-[120px] h-[120px] mt-3 relative">
-            {userData?.image && (
-              <Image className="rounded-full" alt={userData.name} src={userData.image} layout="fill" />
-            )}
-          </div>
+         {/* Back Button */}
+ <Link
+         href={`/becommunity`}
+         className="z-10 absolute top-[15vh] left-[10vw] flex items-center gap-2 bg-white/10 hover:bg-white/20 text-cyan-200 px-4 py-2 rounded-full shadow-md transition-all duration-200 backdrop-blur-md border border-cyan-300/20"
+       >
+         <IoArrowBack className="text-lg" />
+         <span className="hidden sm:inline text-sm font-medium">Back</span>
+       </Link>
+          
 
-          <div className="w-fit flex flex-col">
-            <div className="text-5xl capitalize text-center text-cyan-200 font-semibold mt-3">
-              {userData?.name}
-            </div>
-            <p className="mt-3 text-lg text-center">{userData?.gradYear || null}</p>
+        <div className="relative animate-slide-top glass rounded-2xl w-full max-w-[600px] mx-auto text-gray-300 mt-[10vh] flex flex-col items-center p-6 shadow-xl backdrop-blur-md bg-white/5 border border-cyan-400/10 transition-all duration-300">
 
-            <div className="w-full flex p-2">
-              {userData?.interests?.length ? (
-                <div className="gap-3 flex mt-7 flex-wrap justify-center w-full">
-                  {userData.interests.slice(0, 4).map((interest: string, index: number) => (
-                    <InterestTag key={index} interest={interest} />
-                  ))}
-                  {userData.interests.length > 4 && (
-                    <ShowMoreInterestTag setShowAllInterests={setShowAllInterests} />
-                  )}
-                </div>
-              ) : (
-                <p className="mt-5 text-gray-400">No interests selected yet!</p>
-              )}
-            </div>
+ 
 
-            <p className="mt-5 text-center">{userData?.description}</p>
+  {/* Profile Image */}
+  <div className="w-[120px] h-[120px] mt-2 relative">
+    {userData?.image && (
+      <Image
+        className="rounded-full border-2 border-cyan-300 object-cover"
+        alt={userData.name}
+        src={userData.image}
+        layout="fill"
+      />
+    )}
+  </div>
 
-            {owner && (
-              <Link href={`/teamcreate?id=${id}`} className="bg-green-700 px-4 py-2 w-fit mx-auto rounded-lg my-3 mt-5">
-                Create Team
-              </Link>
-            )}
-          </div>
-        </div>
+  {/* User Info */}
+  <div className="w-full flex flex-col items-center mt-4 text-center">
+    <h1 className="text-4xl sm:text-5xl capitalize font-bold text-cyan-200 tracking-wide">
+      {userData?.name}
+    </h1>
+    {userData?.gradYear && (
+      <p className="mt-2 text-lg text-gray-400">{userData.gradYear}</p>
+    )}
+  </div>
 
+  {/* Interests */}
+  <div className="w-full flex justify-center px-4 mt-6">
+    {userData?.interests?.length ? (
+      <div className="flex flex-wrap gap-3 justify-center w-full">
+        {userData.interests.slice(0, 4).map((interest: string, index: number) => (
+          <InterestTag key={index} interest={interest} />
+        ))}
+        {userData.interests.length > 4 && (
+          <ShowMoreInterestTag setShowAllInterests={setShowAllInterests} />
+        )}
+      </div>
+    ) : (
+      <p className="mt-5 text-gray-500">No interests selected yet!</p>
+    )}
+  </div>
+
+  {/* Description */}
+  {userData?.description && (
+    <p className="mt-6 text-center text-sm sm:text-base text-gray-300 px-4">
+      {userData.description}
+    </p>
+  )}
+</div>
         <Card className="animate-slide-top bg-transparent border-0 w-full mt-7 p-0">
           <CardHeader className="p-0">
             <Tabs defaultValue="Posts">
@@ -203,6 +226,7 @@ const ProfilePage = () => {
               handleUpdate={(interests, desc) =>
                 updateMutation.mutate({ changedInterests: interests, changedDescription: desc })
               }
+              uploading={updateMutation.isPending}
             />
           </DialogContent>
         </Dialog>

@@ -6,6 +6,7 @@ interface PropsType {
   handleUpdate: (interests: string[], description: string) => void;
   currentInterests: string[];
   currentUserDescription: string;
+  uploading?: boolean;
 }
 
 const predefinedOptions =[
@@ -174,6 +175,7 @@ const Form = ({
   handleUpdate,
   currentInterests,
   currentUserDescription,
+  uploading
 }: PropsType) => {
   const [interests, setInterests] = useState<string[]>(currentInterests);
   const [currentInterest, setCurrentInterest] = useState<string>(""); // For the interest user is currently typing.
@@ -254,8 +256,9 @@ const Form = ({
           className="w-20 p-2 rounded-xl self-end bg-green-900"
           type="submit"
           onClick={() => handleUpdate(interests, userDescription)}
+          disabled={uploading}
         >
-          Save
+          {uploading ? "Updating..." : "Update"}
         </button>
       </div>
     </form>

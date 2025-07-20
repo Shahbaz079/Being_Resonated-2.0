@@ -13,6 +13,7 @@ export interface IUser {
   _id: mongoose.Schema.Types.ObjectId,
   name: string;
   email: string;
+  description?: string;
   dob?: Date;
   gradYear?: number;
   password?: string;

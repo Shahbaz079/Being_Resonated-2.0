@@ -1,17 +1,13 @@
 'use client'
 
 import SimPeopleWithSuspense from "@/components/commonPeople/SimPeople"
-
+import Link from "next/link";
 import { useState } from "react"
 import { ObjectId } from "mongoose";
 
 import EventCard from "@/components/eventCard/EventCard";
 import PostCard from "@/components/eventCard/PostCard";
-
-;
-
 import "./becommunity.css";
-
 import Layout from "@/components/customLayouts/Layout";
 import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import { redirect } from "next/navigation";
@@ -31,6 +27,7 @@ import {
   fetchTeamPosts,
   fetchTopTeams
 } from "@/lib/fetchPosts";
+import Image from "next/image";
 
 
 export interface EventPost {
@@ -175,17 +172,26 @@ const [render, setRender] = useState<"posts" | "events" | "users" | "teams">("po
             </div> : null}
 
 
-            {render === "teams" ? <div className="w-[500px] glass mx-1 rounded-2xl h-fit min-w-[300px] mt-3 cbecomn:hidden pb-3">
-              <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
-              {
-                topTeams.map((team)=>(
-                  <TeamCard {...team} key={team?._id?.toString()}></TeamCard>
-                ))
+            {render === "teams" ? (
+  <div className="w-full max-w-[500px] glass mx-2 rounded-2xl mt-4 cbecomn:hidden pb-5 shadow-xl border border-cyan-900/30 backdrop-blur-lg">
+    <h1 className="text-center text-xl font-bold text-cyan-200 py-4 border-b border-cyan-800/50">
+      📈 Trending Teams
+    </h1>
 
-              }
-                
-              </div> : null
-            }
+    <Link
+      href={`/teamcreate?id=${mongoId}`}
+      className="block mx-auto w-[90%] text-center bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 transition-all duration-300 text-white font-semibold rounded-xl py-2 mt-5 mb-4 shadow-md hover:shadow-lg"
+    >
+      ➕ Create a New Team
+    </Link>
+
+    <div className="space-y-3 px-3">
+      {topTeams.map((team) => (
+        <TeamCard {...team} key={team?._id?.toString()} />
+      ))}
+    </div>
+  </div>
+) : null}
 
             <div>
               <div className="glass rounded-2xl h-fit min-w-[300px] mt-3 cbecom:hidden">
@@ -193,14 +199,22 @@ const [render, setRender] = useState<"posts" | "events" | "users" | "teams">("po
                 <EventCard uId={mongoId as string} />
               </div>
 
-              <div className="glass rounded-2xl h-fit min-w-[300px] mt-3 cbecom:hidden pb-3">
-                <h1 className="text-center p-3 text-cyan-200 font-semibold text-base">Teams</h1>
-                {
-                topTeams.map((team)=>(
-                  <TeamCard {...team}  key={team?._id?.toString()}></TeamCard>
-                ))
-
-              }
+              <div className="glass rounded-2xl h-fit min-w-[300px] mt-3 cbecom:hidden 
+              pb-6 px-4 shadow-xl backdrop-blur-lg border border-cyan-500/20 transition-all duration-300
+              ">
+                <h1 className="text-center py-4 text-cyan-100 font-bold text-lg tracking-wide border-b border-cyan-400/30">📈 Trending Teams</h1>
+                
+             <div className="space-y-4">
+    {topTeams.map((team) => (
+      <TeamCard {...team} key={team?._id?.toString()} />
+    ))}
+  </div>
+  <Link
+    href={`/teamcreate?id=${mongoId}`}
+    className="block w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-semibold rounded-xl py-2 mt-6 mb-5 text-center shadow-md hover:shadow-lg transition-all duration-300"
+  >
+    ➕ Create Team
+  </Link>
               </div>
             </div>
 
@@ -317,11 +331,14 @@ const BeCommunityWithSuspense = () => (
 const TeamCard = (team:ITeam)=> {
   return (
     <div className="w-full px-4 py-1">
-      <div className="rounded-lg flex flex-row justify-start gap-5 items-center p-3 cursor-pointer transform transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-700" onClick={()=>redirect(`/team/${team._id}?id=${team._id}`)}>
-          <img src={team.image} alt={team.name} className="w-[50px] h-[50px] rounded-full" />
+      <Link className="rounded-lg flex flex-row justify-start gap-5 items-center p-3 cursor-pointer transform transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-700"
+      href={`/team/${team._id}?id=${team._id}`}
+      >
+          <Image src={team.image || "/default-image-path.jpg"} alt={team.name ||"team Img"} width={50} height={50} className=" rounded-full" />
           <span className="">{team.name}</span>
+          </Link>
       </div>
-    </div>
+    
   )
 }
 

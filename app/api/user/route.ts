@@ -74,61 +74,77 @@ export async function PUT(req:NextRequest){
 
    export async function GET(request: NextRequest) {
 
-              let client: MongoClient | null = null;
-               try { 
-                const { searchParams } = new URL(request.url);
-                const id = searchParams.get('id') as string;
+let client: MongoClient | null = null;
+try { 
+const { searchParams } = new URL(request.url);
+const id = searchParams.get('id') as string;
 
-                const type=searchParams.get('type') as string;
+const type=searchParams.get('type') as string;
 
-                  // Extract `id` from query params
-                  if (!ObjectId.isValid(id)) { 
-                   return NextResponse.json({ error: 'Invalid team ID' }, { status: 400 }); }
-                    client = new MongoClient(uri!);
-                     // Use non-null assertion to ensure uri is defined await
-                      client.connect();
-                       const db = client.db(dbName!); 
-                       // Use non-null assertion to ensure dbName is defined 
-                       const users = db.collection('users'); 
-                      
-                      
-                       const userPosts = db.collection('userposts');
+// Extract `id` from query params
+if (!ObjectId.isValid(id)) { 
+return NextResponse.json({ error: 'Invalid team ID' }, { status: 400 }); }
+client = new MongoClient(uri!);
+// Use non-null assertion to ensure uri is defined await
+client.connect();
+  const db = client.db(dbName!); 
+  // Use non-null assertion to ensure dbName is defined 
+  const users = db.collection('users'); 
 
 
+  const userPosts = db.collection('userposts');
 
-                       const user = await users.findOne({ _id: new ObjectId(id) }, {projection:{name:1,description:1,email:1,gradYear:1,interests:1,image:1,posts:1}});
-                        if (!user) {
-                          return NextResponse.json({ error: 'User not found' }, 
-                           { status: 404 });
-                          }
 
-                    
-                          let posts:any[]=[];
-                          
-                        
-                          
-                          if(user?.posts){
-                            const postIds=user.posts;
-                            const finalIds=postIds.map((id:string)=>new ObjectId(id));
-                            posts=await userPosts.find({_id:{$in:finalIds}}).toArray();
-                          }
 
-                          
-                          
-                        
-                         user.posts=posts;
+  const user = await users.findOne({ _id: new ObjectId(id) }, {projection:{name:1,description:1,email:1,gradYear:1,interests:1,image:1,posts:1}});
+  if (!user) {
+    return NextResponse.json({ error: 'User not found' }, 
+      { status: 404 });
+    }
 
-                          return NextResponse.json(user);
-                          } catch (error) {
-                            console.error('Error:', error);
-                             return NextResponse.json({ error: 'Failed to fetch currrent User' },
-                                { status: 500 }); } 
-                                finally {
 
-                                 if (client) {
-                                   await client.close(); 
-                                  }
-                                 } }
+    let finalPosts:any[]=[];
+    
+  
+    
+    if(user?.posts){
+
+
+      const postIds=user.posts;
+      const finalIds=postIds.map((id:string)=>new ObjectId(id));
+
+      const posts=await userPosts.find({_id:{$in:finalIds}}).sort({createdAt:-1}).toArray();
+
+      finalPosts = await Promise.all(
+      posts.map(async (post) => {
+        
+  
+          post.likes = post?.likes ? await users.find(
+            { _id: { $in: post?.likes } },
+            { projection: { _id:1,image:1,name:1 } }
+          ).toArray() : [];
+  
+          return { ...post };
+        })
+      );
+    }
+
+    
+    
+  
+    user.posts=finalPosts;
+
+    return NextResponse.json(user);
+    } catch (error) {
+      console.error('Error:', error);
+        return NextResponse.json({ error: 'Failed to fetch currrent User' },
+          { status: 500 }); } 
+          finally {
+
+            if (client) {
+              await client.close(); 
+            }
+            } }
 
 
 

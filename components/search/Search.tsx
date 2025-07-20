@@ -53,7 +53,7 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
   }, [debouncedSearchTerm]);
 
   return (
-    <div className='relative'>
+    <div className='relative z-50'>
       <Input
         type="text"
         value={searchTerm}
@@ -62,7 +62,7 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
         placeholder="Search users, events, teams"
         className='w-[35vw] h-12'
       />
-      <div className='absolute spglass z-[50] w-[500px] max-h-[500px] ctab:w-[400px] cphone:w-[100vw] cphone:fixed cphone:left-0 mt-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-cyan-300 scrollbar-track-transparent'>
+      <div className='absolute bg-[#24b1adec] z-[100] rounded-lg w-[500px] max-h-[500px] ctab:w-[400px] cphone:w-[100vw] cphone:fixed cphone:left-0 mt-2 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-transparent'>
 
         <ul className='flex flex-col'>
           {results?.users?.map((user: any) => (

@@ -48,7 +48,7 @@ const SubHeader = () => {
 
 
   return (
-    <div className='fixed z-[990] top-0 left-[4%] right-[4%] pr-[35vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] mb-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
+    <div className='fixed z-[990] top-2 left-[4%] right-[4%] pr-[35vw] bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg h-[8vh] mb-4 rounded-xl items-center text-white flex flex-row justify-between px-4'>
 
       <Link href={'/'}>
         <Home className="w-6 h-6" />

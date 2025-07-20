@@ -37,133 +37,160 @@ export async function POST(request: NextRequest) {
           const result = await teams.insertOne(team);
            if (result.acknowledged) { 
             // Perform additional actions if needed
-             await Promise.all(
-              members.map(async (member: { _id: string }) => { 
-                const users = db.collection('users'); 
-                const user = await users.findOne({ _id: new ObjectId(member._id) });
-                 if (user) {
-                   const updatedTeams = user.teams || []; 
-                   updatedTeams.push(result.insertedId);
-                    await users.updateOne( { _id: new ObjectId(member._id) },
-                     { $set: { teams: updatedTeams } } );
-                     } })); } 
-                     return NextResponse.json(result); } 
-                     catch (error) { 
-                      console.error('Error:', error);
-                       return NextResponse.json({ error: 'Failed to insert team' }, { status: 500 });
-                       } finally {
-                         if (client) {
-                           await client.close(); 
-                          } } }
+  await Promise.all(
+  members.map(async (member: { _id: string }) => { 
+    const users = db.collection('users'); 
+    const user = await users.findOne({ _id: new ObjectId(member._id) });
+      if (user) {
+        const updatedTeams = user.teams || []; 
+        updatedTeams.push(result.insertedId);
+        await users.updateOne( { _id: new ObjectId(member._id) },
+          { $set: { teams: updatedTeams } } );
+          } })); } 
+          return NextResponse.json(result); } 
+          catch (error) { 
+          console.error('Error:', error);
+            return NextResponse.json({ error: 'Failed to insert team' }, { status: 500 });
+            } finally {
+              if (client) {
+                await client.close(); 
+              } } }
 
 
                         export async function GET(request: NextRequest) {
-                             let client: MongoClient | null = null;
-                             const type=request.nextUrl.searchParams.get('type') as string;
-                             
-                             if(type==='topTeams'){
+let client: MongoClient | null = null;
+const type=request.nextUrl.searchParams.get('type') as string;
 
-                              try {
-                                client = new MongoClient(uri!);
-                                // Use non-null assertion to ensure uri is defined await
-                                 client.connect();
-                                  const db = client.db(dbName!); 
-                                  // Use non-null assertion to ensure dbName is defined 
+if(type==='topTeams'){
 
-                                  const teams=db.collection('teams')
+try {
+  client = new MongoClient(uri!);
+  // Use non-null assertion to ensure uri is defined await
+    client.connect();
+    const db = client.db(dbName!); 
+    // Use non-null assertion to ensure dbName is defined 
 
-                                  const allTeams = await teams.aggregate([
-                                    {
-                                      $addFields: {
-                                        memberCount: { $size: "$members" }
-                                      }
-                                    },
-                                    {
-                                      $sort: { memberCount: -1 }
-                                    }
-                                  ]).toArray();
-                              
-                                
+    const teams=db.collection('teams')
 
-                                  return NextResponse.json(allTeams);
+    const allTeams = await teams.aggregate([
+      {
+        $addFields: {
+          memberCount: { $size: "$members" }
+        }
+      },
+      {
+        $sort: { memberCount: -1 }
+      },
+     { $project:{
+        _id: 1,
+        name: 1,
+        description: 1,
+        image: 1,
+        memberCount: 1
+      }
+    }
+      ,
+      {
+        $limit: 3
+      }
+    ]).toArray();
 
-                              } catch (error) {
-                                console.error('Error:', error);
-                                return NextResponse.json({ error: 'Failed to fetch team' },
-                                   { status: 500 });
-                                
-                              }finally { 
-                                if (client) { await client.close(); }
-                               }
+  
+
+    return NextResponse.json(allTeams);
+
+} catch (error) {
+  console.error('Error:', error);
+  return NextResponse.json({ error: 'Failed to fetch team' },
+      { status: 500 });
+  
+}finally { 
+  if (client) { await client.close(); }
+  }
 
 
-                             }else{
-                             
-                              try { 
-                               const id = request.nextUrl.searchParams.get('id') as string;
-                                // Extract `id` from query params
-                                 if (!ObjectId.isValid(id)) { 
-                                  return NextResponse.json({ error: 'Invalid team ID' }, { status: 400 }); }
-                                   client = new MongoClient(uri!);
-                                    // Use non-null assertion to ensure uri is defined await
-                                     client.connect();
-                                      const db = client.db(dbName!); 
-                                      // Use non-null assertion to ensure dbName is defined 
+}else{
 
-                                      const users=db.collection('users')
-                                      const teams = db.collection('teams'); 
-                                      const teamPosts=db.collection('teamposts');
+try { 
+  const id = request.nextUrl.searchParams.get('id') as string;
+  // Extract `id` from query params
+    if (!ObjectId.isValid(id)) { 
+    return NextResponse.json({ error: 'Invalid team ID' }, { status: 400 }); }
+      client = new MongoClient(uri!);
+      // Use non-null assertion to ensure uri is defined await
+        client.connect();
+        const db = client.db(dbName!); 
+        // Use non-null assertion to ensure dbName is defined 
 
-                                      const events=db.collection('events');
+        const users=db.collection('users')
+        const teams = db.collection('teams'); 
+        const teamPosts=db.collection('teamposts');
 
-                                      const team = await teams.findOne({ _id: new ObjectId(id) });
-                                       if (!team) {
-                                         return NextResponse.json({ error: 'Team not found' }, 
-                                          { status: 404 });
-                                         }
-                                         let teamMembers:any[]=[];
-                                         let teamLeaders:any[]=[]; 
-                                         let teamCreator;
-                                         let teamEvents:any[]=[];
-                                         let requests:any[]=[];
-                                         let posts:any[]=[];
-                                         if(team?.members){
-                                            teamMembers=await users.find({_id:{$in:team?.members}},{ projection: { password: 0, teams: 0, events: 0 } }).toArray();
-                                         }
-                                         if(team?.leaders){
-                                           teamLeaders=await users.find({_id:{ $in:team?.leaders}},{ projection:{password: 0, teams: 0,events:0} }).toArray();
+        const events=db.collection('events');
 
-                                            teamCreator=await users.findOne({_id:team.createdBy},{ projection: { password: 0 ,teams: 0,events:0} })
+        const team = await teams.findOne({ _id: new ObjectId(id) });
+          if (!team) {
+            return NextResponse.json({ error: 'Team not found' }, 
+            { status: 404 });
+            }
+            let teamMembers:any[]=[];
+            let teamLeaders:any[]=[]; 
+            let teamCreator;
+            let teamEvents:any[]=[];
+            let requests:any[]=[];
+            let finalPosts:any[]=[];
+            if(team?.members){
+              teamMembers=await users.find({_id:{$in:team?.members}},{ projection: { password: 0, teams: 0, events: 0,email:0,createdAt:0, updatedAt:0,interests:0,posts:0,participations:0,requestEvents:0,requestTeams:0 } }).toArray();
+            }
+            if(team?.leaders){
+              teamLeaders=await users.find({_id:{ $in:team?.leaders}},{ projection:{password: 0, teams: 0,events:0} }).toArray();
 
-                                         }
+              teamCreator=await users.findOne({_id:team.createdBy},{ projection: { password: 0 ,teams: 0,events:0} })
 
-                                         if(team?.events){
-                                          teamEvents=await events.find({_id:{$in:team?.events}}).toArray();
-                                         }
+            }
 
-                                         if(team?.requests){
-                                          requests=await users.find({_id:{$in:team?.requests}},{ projection: { password: 0, teams: 0, events: 0 } }).toArray();
-                                         }
-                                         if(team?.posts){
-                                          posts=await teamPosts.find({_id:{$in:team?.posts}}).toArray();
-                                         }
+            if(team?.events){
+            teamEvents=await events.find({_id:{$in:team?.events}}).toArray();
+            }
 
-                                         team.members=teamMembers
-                                         team.leaders=teamLeaders;
-                                         team.createdBy=teamCreator;
-                                         team.events=teamEvents;
-                                         team.requests=requests;
-                                         team.posts=posts;
-                                         
-                                         return NextResponse.json(team);
-                                         } catch (error) {
-                                           console.error('Error:', error);
-                                            return NextResponse.json({ error: 'Failed to fetch team' },
-                                               { status: 500 }); } finally { 
-                                                if (client) { await client.close(); } }
-                                              
-                                               }
-                                              }
+            if(team?.requests){
+            requests=await users.find({_id:{$in:team?.requests}},{ projection: { password: 0, teams: 0, events: 0 } }).toArray();
+            }
+            if(team?.posts){
+            const posts=await teamPosts.find({_id:{$in:team?.posts}}).sort({createdAt:-1}).toArray();
+            
+
+            finalPosts = await Promise.all(
+                  posts.map(async (post) => {
+                    // Fetch team details for each post
+                    const team = await teams.findOne({ _id:new ObjectId (post?.from as string)  }, { projection: { name: 1, image: 1 ,leaders:1} });
+            
+                    post.likes = post?.likes ? await users.find(
+                      { _id: { $in: post?.likes } },
+                      { projection: { _id:1,image:1,name:1 } }
+                    ).toArray() : [];
+            
+                    return { ...post, team };
+                  })
+                );
+              }
+
+            team.members=teamMembers
+            team.leaders=teamLeaders;
+            team.createdBy=teamCreator;
+            team.events=teamEvents;
+            team.requests=requests;
+            team.posts=finalPosts;
+            
+            return NextResponse.json(team);
+            } catch (error) {
+              console.error('Error:', error);
+              return NextResponse.json({ error: 'Failed to fetch team' },
+                  { status: 500 }); } finally { 
+                  if (client) { await client.close(); } }
+                
+                  }
+                }
 
 
 

@@ -18,12 +18,7 @@ import LoadingAnimation from '@/components/loadingAnimation/loadingAnimation';
 
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader
 } from '@/components/ui/dialog';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { TeamMembersCard } from '@/components/ui/card';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -34,6 +29,7 @@ import './teams.css';
 import { IUser } from '@/components/expandableCards/card';
 import mongoose from 'mongoose';
 import { EventPost } from '@/app/becommunity/page';
+import { IoArrowBack } from 'react-icons/io5'
 
 export interface IEvent {
   _id: mongoose.Schema.Types.ObjectId;
@@ -139,8 +135,18 @@ const TeamPage = () => {
         {isLoading ? <div className="pt-44"><LoadingAnimation /></div> : (
           <div className="animate-slide-top mt-4 p-5 px-4 gap-1 flex justify-between ctab:flex-col ctab:items-center">
             <div className="ctab:order-2 w-full">
+               {/* Back Button */}
+              <Link
+        href={`/becommunity`}
+        className="z-10 absolute top-5 left-4 flex items-center gap-2 bg-white/10 hover:bg-white/20 text-cyan-200 px-4 py-2 rounded-full shadow-md transition-all duration-200 backdrop-blur-md border border-cyan-300/20"
+      >
+        <IoArrowBack className="text-lg" />
+        <span className="hidden sm:inline text-sm font-medium">Back</span>
+      </Link>
               <Card className="p-3 py-5 glass flex ctab:flex-col border-0">
-                <div className="flex gap-6 ctab:flex-col">
+               
+      
+                <div className="mt-4 flex gap-6 ctab:flex-col">
                   <div className="h-40 w-40 relative rounded-full">
                     <Dialog >
                       <DialogTrigger asChild>
@@ -168,7 +174,7 @@ const TeamPage = () => {
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <h1 className="text-5xl ctab:text-center text-cyan-200 font-semibold">{team?.name}</h1>
+                    <h1 className="text-3xl ctab:text-center text-cyan-200 font-semibold">{team?.name}</h1>
                     <Dialog>
                       <DialogTrigger asChild>
                         <IoMdInformationCircleOutline className="h-10 w-10 cursor-pointer mt-3" />
@@ -192,7 +198,7 @@ const TeamPage = () => {
                     {!isVolunteer && (
                       <Button onClick={() => joinMutation.mutate()}>Request to Join</Button>
                     )}
-                    <div className='flex flex-row items-start justify-center'>
+                    <div className='flex flex-row items-start justify-center gap-4'>
 
                     {isLeader && (
                       <Dialog>
@@ -283,7 +289,7 @@ const TeamPage = () => {
                     )}
 
                     {isLeader && (
-  <div className="flex justify-center md:justify-end mt-6">
+  <div className="flex justify-center md:justify-end">
     <Dialog>
       <DialogTrigger asChild>
         <Button className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg shadow-md">
@@ -312,6 +318,7 @@ const TeamPage = () => {
                   </div>
                 </div>
               </Card>
+              
 
               <Tabs defaultValue="posts" className="mt-5">
                 <TabsList>
@@ -366,22 +373,8 @@ const EventCard = ({ event, mongoId }: { event: IEvent; mongoId: string }) => (
   </div>
 );
 
-const TeamMembersCard = ({ members }: { members: IUser[] }) => (
-  <Card className="mt-10 bg-transparent border-0">
-    <CardContent>
-      <div className="flex flex-wrap gap-7 justify-center">
-        {members.map(member => (
-          <Card key={member._id.toString()} className="w-fit border-0 bg-transparent">
-            <CardContent className="mt-7">
-              <h1 className="text-2xl capitalize">{member.name}</h1>
-              <p className="text-sm">{member.email}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-);
+
+
 
 const TeamPageWithSuspense = () => (
   <Suspense fallback={<LoadingAnimation />}>
