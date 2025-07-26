@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 
 import MeditatingPanda from "@/components/Animations/FloatingPanda";
+import Link from "next/link";
+import { IoArrowBack } from "react-icons/io5";
 
 // Google Drive Embed URL
 const getEmbedUrl = (fileId: string) =>
@@ -54,7 +56,7 @@ const DocumentPage = () => {
      
     });
     const data = await res.json();
-    console.log(data)
+   
 
     if (data) {
       setPYQs(data.PYQDocs);
@@ -94,154 +96,183 @@ const DocumentPage = () => {
     }
   };
 
-  console.log("PYQS", PYQs);
+
 
   if (!dept) {
     return <div>Department not found</div>;
   }
 
   return (
-    <div className="p-6 bg-gradient-to-b from-blue-50 to-white min-h-screen">
-      <motion.h1
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-4xl font-extrabold text-center mb-12 text-blue-900"
+    <div
+  className="p-6 min-h-screen"
+  style={{
+    backgroundImage: 'linear-gradient(120deg, rgba(1,1,15,0.9), rgba(1,1,25,0.9))',
+  }}
+>
+   {/* Back Button */}
+ <Link
+         href={`/academics`}
+         className="z-10 absolute top-[5vh] left-[5vw] flex items-center gap-2 bg-white/10 hover:bg-white/20 text-cyan-200 px-4 py-2 rounded-full shadow-md transition-all duration-200 backdrop-blur-md border border-cyan-300/20"
+       >
+         <IoArrowBack className="text-lg" />
+         <span className="hidden sm:inline text-sm font-medium">Back</span>
+       </Link>
+  <motion.h1
+    initial={{ opacity: 0, y: -30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6 }}
+    className="text-4xl font-extrabold text-center mb-12 text-slate-100 drop-shadow-lg"
+  >
+    Document Library
+  </motion.h1>
+
+  <div className="flex flex-col gap-12 items-center">
+    {PYQs?.map((pyq, index) => {
+      const [semData, ...docs] = pyq;
+      const { sem, exam, year } = semData;
+
+      return (
+        <motion.div
+          key={`${sem}-${exam}-${year}`}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.2, duration: 0.6 }}
+          className="w-full max-w-6xl rounded-2xl shadow-xl border border-slate-700 bg-slate-900 overflow-hidden"
+        >
+          <div className="bg-slate-800 p-6 border-b border-slate-700 flex justify-between items-center">
+            <h2 className="text-2xl font-semibold text-blue-300">
+              Semester {sem} — {exam} {year}
+            </h2>
+            {kernel && (
+              <button
+                onClick={() => setUploadModalData({ sem, exam, year })}
+                className="text-blue-300 hover:text-blue-200 font-bold text-xl"
+                title="Upload Document"
+              >
+                ⬆️ Upload
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-6 px-6 py-4">
+            {docs?.map((doc) => (
+              <div
+                key={doc.fileId}
+                className="w-full rounded-lg border border-slate-700 shadow-md p-4 bg-slate-800 hover:bg-slate-700 cursor-pointer transition duration-200"
+                onClick={() => setSelectedDoc({ fileId: doc.fileId, title: doc.title })}
+              >
+                <h3 className="text-lg font-semibold text-slate-100">{doc.title}</h3>
+                <p className="text-sm text-slate-400">Click to view fullscreen</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      );
+    })}
+  </div>
+
+  {/* View PDF Modal */}
+  <AnimatePresence>
+    {selectedDoc && (
+      <motion.div
+        className="fixed inset-0 z-50 bg-transparent flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{ pointerEvents: 'none' }}
       >
-        Document Library
-      </motion.h1>
-
-      <div className="flex flex-col gap-12 items-center">
-        {PYQs?.map((pyq, index) => {
-          const [semData, ...docs] = pyq;
-          const { sem, exam, year } = semData;
-
-          return (
-            <motion.div
-              key={`${sem}-${exam}-${year}`}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2, duration: 0.6 }}
-              className="w-full max-w-6xl rounded-2xl shadow-lg border border-gray-300 bg-white overflow-hidden"
+        <motion.div
+          initial={{ scale: 0.9, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.9, y: 50 }}
+          transition={{ duration: 0.3 }}
+          className="relative w-full h-full flex flex-col lg:flex-row p-4"
+          style={{ pointerEvents: 'auto' }}
+        >
+          <div className="absolute top-4 left-4 z-50">
+            <button
+              onClick={() => setSelectedDoc(null)}
+              className="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-semibold shadow-lg"
             >
-              <div className="bg-blue-100 p-6 border-b border-gray-200 flex justify-between items-center">
-                <h2 className="text-2xl font-semibold text-blue-800">
-                  Semester {sem} — {exam} {year}
-                </h2>
-               {kernel && <button
-                  onClick={() => setUploadModalData({ sem, exam, year })}
-                  className="text-blue-800 hover:text-blue-600 font-bold text-xl"
-                  title="Upload Document"
-                >
-                  ⬆️ Upload
-                </button>}
-              </div>
+              Close ✕
+            </button>
+          </div>
 
-              <div className="flex flex-col gap-6 px-6 py-4">
-                {docs?.map((doc) => (
-                  <div
-                    key={doc.fileId}
-                    className="w-full rounded-lg border border-gray-200 shadow-sm p-4 bg-white hover:bg-blue-50 cursor-pointer transition"
-                    onClick={() => setSelectedDoc({ fileId: doc.fileId, title: doc.title })}
-                  >
-                    <h3 className="text-lg font-semibold text-gray-800">{doc.title}</h3>
-                    <p className="text-sm text-gray-500">Click to view fullscreen</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          );
-        })}
+          <div className="w-full lg:w-[60vw] h-full mt-12 relative">
+            <iframe
+              src={getEmbedUrl(selectedDoc.fileId)}
+              className="w-full h-full rounded-xl shadow-md [clip-path:polygon(0_0,100%_0,100%_80%,0_80%)] lg:[clip-path:none]"
+              allow="autoplay"
+            />
+          </div>
+          <div className="hidden lg:block w-full lg:w-[30vw] h-full p-2 mt-6 lg:mt-12">
+            <MeditatingPanda fileId={selectedDoc.fileId} />
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+
+  {/* Upload Modal */}
+  <AnimatePresence>
+    {uploadModalData && (
+      <motion.div
+        className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          initial={{ scale: 0.9, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.9, y: 50 }}
+          transition={{ duration: 0.3 }}
+          className="bg-slate-900 text-white rounded-xl p-6 shadow-2xl w-[90%] max-w-md relative border border-slate-700"
+        >
+          <button
+            onClick={() => setUploadModalData(null)}
+            className="absolute top-3 right-3 text-slate-400 hover:text-red-500"
+          >
+            ✕
+          </button>
+          <h2 className="text-xl font-semibold mb-4 text-blue-300">
+            Upload Document — Sem {uploadModalData.sem}, {uploadModalData.exam} {uploadModalData.year}
+          </h2>
+          <input
+            className="w-full mb-3 p-2 border border-slate-600 bg-slate-800 text-white rounded placeholder:text-slate-400"
+            placeholder="Document Title"
+            value={uploadTitle}
+            onChange={(e) => setUploadTitle(e.target.value)}
+          />
+          <input
+            className="w-full mb-3 p-2 border border-slate-600 bg-slate-800 text-white rounded placeholder:text-slate-400"
+            placeholder="Google Drive File ID"
+            value={uploadFileId}
+            onChange={(e) => setUploadFileId(e.target.value)}
+          />
+          <button
+            onClick={handleUpload}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition"
+          >
+            Upload
+          </button>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+
+
+
+  {/* FloatingPanda for Small Screens - Always Visible */}
+  {selectedDoc && selectedDoc.fileId && (
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[999999]">
+      <div style={{ pointerEvents: 'auto' }}>
+        <MeditatingPanda fileId={selectedDoc.fileId} />
       </div>
-
-      {/* View PDF Modal */}
-      <AnimatePresence>
-        {selectedDoc && (
-          <motion.div
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 50 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-full h-full p-4"
-            >
-              <div className="absolute top-4 left-4 z-50">
-                <button
-                  onClick={() => setSelectedDoc(null)}
-                  className="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-semibold shadow-lg"
-                >
-                  Close ✕
-                </button>
-              </div>
-
-              <div className="w-[60vw] h-full mt-12">
-                <iframe
-                  src={getEmbedUrl(selectedDoc.fileId)}
-                  className="w-full h-full rounded-md"
-                  allow="autoplay"
-                />
-              </div>
-              <div className="w-[30vw] h-full">
-                <MeditatingPanda fileId={selectedDoc.fileId}/>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Upload Modal */}
-      <AnimatePresence>
-        {uploadModalData && (
-          <motion.div
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 50 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white rounded-xl p-6 shadow-xl w-[90%] max-w-md relative"
-            >
-              <button
-                onClick={() => setUploadModalData(null)}
-                className="absolute top-3 right-3 text-gray-500 hover:text-red-600"
-              >
-                ✕
-              </button>
-              <h2 className="text-xl font-semibold mb-4 text-blue-800">
-                Upload Document — Sem {uploadModalData.sem}, {uploadModalData.exam} {uploadModalData.year}
-              </h2>
-              <input
-                className="w-full mb-3 p-2 border border-gray-300 rounded"
-                placeholder="Document Title"
-                value={uploadTitle}
-                onChange={(e) => setUploadTitle(e.target.value)}
-              />
-              <input
-                className="w-full mb-3 p-2 border border-gray-300 rounded"
-                placeholder="Google Drive File ID"
-                value={uploadFileId}
-                onChange={(e) => setUploadFileId(e.target.value)}
-              />
-              <button
-                onClick={handleUpload}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold"
-              >
-                Upload
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
+  )}
+</div>
+
   );
 };
 

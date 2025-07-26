@@ -83,7 +83,8 @@ const TeamPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
-
+const [acceptingRequest, setAcceptingRequest] = useState(false);
+const [decliningRequest, setDecliningRequest] = useState(false);
   if(!id){
     throw new Error("Team ID is required");
   }
@@ -108,8 +109,10 @@ const TeamPage = () => {
     onError: () => toast.error('Request failed')
   });
 
+  const [uploading, setUploading] = useState(false);
   const handleUpload = async () => {
     if (file) {
+      setUploading(true);
       const res = await edgestore.mypublicImages.upload({
         file,
         onProgressChange: setProgress
@@ -119,6 +122,7 @@ const TeamPage = () => {
         body: JSON.stringify({ imgUrl: res.url, thumbUrl: res.thumbnailUrl })
       });
       toast.success('Image uploaded');
+      setUploading(false);
       queryClient.invalidateQueries({ queryKey: ["team", id] });
       
     }
@@ -160,7 +164,7 @@ const TeamPage = () => {
                             const f = e.target.files?.[0];
                             if (f) setFile(f);
                           }} />
-                          <Button onClick={handleUpload} className="mt-4">Save</Button>
+                          <Button onClick={handleUpload} disabled={uploading} className="mt-4">{uploading?"saving...":"save"}</Button>
                         </DialogHeader>
                       </DialogContent>
                     </Dialog>
@@ -196,7 +200,7 @@ const TeamPage = () => {
                     </div>
 
                     {!isVolunteer && (
-                      <Button onClick={() => joinMutation.mutate()}>Request to Join</Button>
+                      <Button onClick={() => joinMutation.mutate()} disabled={joinMutation.isPending}>{joinMutation.isPending?"Request to Join":"Sending Request..."}</Button>
                     )}
                     <div className='flex flex-row items-start justify-center gap-4'>
 
@@ -238,6 +242,8 @@ const TeamPage = () => {
               className="bg-green-600 hover:bg-green-700"
               onClick={async () => {
                 // Accept Request Handler
+                
+                setAcceptingRequest(true);
                 const res = await fetch(
                   `/api/join?tid=${id}&id=${participant._id.toString()}`,
                   {
@@ -249,17 +255,19 @@ const TeamPage = () => {
                 );
                 if (res.ok) {
                   toast.success("Participant added successfully");
+                  setAcceptingRequest(false);
                   queryClient.invalidateQueries({queryKey:["team", id]}); // Refetch team data
                 }
               }}
             >
-              Accept
+              {acceptingRequest ? "Accepting..." : "Accept"}
             </Button>
             <Button
               variant="destructive"
               className="bg-red-600 hover:bg-red-700"
               onClick={async () => {
                 // Decline/Remove Handler
+                setDecliningRequest(true);
                 const updated = team?.requests?.filter(
                   (r) => r._id !== participant._id
                 );
@@ -273,12 +281,13 @@ const TeamPage = () => {
                 });
 
                 if (res.ok) {
+                  setDecliningRequest(false);
                   toast.success("Request declined");
                   queryClient.invalidateQueries({queryKey:["team", id]}); // Refetch team data
                 }
               }}
             >
-              Remove
+              {decliningRequest ? "Declining..." : "Decline"}
             </Button>
           </div>
         </div>
