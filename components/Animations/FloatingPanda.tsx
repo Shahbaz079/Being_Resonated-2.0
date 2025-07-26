@@ -148,7 +148,7 @@ export default function MeditatingPanda({ fileId }: { fileId: string }) {
             {/* Chat Area */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 text-sm text-slate-900 bg-white/40 backdrop-blur-sm">
               <div className="bg-white/60 p-3 rounded-xl border border-slate-200 shadow text-sm text-slate-800">
-                Hi! I'm your panda assistant. Ask me anything 🧘‍♂️
+                Hi! I&apos;m your panda assistant. Ask me anything 🧘‍♂️
               </div>
 
               {loading ? (
