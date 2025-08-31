@@ -17,15 +17,21 @@ if (!dbName) {
 export async function GET(req: NextRequest) {
   const client = new MongoClient(uri);
   try {
-
-
     await client.connect();
     const db = client.db(dbName);
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '6', 10);
+    
+    // Validate parameters
     if (!id) {
       return NextResponse.json({ message: 'Invalid user ID' }, { status: 400 });
+    }
+    
+    if (page < 1 || limit < 1 || limit > 50) {
+      return NextResponse.json({ message: 'Invalid pagination parameters' }, { status: 400 });
     }
 
     const users = db.collection('users');
@@ -37,44 +43,106 @@ export async function GET(req: NextRequest) {
 
     const { interests: referenceArray } = existingUser;
     if (!referenceArray || referenceArray.length === 0) {
-      // Return empty array if no interests
-      return NextResponse.json([], { status: 200 });
+      // Return empty paginated response if no interests
+      return NextResponse.json({
+        users: [],
+        totalUsers: 0,
+        totalPages: 0,
+        currentPage: page,
+        hasNextPage: false,
+        hasPreviousPage: false
+      }, { status: 200 });
     }
 
-    const AllUsers = await users.find(
-      { _id: { $ne: new ObjectId(id) } },
+    // Optimized aggregation pipeline: get count and paginated data in single operation
+    const aggregationPipeline = [
       {
-        projection: {
-          name: 1,
-          description: 1,
-          email: 1,
-          gradYear: 1,
-          interests: 1,
-          image: 1,
-          posts: 1,
-          teams: 1,
-        },
+        // Stage 1: Filter users (exclude current user and must have matching interests)
+        $match: {
+          _id: { $ne: new ObjectId(id) },
+          interests: { $exists: true, $ne: [], $in: referenceArray }
+        }
+      },
+      {
+        // Stage 2: Add match count field
+        $addFields: {
+          matchCount: {
+            $size: {
+              $setIntersection: ["$interests", referenceArray]
+            }
+          }
+        }
+      },
+      {
+        // Stage 3: Filter users with at least 1 match
+        $match: { matchCount: { $gt: 0 } }
+      },
+      {
+        // Stage 4: Sort by match count (descending)
+        $sort: { matchCount: -1, _id: 1 }
       }
-    ).toArray();
+    ];
 
-    const matchCount = (userInterests: string[] = []) =>
-      userInterests.filter((interest) => referenceArray.includes(interest)).length;
+    // Use facet to get count and paginated data in single database operation
+    const result = await users.aggregate([
+      ...aggregationPipeline,
+      {
+        $facet: {
+          totalCount: [{ $count: "count" }],
+          paginatedData: [
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+            {
+              $project: {
+                name: 1,
+                description: 1,
+                email: 1,
+                gradYear: 1,
+                interests: 1,
+                image: 1,
+                posts: 1,
+                teams: 1,
+                matchCount: 1
+              }
+            }
+          ]
+        }
+      }
+    ]).toArray();
 
-    const filteredUsers = AllUsers
-      .map((user:any) => ({
-        ...user,
-        matchCount: matchCount(user.interests),
-      }))
-      .filter((user:any) => user.matchCount > 0)
-      .sort((a:any, b:any) => b.matchCount - a.matchCount);
+    const totalUsers = result[0]?.totalCount[0]?.count || 0;
+    const paginatedUsers = result[0]?.paginatedData || [];
+    
+    if (totalUsers === 0) {
+      return NextResponse.json({
+        users: [],
+        totalUsers: 0,
+        totalPages: 0,
+        currentPage: page,
+        hasNextPage: false,
+        hasPreviousPage: false
+      }, { status: 200 });
+    }
 
-    const plainUsers = filteredUsers.map((user:any) => ({
+    const totalPages = Math.ceil(totalUsers / limit);
+    
+    const plainUsers = paginatedUsers.map((user:any) => ({
       ...user,
       _id: user._id.toString(),
       teams: user.teams?.map((teamId: ObjectId) => teamId.toString()) ?? [],
     }));
 
-    return NextResponse.json(plainUsers, { status: 200 });
+    // Return paginated response
+    const response = {
+      users: plainUsers,
+      totalUsers,
+      totalPages,
+      currentPage: page,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1
+    };
+
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Error processing request:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

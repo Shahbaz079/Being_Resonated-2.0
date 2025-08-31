@@ -2,32 +2,95 @@
 
 
 import { useParams, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 
-// Type definitions
-interface DocumentData {
-  fileId: string;
-  title: string;
-}
+// Zod Schemas for validation
+const DocumentDataSchema = z.object({
+  fileId: z.string()
+    .min(1, "File ID is required")
+    .regex(/^[a-zA-Z0-9_-]+$/, "Invalid file ID format")
+    .max(100, "File ID too long"),
+  title: z.string()
+    .min(1, "Title is required")
+    .max(200, "Title too long")
+    .regex(/^[a-zA-Z0-9\s\-_.,()\[\]]+$/, "Title contains invalid characters")
+});
 
-interface PYQData {
-  sem: string;
-  exam: string;
-  year: string;
-}
+const PYQDataSchema = z.object({
+  sem: z.string()
+    .regex(/^[1-8]$/, "Semester must be between 1-8"),
+  exam: z.string()
+    .min(1, "Exam type is required")
+    .regex(/^(mid|end|quiz)$/i, "Invalid exam type"),
+  year: z.string()
+    .regex(/^20[0-9]{2}$/, "Invalid year format")
+});
 
-type PYQGroup = [PYQData, ...DocumentData[]];
+const PYQGroupSchema = z.tuple([PYQDataSchema]).rest(DocumentDataSchema);
+
+const APIResponseSchema = z.object({
+  PYQDocs: z.array(PYQGroupSchema).default([]),
+  success: z.boolean().optional(),
+  message: z.string().optional()
+});
+
+const UploadDataSchema = z.object({
+  dept: z.string()
+    .min(2, "Department code too short")
+    .max(10, "Department code too long")
+    .regex(/^[A-Z]{2,10}$/, "Department must be uppercase letters only"),
+  sem: z.string().regex(/^[1-8]$/, "Invalid semester"),
+  exam: z.string().regex(/^(mid|end|quiz)$/i, "Invalid exam type"),
+  year: z.string().regex(/^20[0-9]{2}$/, "Invalid year"),
+  title: z.string()
+    .min(3, "Title must be at least 3 characters")
+    .max(200, "Title too long")
+    .regex(/^[a-zA-Z0-9\s\-_.,()\[\]]+$/, "Title contains invalid characters"),
+  fileId: z.string()
+    .min(1, "File ID is required")
+    .regex(/^[a-zA-Z0-9_-]+$/, "Invalid Google Drive file ID format")
+    .max(100, "File ID too long")
+});
+
+const UserMetadataSchema = z.object({
+  mongoId: z.string().min(1).optional()
+});
+
+// Type definitions derived from schemas
+type DocumentData = z.infer<typeof DocumentDataSchema>;
+type PYQData = z.infer<typeof PYQDataSchema>;
+type PYQGroup = z.infer<typeof PYQGroupSchema>;
+type UploadData = z.infer<typeof UploadDataSchema>;
 
 import MeditatingPanda from "@/components/Animations/FloatingPanda";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 
-// Google Drive Embed URL
-const getEmbedUrl = (fileId: string) =>
-  `https://drive.google.com/file/d/${fileId}/preview`;
+// Security utilities
+const sanitizeFileId = (fileId: string): string => {
+  // Extract file ID from full Google Drive URL if provided
+  const urlMatch = fileId.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (urlMatch) return urlMatch[1];
+  
+  // Return sanitized file ID
+  return fileId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 100);
+};
+
+// Google Drive Embed URL with validation
+const getEmbedUrl = (fileId: string): string => {
+  const sanitizedId = sanitizeFileId(fileId);
+  const validation = z.string().regex(/^[a-zA-Z0-9_-]+$/).min(1).safeParse(sanitizedId);
+  
+  if (!validation.success) {
+    throw new Error('Invalid file ID for embedding');
+  }
+  
+  return `https://drive.google.com/file/d/${validation.data}/preview`;
+};
 
 const DocumentPage = () => {
   const { dept } = useParams();
@@ -36,22 +99,51 @@ const DocumentPage = () => {
   const exam = params.get("ex");
   const { user } = useUser();
   
-  // Array of authorized admin mongoIds
+  // Validate and sanitize URL parameters
+  const validatedParams = useMemo(() => {
+    try {
+      const deptStr = Array.isArray(dept) ? dept[0] : dept;
+      return {
+        dept: deptStr?.toUpperCase(),
+        sem: sem?.trim(),
+        exam: exam?.toLowerCase().trim()
+      };
+    } catch {
+      return { dept: null, sem: null, exam: null };
+    }
+  }, [dept, sem, exam]);
+  
+  // Array of authorized admin mongoIds with validation
   const ADMIN_MONGO_IDS = [
-    "679e8f524c04113c6bc5828e","68a5d5e9981205f073851fdf" , "68a5d5f3981205f073851fe0" , "68a5d60a411910aee8d05a64"
-    // Add more admin mongoIds here as needed
-  ];
+    "679e8f524c04113c6bc5828e",
+    "68a5d5e9981205f073851fdf",
+    "68a5d5f3981205f073851fe0", 
+    "68a5d60a411910aee8d05a64"
+  ].filter(id => z.string().min(20).safeParse(id).success); // Validate admin IDs
   
   const [selectedDoc, setSelectedDoc] = useState<DocumentData | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const queryClient = useQueryClient();
   
-  // Check if user is an admin by checking if their mongoId is in the admin array
-  const kernel = Boolean(
-    user?.publicMetadata?.mongoId && 
-    ADMIN_MONGO_IDS.includes(user.publicMetadata.mongoId as string)
-  );
+  // Validate user metadata and check admin status
+  const { kernel, validatedUser } = useMemo(() => {
+    try {
+      const metadata = UserMetadataSchema.safeParse(user?.publicMetadata);
+      if (!metadata.success || !metadata.data.mongoId) {
+        return { kernel: false, validatedUser: null };
+      }
+      
+      const isAdmin = ADMIN_MONGO_IDS.includes(metadata.data.mongoId);
+      return { 
+        kernel: isAdmin, 
+        validatedUser: { mongoId: metadata.data.mongoId } 
+      };
+    } catch {
+      return { kernel: false, validatedUser: null };
+    }
+  }, [user?.publicMetadata, ADMIN_MONGO_IDS]);
 
-  // Upload modal state
+  // Upload modal state with validation
   const [uploadModalData, setUploadModalData] = useState<null | {
     sem: string;
     exam: string;
@@ -59,58 +151,139 @@ const DocumentPage = () => {
   }>(null);
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadFileId, setUploadFileId] = useState("");
+  
+  // Real-time input validation
+  const validateUploadInputs = useMemo(() => {
+    if (!uploadTitle && !uploadFileId) return { isValid: true, errors: {} };
+    
+    const titleResult = z.string()
+      .min(3, "Title must be at least 3 characters")
+      .max(200, "Title too long")
+      .regex(/^[a-zA-Z0-9\s\-_.,()\[\]]*$/, "Title contains invalid characters")
+      .safeParse(uploadTitle.trim());
+      
+    const fileIdResult = z.string()
+      .regex(/^[a-zA-Z0-9_-]*$/, "Invalid file ID format")
+      .safeParse(uploadFileId.trim());
+    
+    const errors: Record<string, string> = {};
+    if (!titleResult.success && uploadTitle) {
+      errors.title = titleResult.error.errors[0]?.message || "Invalid title";
+    }
+    if (!fileIdResult.success && uploadFileId) {
+      errors.fileId = fileIdResult.error.errors[0]?.message || "Invalid file ID";
+    }
+    
+    return {
+      isValid: titleResult.success && fileIdResult.success,
+      errors
+    };
+  }, [uploadTitle, uploadFileId]);
 
-  // Fetch documents using TanStack Query
+  // Fetch documents using TanStack Query with validation
   const {
     data: PYQs = [],
     isLoading,
     error,
     refetch
   } = useQuery<PYQGroup[]>({
-    queryKey: ['documents', dept, sem, exam],
+    queryKey: ['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam],
     queryFn: async () => {
-      if (!dept || !sem || !exam) {
-        throw new Error('Missing required parameters');
+      const { dept: validDept, sem: validSem, exam: validExam } = validatedParams;
+      
+      if (!validDept || !validSem || !validExam) {
+        throw new Error('Missing or invalid required parameters');
       }
       
-      const res = await fetch(`/api/documents?dept=${dept}&sem=${sem}&exam=${exam}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      // Validate parameters before making request
+      const paramValidation = z.object({
+        dept: z.string().regex(/^[A-Z]{2,10}$/, "Invalid department"),
+        sem: z.string().regex(/^[1-8]$/, "Invalid semester"),
+        exam: z.string().regex(/^(mid|end|quiz)$/, "Invalid exam type")
+      }).safeParse({ dept: validDept, sem: validSem, exam: validExam });
+      
+      if (!paramValidation.success) {
+        throw new Error(`Invalid parameters: ${paramValidation.error.errors[0]?.message}`);
+      }
+      
+      const res = await fetch(
+        `/api/documents?dept=${encodeURIComponent(validDept)}&sem=${encodeURIComponent(validSem)}&exam=${encodeURIComponent(validExam)}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       
       if (!res.ok) {
-        throw new Error('Failed to fetch documents');
+        throw new Error(`HTTP ${res.status}: Failed to fetch documents`);
       }
       
-      const data = await res.json();
-      return data.PYQDocs || [];
+      const rawData = await res.json();
+      
+      // Validate API response
+      const validatedResponse = APIResponseSchema.safeParse(rawData);
+      if (!validatedResponse.success) {
+        console.error('API response validation failed:', validatedResponse.error);
+        throw new Error('Invalid response format from server');
+      }
+      
+      return validatedResponse.data.PYQDocs;
     },
-    enabled: !!(dept && sem && exam),
+    enabled: !!(validatedParams.dept && validatedParams.sem && validatedParams.exam),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on validation errors
+      if (error.message.includes('Invalid parameters')) return false;
+      return failureCount < 3;
+    }
   });
 
-  // Upload mutation with optimistic updates
+  // Upload mutation with comprehensive validation
   const uploadMutation = useMutation({
-    mutationFn: async (uploadData: {
-      dept: string;
-      sem: string;
-      exam: string;
-      year: string;
-      title: string;
-      fileId: string;
-    }) => {
+    mutationFn: async (uploadData: UploadData) => {
+      // Validate upload data before sending
+      const validationResult = UploadDataSchema.safeParse(uploadData);
+      if (!validationResult.success) {
+        const errorMessages = validationResult.error.errors.map(err => 
+          `${err.path.join('.')}: ${err.message}`
+        ).join(', ');
+        throw new Error(`Validation failed: ${errorMessages}`);
+      }
+      
+      // Additional security check: ensure user is admin
+      if (!kernel) {
+        throw new Error('Unauthorized: Admin access required');
+      }
+      
       const res = await fetch("/api/documents", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(uploadData),
+        headers: { 
+          "Content-Type": "application/json",
+          // Add CSRF protection if available
+        },
+        body: JSON.stringify(validationResult.data),
       });
       
       if (!res.ok) {
-        throw new Error('Upload failed');
+        const errorText = await res.text().catch(() => 'Unknown error');
+        throw new Error(`Upload failed (${res.status}): ${errorText}`);
       }
       
-      return res.json();
+      const responseData = await res.json();
+      
+      // Validate response
+      const responseValidation = z.object({
+        success: z.boolean(),
+        message: z.string().optional(),
+        data: z.any().optional()
+      }).safeParse(responseData);
+      
+      if (!responseValidation.success || !responseValidation.data.success) {
+        throw new Error(responseValidation.data?.message || 'Upload failed');
+      }
+      
+      return responseValidation.data;
     },
     onMutate: async (newDoc) => {
       // Cancel outgoing refetches
@@ -155,22 +328,72 @@ const DocumentPage = () => {
   });
   
   const handleUpload = () => {
-    if (!uploadModalData || !uploadTitle.trim() || !uploadFileId.trim() || !dept) return;
+    if (!uploadModalData || !validatedParams.dept) {
+      setValidationErrors({ general: 'Missing required data' });
+      return;
+    }
     
-    uploadMutation.mutate({
-      dept: Array.isArray(dept) ? dept[0] : dept,
+    // Clear previous errors
+    setValidationErrors({});
+    
+    // Validate inputs before submission
+    const uploadData = {
+      dept: validatedParams.dept,
       sem: uploadModalData.sem,
       exam: uploadModalData.exam,
       year: uploadModalData.year,
       title: uploadTitle.trim(),
       fileId: uploadFileId.trim(),
-    });
+    };
+    
+    const validation = UploadDataSchema.safeParse(uploadData);
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      validation.error.errors.forEach(err => {
+        const field = err.path[0] as string;
+        errors[field] = err.message;
+      });
+      setValidationErrors(errors);
+      return;
+    }
+    
+    uploadMutation.mutate(validation.data);
+  };
+  
+  // Safe document selection with validation
+  const handleDocumentSelect = (doc: any) => {
+    const validation = DocumentDataSchema.safeParse(doc);
+    if (validation.success) {
+      setSelectedDoc(validation.data);
+    } else {
+      console.error('Invalid document data:', validation.error);
+      alert('Error: Invalid document data');
+    }
   };
 
 
 
-  if (!dept) {
-    return <div className="text-white text-center p-6">Department not found</div>;
+  // Security check: validate all required parameters
+  if (!validatedParams.dept || !validatedParams.sem || !validatedParams.exam) {
+    return (
+      <div className="p-6 min-h-screen" style={{
+        backgroundImage: 'linear-gradient(120deg, rgba(1,1,15,0.9), rgba(1,1,25,0.9))',
+      }}>
+        <div className="text-center text-red-400 p-8">
+          <span className="text-6xl mb-4 block">🚫</span>
+          <h2 className="text-xl font-semibold mb-2">Invalid Access</h2>
+          <p className="text-sm text-slate-400">
+            Missing or invalid parameters. Please access this page through the proper navigation.
+          </p>
+          <Link 
+            href="/academics"
+            className="mt-4 inline-block bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Back to Academics
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   if (isLoading) {
@@ -257,7 +480,9 @@ const DocumentPage = () => {
       >
         <span className="text-4xl mb-4 block">📚</span>
         <h3 className="text-xl font-semibold mb-2">No documents found</h3>
-        <p className="text-sm text-slate-400">No documents are available for {dept?.toString().toUpperCase()} - Semester {sem}, {exam}.</p>
+        <p className="text-sm text-slate-400">
+          No documents are available for {validatedParams.dept} - Semester {validatedParams.sem}, {validatedParams.exam}.
+        </p>
         {kernel && (
           <p className="text-xs text-blue-300 mt-2">As an admin, you can upload the first document!</p>
         )}
@@ -296,7 +521,7 @@ const DocumentPage = () => {
               <div
                 key={doc.fileId}
                 className="w-full rounded-lg border border-slate-700 shadow-md p-4 bg-slate-800 hover:bg-slate-700 cursor-pointer transition duration-200"
-                onClick={() => setSelectedDoc({ fileId: doc.fileId, title: doc.title })}
+                onClick={() => handleDocumentSelect(doc)}
               >
                 <h3 className="text-lg font-semibold text-slate-100">{doc.title}</h3>
                 <p className="text-sm text-slate-400">Click to view fullscreen</p>
@@ -341,6 +566,9 @@ const DocumentPage = () => {
               src={getEmbedUrl(selectedDoc.fileId)}
               className="w-full h-full rounded-xl shadow-md [clip-path:polygon(0_0,100%_0,100%_80%,0_80%)] lg:[clip-path:none]"
               allow="autoplay"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              referrerPolicy="strict-origin-when-cross-origin"
+              loading="lazy"
             />
           </div>
           <div className="hidden lg:block w-full lg:w-[30vw] h-full p-2 mt-6 lg:mt-12">
@@ -376,21 +604,82 @@ const DocumentPage = () => {
           <h2 className="text-xl font-semibold mb-4 text-blue-300">
             Upload Document — Sem {uploadModalData.sem}, {uploadModalData.exam} {uploadModalData.year}
           </h2>
-          <input
-            className="w-full mb-3 p-2 border border-slate-600 bg-slate-800 text-white rounded placeholder:text-slate-400"
-            placeholder="Document Title"
-            value={uploadTitle}
-            onChange={(e) => setUploadTitle(e.target.value)}
-          />
-          <input
-            className="w-full mb-3 p-2 border border-slate-600 bg-slate-800 text-white rounded placeholder:text-slate-400"
-            placeholder="Google Drive File ID"
-            value={uploadFileId}
-            onChange={(e) => setUploadFileId(e.target.value)}
-          />
+          <div className="mb-3">
+            <input
+              className={`w-full p-2 border bg-slate-800 text-white rounded placeholder:text-slate-400 ${
+                validationErrors.title || validateUploadInputs.errors.title
+                  ? 'border-red-500 focus:border-red-400' 
+                  : 'border-slate-600 focus:border-blue-400'
+              }`}
+              placeholder="Document Title (3-200 characters)"
+              value={uploadTitle}
+              onChange={(e) => {
+                setUploadTitle(e.target.value);
+                // Clear field-specific error on input
+                if (validationErrors.title) {
+                  setValidationErrors(prev => ({ ...prev, title: '' }));
+                }
+              }}
+              maxLength={200}
+            />
+            {(validationErrors.title || validateUploadInputs.errors.title) && (
+              <p className="text-red-400 text-xs mt-1">
+                {validationErrors.title || validateUploadInputs.errors.title}
+              </p>
+            )}
+          </div>
+          <div className="mb-3">
+            <input
+              className={`w-full p-2 border bg-slate-800 text-white rounded placeholder:text-slate-400 ${
+                validationErrors.fileId || validateUploadInputs.errors.fileId
+                  ? 'border-red-500 focus:border-red-400' 
+                  : 'border-slate-600 focus:border-blue-400'
+              }`}
+              placeholder="Google Drive File ID (alphanumeric, -, _)"
+              value={uploadFileId}
+              onChange={(e) => {
+                // Extract and sanitize file ID from URL or direct input
+                const sanitized = sanitizeFileId(e.target.value);
+                setUploadFileId(sanitized);
+                // Clear field-specific error on input
+                if (validationErrors.fileId) {
+                  setValidationErrors(prev => ({ ...prev, fileId: '' }));
+                }
+              }}
+              onPaste={(e) => {
+                // Handle pasted Google Drive URLs
+                const pastedData = e.clipboardData.getData('text');
+                const extractedId = sanitizeFileId(pastedData);
+                if (extractedId !== pastedData) {
+                  e.preventDefault();
+                  setUploadFileId(extractedId);
+                }
+              }}
+              maxLength={100}
+            />
+            {(validationErrors.fileId || validateUploadInputs.errors.fileId) && (
+              <p className="text-red-400 text-xs mt-1">
+                {validationErrors.fileId || validateUploadInputs.errors.fileId}
+              </p>
+            )}
+            <p className="text-xs text-slate-500 mt-1">
+              Extract from Google Drive share URL: drive.google.com/file/d/<strong>FILE_ID</strong>/view
+            </p>
+          </div>
+          {validationErrors.general && (
+            <div className="mb-3 p-2 bg-red-900/30 border border-red-500 rounded text-red-400 text-sm">
+              {validationErrors.general}
+            </div>
+          )}
           <button
             onClick={handleUpload}
-            disabled={uploadMutation.isPending || !uploadTitle.trim() || !uploadFileId.trim()}
+            disabled={
+              uploadMutation.isPending || 
+              !uploadTitle.trim() || 
+              !uploadFileId.trim() ||
+              !validateUploadInputs.isValid ||
+              Object.keys(validationErrors).length > 0
+            }
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded font-semibold transition"
           >
             {uploadMutation.isPending ? (
