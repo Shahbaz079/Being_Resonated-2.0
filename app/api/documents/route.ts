@@ -97,29 +97,27 @@ export async function GET(request: NextRequest) {
 
     const dept_sem_examAllPapers = await documents.find({dept:dept,sem:sem,exam:exam}).toArray();
 
+    console.log(dept_sem_examAllPapers[0])
+
+    // If no documents found, return default data
+    if (!dept_sem_examAllPapers || dept_sem_examAllPapers.length === 0) {
       try {
-         if (!dept_sem_examAllPapers || dept_sem_examAllPapers.length === 0) {
+        // Default response: one array with one object
+        const defaultYears = ["2022","2023", "2024"]; // You can customize this list
+        const defaultData = defaultYears.map((year) => [
+          { dept, sem, exam, year },
+        ]);
 
-       // Default response: one array with one object
-      const defaultYears = ["2022","2023", "2024"]; // You can customize this list
-      const defaultData = defaultYears.map((year) => [
-        { dept, sem, exam, year },
-      ]);
-
-  
-
-      return NextResponse.json({ success: true, PYQDocs: defaultData }); 
-
-       
-      }
+        return NextResponse.json({ success: true, PYQDocs: defaultData }); 
       } catch (error) {
-        console.error("Error processing documents:", error);
+        console.error("Error processing default documents:", error);
         return NextResponse.json({ error: 'Failed to process Default documents' }, { status: 500 });
-      }finally{
+      } finally {
         if (client) {
           await client.close();
         }
       }
+    }
 
      
 
@@ -160,3 +158,51 @@ export async function GET(request: NextRequest) {
       
 
   }
+
+export async function DELETE(req: NextRequest) {
+  let client: MongoClient | null = null;
+
+  try {
+    const body = await req.json();
+    if (!body) {
+      return NextResponse.json({ error: 'No data found' }, { status: 400 });
+    }
+    
+    const { fileId, dept, sem, exam, year } = body;
+    
+    if (!fileId || !dept || !sem || !exam || !year) {
+      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+    }
+    
+    client = new MongoClient(uri);
+    await client.connect();
+    const db = client.db(dbName);
+    const documents = db.collection('documents');
+    
+    // Delete the document with all matching criteria for security
+    const result = await documents.deleteOne({
+      fileId: fileId,
+      dept: dept,
+      sem: sem,
+      exam: exam,
+      year: year
+    });
+    
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: 'Document not found or could not be deleted' }, { status: 404 });
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Document deleted successfully' 
+    }, { status: 200 });
+    
+  } catch (error) {
+    console.error('Delete error:', error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}

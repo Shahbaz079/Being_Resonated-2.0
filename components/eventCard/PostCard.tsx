@@ -377,16 +377,6 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
               <span className="font-medium text-sm">{likeCount}</span>
               {isLiked && <div className="absolute inset-0 bg-gradient-to-r from-red-400/10 to-pink-400/10 rounded-full pointer-events-none" />}
             </button>
-
-            <button className="flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-sm border border-slate-600/30 text-slate-300 hover:text-blue-300 hover:bg-blue-500/10 hover:border-blue-400/30 transition-all duration-300 hover:scale-105">
-              <MessageCircle className="w-5 h-5" />
-              <span className="text-sm font-medium">Comment</span>
-            </button>
-
-            <button className="flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-sm border border-slate-600/30 text-slate-300 hover:text-green-300 hover:bg-green-500/10 hover:border-green-400/30 transition-all duration-300 hover:scale-105">
-              <Share2 className="w-5 h-5" />
-              <span className="text-sm font-medium">Share</span>
-            </button>
           </div>
 
           {/* Likes Preview */}

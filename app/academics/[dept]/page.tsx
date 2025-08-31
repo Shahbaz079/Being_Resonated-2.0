@@ -12,13 +12,12 @@ import { z } from "zod";
 const DocumentDataSchema = z.object({
   fileId: z.string()
     .min(1, "File ID is required")
-    .regex(/^[a-zA-Z0-9_-]+$/, "Invalid file ID format")
-    .max(100, "File ID too long"),
+    .max(200, "File ID too long"), // Removed strict regex, increased length limit
   title: z.string()
     .min(1, "Title is required")
     .max(200, "Title too long")
     .regex(/^[a-zA-Z0-9\s\-_.,()\[\]]+$/, "Title contains invalid characters")
-});
+}).passthrough(); // Allow additional fields from database
 
 const PYQDataSchema = z.object({
   sem: z.string()
@@ -28,7 +27,7 @@ const PYQDataSchema = z.object({
     .regex(/^(mid|end|quiz)$/i, "Invalid exam type"),
   year: z.string()
     .regex(/^20[0-9]{2}$/, "Invalid year format")
-});
+}).passthrough(); // Allow additional fields
 
 const PYQGroupSchema = z.tuple([PYQDataSchema]).rest(DocumentDataSchema);
 
@@ -36,13 +35,13 @@ const APIResponseSchema = z.object({
   PYQDocs: z.array(PYQGroupSchema).default([]),
   success: z.boolean().optional(),
   message: z.string().optional()
-});
+}).passthrough(); // Allow additional fields
 
 const UploadDataSchema = z.object({
   dept: z.string()
     .min(2, "Department code too short")
     .max(10, "Department code too long")
-    .regex(/^[A-Z]{2,10}$/, "Department must be uppercase letters only"),
+    .regex(/^[a-z]{2,10}$/, "Department must be lowercase letters only"),
   sem: z.string().regex(/^[1-8]$/, "Invalid semester"),
   exam: z.string().regex(/^(mid|end|quiz)$/i, "Invalid exam type"),
   year: z.string().regex(/^20[0-9]{2}$/, "Invalid year"),
@@ -52,8 +51,7 @@ const UploadDataSchema = z.object({
     .regex(/^[a-zA-Z0-9\s\-_.,()\[\]]+$/, "Title contains invalid characters"),
   fileId: z.string()
     .min(1, "File ID is required")
-    .regex(/^[a-zA-Z0-9_-]+$/, "Invalid Google Drive file ID format")
-    .max(100, "File ID too long")
+    .max(200, "File ID too long") // Removed strict regex for flexibility
 });
 
 const UserMetadataSchema = z.object({
@@ -66,9 +64,27 @@ type PYQData = z.infer<typeof PYQDataSchema>;
 type PYQGroup = z.infer<typeof PYQGroupSchema>;
 type UploadData = z.infer<typeof UploadDataSchema>;
 
-import MeditatingPanda from "@/components/Animations/FloatingPanda";
+// Delete data schema
+const DeleteDataSchema = z.object({
+  fileId: z.string().min(1, "File ID is required"),
+  dept: z.string().min(2, "Department is required"),
+  sem: z.string().regex(/^[1-8]$/, "Invalid semester"),
+  exam: z.string().regex(/^(mid|end|quiz)$/i, "Invalid exam type"),
+  year: z.string().regex(/^20[0-9]{2}$/, "Invalid year")
+});
+
+type DeleteData = z.infer<typeof DeleteDataSchema>;
+
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
+import dynamic from "next/dynamic";
+import { toast } from 'react-toastify';
+
+// Dynamically import FloatingPanda to prevent SSR issues with PDF parsing
+const MeditatingPanda = dynamic(() => import("@/components/Animations/FloatingPanda"), {
+  ssr: false,
+  loading: () => null
+});
 
 // Security utilities
 const sanitizeFileId = (fileId: string): string => {
@@ -104,7 +120,7 @@ const DocumentPage = () => {
     try {
       const deptStr = Array.isArray(dept) ? dept[0] : dept;
       return {
-        dept: deptStr?.toUpperCase(),
+        dept: deptStr?.toLowerCase(),
         sem: sem?.trim(),
         exam: exam?.toLowerCase().trim()
       };
@@ -123,6 +139,7 @@ const DocumentPage = () => {
   
   const [selectedDoc, setSelectedDoc] = useState<DocumentData | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   
   // Validate user metadata and check admin status
@@ -163,8 +180,8 @@ const DocumentPage = () => {
       .safeParse(uploadTitle.trim());
       
     const fileIdResult = z.string()
-      .regex(/^[a-zA-Z0-9_-]*$/, "Invalid file ID format")
-      .safeParse(uploadFileId.trim());
+      .min(0, "File ID validation")
+      .safeParse(uploadFileId.trim()); // Removed strict regex validation
     
     const errors: Record<string, string> = {};
     if (!titleResult.success && uploadTitle) {
@@ -186,10 +203,12 @@ const DocumentPage = () => {
     isLoading,
     error,
     refetch
-  } = useQuery<PYQGroup[]>({
+  } = useQuery<any[]>({
     queryKey: ['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam],
     queryFn: async () => {
       const { dept: validDept, sem: validSem, exam: validExam } = validatedParams;
+      
+      console.log('Frontend params:', { validDept, validSem, validExam });
       
       if (!validDept || !validSem || !validExam) {
         throw new Error('Missing or invalid required parameters');
@@ -197,7 +216,7 @@ const DocumentPage = () => {
       
       // Validate parameters before making request
       const paramValidation = z.object({
-        dept: z.string().regex(/^[A-Z]{2,10}$/, "Invalid department"),
+        dept: z.string().regex(/^[a-z]{2,10}$/, "Invalid department"),
         sem: z.string().regex(/^[1-8]$/, "Invalid semester"),
         exam: z.string().regex(/^(mid|end|quiz)$/, "Invalid exam type")
       }).safeParse({ dept: validDept, sem: validSem, exam: validExam });
@@ -287,17 +306,17 @@ const DocumentPage = () => {
     },
     onMutate: async (newDoc) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['documents', dept, sem, exam] });
+      await queryClient.cancelQueries({ queryKey: ['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam] });
       
       // Snapshot the previous value
-      const previousDocs = queryClient.getQueryData<PYQGroup[]>(['documents', dept, sem, exam]);
+      const previousDocs = queryClient.getQueryData<any[]>(['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam]);
       
       // Optimistically update to the new value
-      queryClient.setQueryData<PYQGroup[]>(['documents', dept, sem, exam], (old) => {
+      queryClient.setQueryData<any[]>(['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam], (old) => {
         if (!old) return old;
         
         // Find the matching semester/exam/year group
-        return old.map((pyq) => {
+        return old.map((pyq: any) => {
           const [semData, ...docs] = pyq;
           if (semData.sem === newDoc.sem && semData.exam === newDoc.exam && semData.year === newDoc.year) {
             return [semData, ...docs, { title: newDoc.title, fileId: newDoc.fileId }] as PYQGroup;
@@ -311,21 +330,93 @@ const DocumentPage = () => {
     onError: (err, newDoc, context) => {
       // Rollback on error
       if (context?.previousDocs) {
-        queryClient.setQueryData<PYQGroup[]>(['documents', dept, sem, exam], context.previousDocs);
+        queryClient.setQueryData<any[]>(['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam], context.previousDocs);
       }
-      alert("Upload failed: " + (err instanceof Error ? err.message : 'Unknown error'));
+      toast.error("Upload failed: " + (err instanceof Error ? err.message : 'Unknown error'));
     },
     onSuccess: () => {
-      alert("Document uploaded successfully!");
+      toast.success("Document uploaded successfully!");
       setUploadModalData(null);
       setUploadTitle("");
       setUploadFileId("");
     },
     onSettled: () => {
       // Always refetch after error or success
-      queryClient.invalidateQueries({ queryKey: ['documents', dept, sem, exam] });
+      queryClient.invalidateQueries({ queryKey: ['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam] });
     },
   });
+
+  // Delete mutation with comprehensive validation
+  const deleteMutation = useMutation({
+    mutationFn: async (deleteData: DeleteData) => {
+      // Additional security check: ensure user is admin
+      if (!kernel) {
+        throw new Error('Unauthorized: Admin access required');
+      }
+      
+      const res = await fetch("/api/documents", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(deleteData),
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => 'Unknown error');
+        throw new Error(`Delete failed (${res.status}): ${errorText}`);
+      }
+      
+      return await res.json();
+    },
+    onMutate: async (deleteData) => {
+      await queryClient.cancelQueries({ queryKey: ['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam] });
+      const previousDocs = queryClient.getQueryData<any[]>(['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam]);
+      
+      queryClient.setQueryData<any[]>(['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam], (old) => {
+        if (!old) return old;
+        return old.map((pyq: any) => {
+          const [semData, ...docs] = pyq;
+          if (semData.sem === deleteData.sem && semData.exam === deleteData.exam && semData.year === deleteData.year) {
+            const filteredDocs = docs.filter((doc: any) => doc.fileId !== deleteData.fileId);
+            return [semData, ...filteredDocs] as PYQGroup;
+          }
+          return pyq;
+        });
+      });
+      
+      return { previousDocs };
+    },
+    onError: (err, deleteData, context) => {
+      if (context?.previousDocs) {
+        queryClient.setQueryData<any[]>(['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam], context.previousDocs);
+      }
+      toast.error("Delete failed: " + (err instanceof Error ? err.message : 'Unknown error'));
+      setDeletingFileId(null);
+    },
+    onSuccess: () => {
+      toast.success("Document deleted successfully!");
+      setDeletingFileId(null);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents', validatedParams.dept, validatedParams.sem, validatedParams.exam] });
+    },
+  });
+  
+  const handleDelete = (doc: DocumentData, semData: PYQData) => {
+    if (!validatedParams.dept) return;
+    
+    if (confirm(`Are you sure you want to delete "${doc.title}"? This action cannot be undone.`)) {
+      const deleteData: DeleteData = {
+        fileId: doc.fileId,
+        dept: validatedParams.dept,
+        sem: semData.sem,
+        exam: semData.exam,
+        year: semData.year,
+      };
+      
+      setDeletingFileId(doc.fileId);
+      deleteMutation.mutate(deleteData);
+    }
+  };
   
   const handleUpload = () => {
     if (!uploadModalData || !validatedParams.dept) {
@@ -517,14 +608,33 @@ const DocumentPage = () => {
           </div>
 
           <div className="flex flex-col gap-6 px-6 py-4">
-            {docs?.map((doc) => (
+            {docs?.map((doc: any) => (
               <div
                 key={doc.fileId}
-                className="w-full rounded-lg border border-slate-700 shadow-md p-4 bg-slate-800 hover:bg-slate-700 cursor-pointer transition duration-200"
-                onClick={() => handleDocumentSelect(doc)}
+                className="w-full rounded-lg border border-slate-700 shadow-md p-4 bg-slate-800 hover:bg-slate-700 transition duration-200"
               >
-                <h3 className="text-lg font-semibold text-slate-100">{doc.title}</h3>
-                <p className="text-sm text-slate-400">Click to view fullscreen</p>
+                <div className="flex justify-between items-start gap-4">
+                  <div 
+                    className="flex-1 cursor-pointer"
+                    onClick={() => handleDocumentSelect(doc)}
+                  >
+                    <h3 className="text-lg font-semibold text-slate-100">{doc.title}</h3>
+                    <p className="text-sm text-slate-400">Click to view fullscreen</p>
+                  </div>
+                  {kernel && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(doc, semData);
+                      }}
+                      disabled={deletingFileId === doc.fileId}
+                      className="text-red-400 hover:text-red-300 font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed px-2 py-1 rounded border border-red-500/30 hover:border-red-400/50 transition-colors"
+                      title="Delete Document"
+                    >
+                      {deletingFileId === doc.fileId ? "🗑️ Deleting..." : "🗑️ Delete"}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
