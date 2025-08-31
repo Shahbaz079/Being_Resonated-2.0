@@ -348,7 +348,7 @@ const SimPeople = ({id}:{id:string}) => {
                             
                             {paginationMode === 'infinite' && !hasNextPage && similarPeople.length > 0 && (
                                 <div className="mt-6 text-center text-sm text-slate-400">
-                                    You've reached the end! ({totalUsers} users loaded)
+                                    You have reached the end! ({totalUsers} users loaded)
                                 </div>
                             )}
                             </>
