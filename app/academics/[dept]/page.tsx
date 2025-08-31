@@ -2,9 +2,24 @@
 
 
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+// Type definitions
+interface DocumentData {
+  fileId: string;
+  title: string;
+}
+
+interface PYQData {
+  sem: string;
+  exam: string;
+  year: string;
+}
+
+type PYQGroup = [PYQData, ...DocumentData[]];
 
 import MeditatingPanda from "@/components/Animations/FloatingPanda";
 import Link from "next/link";
@@ -16,17 +31,25 @@ const getEmbedUrl = (fileId: string) =>
 
 const DocumentPage = () => {
   const { dept } = useParams();
-
-   const params=useSearchParams();
-   const sem=params.get("sem");
-   const exam=params.get("ex");
-
-     const { user } = useUser();
-  const ownerId = user?.publicMetadata.mongoId;
-
-  const [kernel, setKernel] = useState<boolean>(false);
-  const [PYQs, setPYQs] = useState<Array<Array<any>>>([]);
-  const [selectedDoc, setSelectedDoc] = useState<{ fileId: string; title: string } | null>(null);
+  const params = useSearchParams();
+  const sem = params.get("sem");
+  const exam = params.get("ex");
+  const { user } = useUser();
+  
+  // Array of authorized admin mongoIds
+  const ADMIN_MONGO_IDS = [
+    "679e8f524c04113c6bc5828e","68a5d5e9981205f073851fdf" , "68a5d5f3981205f073851fe0" , "68a5d60a411910aee8d05a64"
+    // Add more admin mongoIds here as needed
+  ];
+  
+  const [selectedDoc, setSelectedDoc] = useState<DocumentData | null>(null);
+  const queryClient = useQueryClient();
+  
+  // Check if user is an admin by checking if their mongoId is in the admin array
+  const kernel = Boolean(
+    user?.publicMetadata?.mongoId && 
+    ADMIN_MONGO_IDS.includes(user.publicMetadata.mongoId as string)
+  );
 
   // Upload modal state
   const [uploadModalData, setUploadModalData] = useState<null | {
@@ -37,69 +60,168 @@ const DocumentPage = () => {
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadFileId, setUploadFileId] = useState("");
 
- 
-  useEffect(() => {
+  // Fetch documents using TanStack Query
+  const {
+    data: PYQs = [],
+    isLoading,
+    error,
+    refetch
+  } = useQuery<PYQGroup[]>({
+    queryKey: ['documents', dept, sem, exam],
+    queryFn: async () => {
+      if (!dept || !sem || !exam) {
+        throw new Error('Missing required parameters');
+      }
+      
+      const res = await fetch(`/api/documents?dept=${dept}&sem=${sem}&exam=${exam}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to fetch documents');
+      }
+      
+      const data = await res.json();
+      return data.PYQDocs || [];
+    },
+    enabled: !!(dept && sem && exam),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
-    setKernel(ownerId=="679e8f524c04113c6bc5828e")
-
-
-  }, [ownerId]);
-
-  useEffect(() => {
-  const getDocs= async () => {
-    if (!dept || !sem || !exam) return;
-
-    // Fetch documents from the server based on department
-    const res = await fetch(`/api/documents?dept=${dept}&sem=${sem}&exam=${exam}`,{
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-     
-    });
-    const data = await res.json();
-   
-
-    if (data) {
-      setPYQs(data.PYQDocs);
-    } else {
-      console.error("Failed to fetch documents:", data.message);
-    }
-  }  
-  
-    getDocs();
-  },
-    [])
-
-  const handleUpload = async () => {
-    if (!uploadModalData || !uploadTitle || !uploadFileId) return;
-
-    const res = await fetch("/api/documents", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        dept,
-        sem: uploadModalData.sem,
-        exam: uploadModalData.exam,
-        year: uploadModalData.year,
-        title: uploadTitle,
-        fileId: uploadFileId,
-      }),
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      alert("Document uploaded!");
+  // Upload mutation with optimistic updates
+  const uploadMutation = useMutation({
+    mutationFn: async (uploadData: {
+      dept: string;
+      sem: string;
+      exam: string;
+      year: string;
+      title: string;
+      fileId: string;
+    }) => {
+      const res = await fetch("/api/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(uploadData),
+      });
+      
+      if (!res.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      return res.json();
+    },
+    onMutate: async (newDoc) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['documents', dept, sem, exam] });
+      
+      // Snapshot the previous value
+      const previousDocs = queryClient.getQueryData<PYQGroup[]>(['documents', dept, sem, exam]);
+      
+      // Optimistically update to the new value
+      queryClient.setQueryData<PYQGroup[]>(['documents', dept, sem, exam], (old) => {
+        if (!old) return old;
+        
+        // Find the matching semester/exam/year group
+        return old.map((pyq) => {
+          const [semData, ...docs] = pyq;
+          if (semData.sem === newDoc.sem && semData.exam === newDoc.exam && semData.year === newDoc.year) {
+            return [semData, ...docs, { title: newDoc.title, fileId: newDoc.fileId }] as PYQGroup;
+          }
+          return pyq;
+        });
+      });
+      
+      return { previousDocs };
+    },
+    onError: (err, newDoc, context) => {
+      // Rollback on error
+      if (context?.previousDocs) {
+        queryClient.setQueryData<PYQGroup[]>(['documents', dept, sem, exam], context.previousDocs);
+      }
+      alert("Upload failed: " + (err instanceof Error ? err.message : 'Unknown error'));
+    },
+    onSuccess: () => {
+      alert("Document uploaded successfully!");
       setUploadModalData(null);
-      // TODO: Ideally re-fetch updated data here
-    } else {
-      alert("Upload failed.");
-    }
+      setUploadTitle("");
+      setUploadFileId("");
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['documents', dept, sem, exam] });
+    },
+  });
+  
+  const handleUpload = () => {
+    if (!uploadModalData || !uploadTitle.trim() || !uploadFileId.trim() || !dept) return;
+    
+    uploadMutation.mutate({
+      dept: Array.isArray(dept) ? dept[0] : dept,
+      sem: uploadModalData.sem,
+      exam: uploadModalData.exam,
+      year: uploadModalData.year,
+      title: uploadTitle.trim(),
+      fileId: uploadFileId.trim(),
+    });
   };
 
 
 
   if (!dept) {
-    return <div>Department not found</div>;
+    return <div className="text-white text-center p-6">Department not found</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6 min-h-screen" style={{
+        backgroundImage: 'linear-gradient(120deg, rgba(1,1,15,0.9), rgba(1,1,25,0.9))',
+      }}>
+        <motion.h1
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl font-extrabold text-center mb-12 text-slate-100 drop-shadow-lg"
+        >
+          Document Library
+        </motion.h1>
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+          <span className="ml-4 text-slate-300">Loading documents...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 min-h-screen" style={{
+        backgroundImage: 'linear-gradient(120deg, rgba(1,1,15,0.9), rgba(1,1,25,0.9))',
+      }}>
+        <motion.h1
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl font-extrabold text-center mb-12 text-slate-100 drop-shadow-lg"
+        >
+          Document Library
+        </motion.h1>
+        <div className="flex flex-col justify-center items-center min-h-[50vh]">
+          <div className="text-red-400 text-center mb-4">
+            <span className="text-6xl">⚠️</span>
+            <p className="text-xl mt-2">Error loading documents</p>
+            <p className="text-sm text-slate-400 mt-1">{error instanceof Error ? error.message : 'Unknown error'}</p>
+          </div>
+          <button
+            onClick={() => refetch()}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -127,7 +249,21 @@ const DocumentPage = () => {
   </motion.h1>
 
   <div className="flex flex-col gap-12 items-center">
-    {PYQs?.map((pyq, index) => {
+    {PYQs.length === 0 ? (
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center text-slate-300 bg-slate-800/50 rounded-xl p-8 border border-slate-700"
+      >
+        <span className="text-4xl mb-4 block">📚</span>
+        <h3 className="text-xl font-semibold mb-2">No documents found</h3>
+        <p className="text-sm text-slate-400">No documents are available for {dept?.toString().toUpperCase()} - Semester {sem}, {exam}.</p>
+        {kernel && (
+          <p className="text-xs text-blue-300 mt-2">As an admin, you can upload the first document!</p>
+        )}
+      </motion.div>
+    ) : (
+      PYQs?.map((pyq, index) => {
       const [semData, ...docs] = pyq;
       const { sem, exam, year } = semData;
 
@@ -146,10 +282,11 @@ const DocumentPage = () => {
             {kernel && (
               <button
                 onClick={() => setUploadModalData({ sem, exam, year })}
-                className="text-blue-300 hover:text-blue-200 font-bold text-xl"
+                disabled={uploadMutation.isPending}
+                className="text-blue-300 hover:text-blue-200 font-bold text-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Upload Document"
               >
-                ⬆️ Upload
+                {uploadMutation.isPending ? "⏳ Uploading..." : "⬆️ Upload"}
               </button>
             )}
           </div>
@@ -168,7 +305,8 @@ const DocumentPage = () => {
           </div>
         </motion.div>
       );
-    })}
+      })
+    )}
   </div>
 
   {/* View PDF Modal */}
@@ -252,9 +390,17 @@ const DocumentPage = () => {
           />
           <button
             onClick={handleUpload}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition"
+            disabled={uploadMutation.isPending || !uploadTitle.trim() || !uploadFileId.trim()}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded font-semibold transition"
           >
-            Upload
+            {uploadMutation.isPending ? (
+              <span className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Uploading...
+              </span>
+            ) : (
+              "Upload"
+            )}
           </button>
         </motion.div>
       </motion.div>
