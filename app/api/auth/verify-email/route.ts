@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     await user.save()
     
     // Generate auth token and set cookie for auto-login
-    const authToken = generateToken({
+    const authToken = await generateToken({
       id: user._id.toString(),
       email: user.email,
       name: user.name,
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     await user.save()
     
     // Generate auth token
-    const authToken = generateToken({
+    const authToken = await generateToken({
       id: user._id.toString(),
       email: user.email,
       name: user.name,
