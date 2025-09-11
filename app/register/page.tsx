@@ -251,14 +251,14 @@ const Register = () => {
           {step === 'form' ? (
             <div className="mt-6 text-xs text-gray-500 dark:text-gray-400 text-center">
               <p>
-                By creating an account, you'll receive a verification code via email.
-                No password required - you'll be automatically logged in after verification!
+                By creating an account, you&apos;ll receive a verification code via email.
+                No password required - you&apos;ll be automatically logged in after verification!
               </p>
             </div>
           ) : (
             <div className="mt-6 text-xs text-gray-500 dark:text-gray-400 text-center">
               <p>
-                Didn't receive the code? Check your spam folder or go back to try again.
+                Didn&apos;t receive the code? Check your spam folder or go back to try again.
               </p>
             </div>
           )}

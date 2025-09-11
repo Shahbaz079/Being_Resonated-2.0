@@ -338,7 +338,7 @@ const Login = () => {
           {loginType === 'otp' && !otpSent && (
             <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
               <p>
-                We'll send a 6-digit code to your email address.
+                We&apos;ll send a 6-digit code to your email address.
                 Enter the code to log in securely.
               </p>
             </div>
@@ -347,7 +347,7 @@ const Login = () => {
           {loginType === 'password' && (
             <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
               <p>
-                Don't have a password? You can use OTP to sign in,
+                Don&apos;t have a password? You can use OTP to sign in,
                 then set a password in your profile settings.
               </p>
             </div>
