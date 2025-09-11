@@ -1,3 +1,7 @@
+// Legacy Clerk retrieve API - commented out after Clerk removal  
+// This file is kept for reference but is no longer functional
+
+/*
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import { clerkClient } from '@clerk/nextjs/server';
@@ -69,4 +73,12 @@ export async function PUT(req: NextRequest) {
       await client.close();
     }
   }
+}
+*/
+
+// Placeholder to prevent 404 errors
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ error: 'Retrieve endpoint disabled - Clerk removed' }, { status: 410 })
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link"
-import { useSession, useAuth, useUser } from "@clerk/nextjs"
+import { useAuth } from "@/lib/hooks/useAuth"
 import { useEffect, useState } from "react"
 
 
@@ -51,10 +51,8 @@ const slides = [
 ]
 
 export default function Home() {
-  const { isLoaded } = useSession()
-  const { userId } = useAuth()
-  const { user } = useUser()
-  const mongoId = user?.publicMetadata?.mongoId as string
+  const { user, loading } = useAuth()
+  const mongoId = user?._id as string
 
   const [loaderVisible, setLoaderVisible] = useState(true)
 
@@ -81,44 +79,7 @@ useEffect(() => {
 }, [])
 
 
-  useEffect(() => {
-    if (!isLoaded || !userId) return
-
-    const fetchData = async () => {
-      if (!mongoId) {
-        const grad = Number(user?.primaryEmailAddress?.emailAddress.slice(0, 4)) + 4
-        await fetch('/api/retrieve', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: user?.username,
-            email: user?.primaryEmailAddress?.emailAddress,
-            userId,
-            image: user?.imageUrl,
-            gradYear: grad,
-          }),
-        })
-      }
-    }
-    fetchData()
-  }, [isLoaded, userId, mongoId, user])
-
-  useEffect(() => {
-    if (isLoaded && user?.imageUrl) {
-      const updateProfileImage = async () => {
-        await fetch('/api/user', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: user?.primaryEmailAddress?.emailAddress,
-            image: user?.imageUrl,
-            name: user?.username,
-          }),
-        })
-      }
-      updateProfileImage()
-    }
-  }, [user?.imageUrl, isLoaded])
+  // Custom auth system manages user data directly, no need for sync logic
 
 
   return (

@@ -1,10 +1,14 @@
+// Legacy Clerk webhook API - commented out after Clerk removal
+// This file is kept for reference but is no longer functional
+
+/*
 'use server'
 
 import connectDB from '@/config/db';
 
 import { MongoClient } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server'
-import { clerkClient ,auth} from '@clerk/nextjs/server';
+// import { clerkClient ,auth} from '@clerk/nextjs/server'; // Legacy - Clerk removed
 
 
 const uri = process.env.MONGO_URI as string;
@@ -104,6 +108,14 @@ try {
        await client.close(); 
       } }
     }
+}
+*/
+
+// Placeholder to prevent 404 errors
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ error: 'Webhook endpoint disabled - Clerk removed' }, { status: 410 })
 }
 
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Heart, MessageCircle, Share2, MoreHorizontal, Play } from "lucide-react";
 import { EventPost } from "@/app/becommunity/page";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import parse from "html-react-parser";
 import { toast } from "react-toastify";
 import { ObjectId } from "mongoose";
@@ -71,8 +71,8 @@ interface PostCardProps {
 
 // Enhanced PostCard Component
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const { user } = useUser();
-  const mongoId = user?.publicMetadata.mongoId as string;
+  const { user } = useAuth();
+  const mongoId = user?._id as string;
   
   // State management
   const [isExpanded, setIsExpanded] = useState(false);
@@ -176,8 +176,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       if (newIsLiked) {
         const newLike = {
           _id: mongoId as unknown as ObjectId,
-          name: user?.username || "",
-          image: user?.imageUrl || ""
+          name: user?.name || "",
+          image: user?.image || ""
         };
         updatedLikes = [...(post.likes || []), newLike].map(like => like._id.toString());
       } else {

@@ -3,7 +3,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/hooks/useAuth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEdgeStore } from '@/lib/edgeStoreRouter';
@@ -74,8 +74,8 @@ const fetchTeamData = async (id: string): Promise<Team> => {
 const TeamPage = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const { user } = useUser();
-  const mongoId = user?.publicMetadata.mongoId as string;
+  const { user } = useAuth();
+  const mongoId = user?._id as string;
 
   const queryClient = useQueryClient();
   const { edgestore } = useEdgeStore();

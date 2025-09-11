@@ -4,11 +4,12 @@ import localFont from "next/font/local";
 import "./styles/globals.css";
 import "./styles/profilepage.css"
 import { SessionProvider } from "next-auth/react"
-import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import Header from "@/components/header/header";
 
 import { EdgeStoreProvider } from "@/lib/edgeStoreRouter";
+import { AuthProvider } from "@/lib/hooks/useAuth";
 import Providers from "./providers";
 
 
@@ -35,25 +36,32 @@ export default function RootLayout({
 }>) {
 
   return (
-    <ClerkProvider>
-      <html lang="en" className="dark">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased inset-0 bg-gradient-to-br from-black via-gray-900 to-black`}
-        >
-          <SessionProvider>
-            <ToastContainer />
-           
-              <Providers>
+    <html lang="en" className="dark">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased inset-0 bg-gradient-to-br from-black via-gray-900 to-black`}
+      >
+        <AuthProvider>
+          <ToastContainer 
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+         
+          <Providers>
             <EdgeStoreProvider>
               <Header/>
               {children}
             </EdgeStoreProvider>
-              </Providers>
-            <ToastContainer />
-          </SessionProvider>
-
-        </body>
-      </html>
-    </ClerkProvider>
+          </Providers>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

@@ -1,5 +1,5 @@
 import { useEdgeStore } from "@/lib/edgeStoreRouter";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -19,7 +19,7 @@ const WhatsOnUserMind = () => {
   const { edgestore } = useEdgeStore();
   const [caption, setCaption] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
-  const { user, isLoaded } = useUser();
+  const { user, loading } = useAuth();
   const [mongoId, setMongoId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>("");
   const [posting, setPosting] = useState<boolean>(false);
@@ -47,10 +47,10 @@ const WhatsOnUserMind = () => {
 
   useEffect(() => {
     if (user) {
-      setMongoId(user.publicMetadata.mongoId as string);
-      setUserName(user?.username);
+      setMongoId(user._id as string);
+      setUserName(user?.name);
     }
-  }, [isLoaded, user]);
+  }, [loading, user]);
 
   const handlePost = () => {
     if (posting) return;
@@ -76,7 +76,7 @@ const WhatsOnUserMind = () => {
                 vid: false,
                 imgThumbnail: response.thumbnailUrl,
                 caption,
-                createdBy: user?.publicMetadata.mongoId,
+                createdBy: user?._id,
                 name: userName,
               }),
             });
@@ -114,7 +114,7 @@ const WhatsOnUserMind = () => {
             image: res.url,
             vid: true,
             caption,
-            createdBy: user?.publicMetadata.mongoId,
+            createdBy: user?._id,
             name: userName,
           }),
         });

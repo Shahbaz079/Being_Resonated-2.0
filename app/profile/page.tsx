@@ -3,7 +3,7 @@
 
 import { useState, Suspense,useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useUser} from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import Image from "next/image";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -32,8 +32,8 @@ const ProfilePage = () => {
   const params = useSearchParams();
   const id = params.get("id") as string;
  
-  const { user } = useUser();
-  const ownerId = user?.publicMetadata.mongoId;
+  const { user } = useAuth();
+  const ownerId = user?._id;
   const queryClient = useQueryClient();
 
   const [edit, setEdit] = useState(false);
@@ -56,12 +56,12 @@ const ProfilePage = () => {
 
   useEffect(() => {
     // Check if the current user is the owner of the profile
-    if (user && user.publicMetadata.mongoId === id) {
+    if (user && user._id === id) {
       setOwner(true);
     } else {
       setOwner(false);
     }
-  },[])
+  }, [user, id])
 
   // Mutation to update profile
   const updateMutation = useMutation({
@@ -79,7 +79,7 @@ const ProfilePage = () => {
           email: userData?.email,
           interests: changedInterests,
           dob: userData?.dob,
-          image: user?.imageUrl,
+          image: user?.image,
           description: changedDescription,
         }),
       });

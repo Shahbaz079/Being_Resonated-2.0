@@ -3,7 +3,7 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useState, useEffect, FormEvent } from "react";
 import { IUser } from "@/components/expandableCards/card";
 import ITeam, { Team } from "@/models/Team";
@@ -100,12 +100,12 @@ const EventPage = ({eventId}:{eventId:string}) => {
   //const [eventUpdateData, setEventUpdateData] = useState<EventUpdateType>(emptyEventUpdateData);
 
 
-   const { user, isLoaded } = useUser();
+   const { user, loading } = useAuth();
 
 const { data: eventData, isLoading, isError } = useQuery({
   queryKey: ['event', eventId],
   queryFn: () => getEventById(eventId),
-  enabled: !!eventId && isLoaded, // ensures query runs only when eventId exists
+  enabled: !!eventId && !loading, // ensures query runs only when eventId exists
   refetchOnWindowFocus: false, 
 });
 
@@ -155,7 +155,7 @@ const handleUpload = () => {
 
 
  
-  const mongoId = user?.publicMetadata.mongoId as string;
+  const mongoId = user?._id as string;
 
 
 
@@ -244,7 +244,7 @@ const { mutate: updateEvent } = useMutation({
 })
 
 
-if(isLoading || !isLoaded) {
+if(isLoading || loading) {
   return <div className="mt-44 min-h-screen ">
     <LoadingAnimation></LoadingAnimation>
   </div>

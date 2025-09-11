@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState, Suspense } from "react";
 import { newMember } from "@/components/expandableCards/card";
 import { toast } from "react-toastify";
 import { IUser } from "@/components/expandableCards/card";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { Mongoose } from "mongoose";
 import Image from "next/image";
 import { Label } from "../ui/label";
@@ -14,7 +14,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 const CreateEvent = ({ members, teamId }: { members: IUser[] | null, teamId: string | null }) => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
  
@@ -37,7 +37,7 @@ const [eventTime, setEventTime] = useState(now.toTimeString().slice(0, 5));   //
     console.log(teamId, "teamId")
 
     if (!currentPerson) {
-      setCurrentPerson(user?.publicMetadata.mongoId as string
+      setCurrentPerson(user?._id as string
       )
     }
     event.preventDefault(); // Prepare data

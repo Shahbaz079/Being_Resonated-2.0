@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import Link from 'next/link'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/lib/hooks/useAuth'
 import { useState, useEffect } from 'react'
 import { Home, Users, Calendar, Search } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -23,8 +23,8 @@ const fetchTeamsAndEvents = async (id: string):Promise<{ teams: ITeam[]; events:
 }
 
 const SubHeader = () => {
-  const { user, isLoaded } = useUser();
-  const mongoId = user?.publicMetadata.mongoId as string
+  const { user, loading } = useAuth();
+  const mongoId = user?._id as string
 
 
   const [teamModal, setTeamModal] = useState(false);
@@ -40,7 +40,7 @@ const SubHeader = () => {
   const { data:userData={teams:[],events:[]}, isLoading, error } = useQuery({
   queryKey: ['teamsAndEvents', mongoId],
   queryFn: () => fetchTeamsAndEvents(mongoId),
-  enabled: isLoaded && !!mongoId,
+  enabled: !loading && !!mongoId,
   refetchOnWindowFocus: false, // optional: to avoid refetching on window focus
   staleTime:1000*60*1 // optional: data will be considered fresh for 1 minute
 })

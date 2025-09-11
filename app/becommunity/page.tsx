@@ -13,7 +13,7 @@ import WhatsOnUserMind from "@/components/WhatsOnYourMInd/WhatsOnUserMind";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import LoadingAnimation from "@/components/loadingAnimation/loadingAnimation";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import ITeam from "@/models/Team";
 
 import {
@@ -63,12 +63,8 @@ const BeCommunity = () => {
   
 const [render, setRender] = useState<"posts" | "events" | "users" | "teams">("posts");
 
-  const {user}=useUser();
-
-
-
-  //const searchParams = useSearchParams();
-  const mongoId = user?.publicMetadata?.mongoId as string
+  const {user} = useAuth();
+  const mongoId = user?._id as string
 
 // Fetch Top Teams (non-paginated)
   const { data: topTeams = []} = useQuery({

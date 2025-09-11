@@ -14,11 +14,11 @@ import { useEdgeStore } from "@/lib/edgeStoreRouter";
 import { useState } from "react";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IEvent } from "@/app/team/[id]/page";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export function AnimatedModalDemo({event}:{event:IEvent | null}) {
 
-const {user}=useUser();
+const {user}=useAuth();
 
   const [file, setFile] = useState<File>();
   const { edgestore } = useEdgeStore();
@@ -40,7 +40,7 @@ const {user}=useUser();
         if(response.url){
         const res= await fetch(`/api/eventpost`,{
           method:"POST",
-          body:JSON.stringify({title:event?.team,name:event?.name,image:response.url,caption,createdBy:user?.publicMetadata.mongoId,location:event?.location,time:event?.time,date:event?.date,eventId:event?._id}),
+          body:JSON.stringify({title:event?.team,name:event?.name,image:response.url,caption,createdBy:user?._id,location:event?.location,time:event?.time,date:event?.date,eventId:event?._id}),
         })
         if(res.ok){
           toast.success("Post created successfully")

@@ -1,3 +1,7 @@
+// Legacy Clerk createuser API - commented out after Clerk removal
+// This file is kept for reference but is no longer functional
+
+/*
 'use server'
 
 import connectDB from '@/config/db';
@@ -80,4 +84,12 @@ try {
      if (client) {
        await client.close(); 
       } }
+}
+*/
+
+// Placeholder to prevent 404 errors
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ error: 'Createuser endpoint disabled - Clerk removed' }, { status: 410 })
 }

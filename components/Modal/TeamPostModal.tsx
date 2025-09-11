@@ -14,12 +14,12 @@ import { useEdgeStore } from "@/lib/edgeStoreRouter";
 import { useState } from "react";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 import { IEvent } from "@/app/team/[id]/page";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import ITeam from "@/models/Team";
 
 export function TeamPostModal({ teamName, teamId }: { teamName: string, teamId: string | null }) {
 
-const {user}=useUser();
+const {user}=useAuth();
 
   const [file, setFile] = useState<File>();
   const { edgestore } = useEdgeStore();
@@ -41,7 +41,7 @@ const {user}=useUser();
         if(response.url){
         const res= await fetch(`/api/teampost`,{
           method:"POST",
-          body:JSON.stringify({title:teamName,image:response.url,caption,createdBy:user?.publicMetadata.mongoId,teamId:teamId}),
+          body:JSON.stringify({title:teamName,image:response.url,caption,createdBy:user?._id,teamId:teamId}),
         })
         if(res.ok){
           toast.success("Post created successfully")

@@ -14,11 +14,11 @@ import { useEdgeStore } from "@/lib/edgeStoreRouter";
 import { useState } from "react";
 import { SingleImageDropzone } from "../singledropZone/SingleImageDropZone";
 
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export function UserPostModal({ name }: { name: string | null }) {
 
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const [file, setFile] = useState<File>();
   const { edgestore } = useEdgeStore();
@@ -41,7 +41,7 @@ export function UserPostModal({ name }: { name: string | null }) {
         if (response.url) {
           const res = await fetch(`/api/userpost`, {
             method: "POST",
-            body: JSON.stringify({ image: response.url, caption, createdBy: user?.publicMetadata.mongoId, name }),
+            body: JSON.stringify({ image: response.url, caption, createdBy: user?._id, name }),
           })
           if (res.ok) {
             toast.success("Post created successfully")

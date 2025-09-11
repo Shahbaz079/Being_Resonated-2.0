@@ -1,13 +1,13 @@
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { useEffect } from 'react';
 
 
 export const LogOutButton = () => {
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
 
   useEffect(() => {
-    signOut({ redirectUrl: '/' });
-  }, [signOut]);
+    logout();
+  }, [logout]);
 
-  return <button onClick={() => signOut({ redirectUrl: '/' })}>Sign Out</button>;
+  return <button onClick={() => logout()}>Sign Out</button>;
 };

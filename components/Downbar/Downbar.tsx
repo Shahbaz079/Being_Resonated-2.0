@@ -1,22 +1,22 @@
 
 import Link from 'next/link'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/lib/hooks/useAuth'
 import { useEffect, useState } from 'react'
 import { UserPostModal } from '../animatedModal/UserPostModal'
 import { User, Award } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const Downbar = () => {
-  const { user, isLoaded } = useUser();
+  const { user, loading } = useAuth();
   const [mongoId, setMongoId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>("")
 
   useEffect(() => {
     if (user) {
-      setMongoId(user.publicMetadata.mongoId as string)
-      setUserName(user.fullName)
+      setMongoId(user._id as string)
+      setUserName(user.name)
     }
-  }, [isLoaded, user])
+  }, [loading, user])
 
   return (
     <div className='fixed h-[8vh] top-auto bottom-0 left-[20%] right-[20%] rounded-lg 

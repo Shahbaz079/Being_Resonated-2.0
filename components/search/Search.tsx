@@ -8,7 +8,7 @@ import { Input } from '../ui/input';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 import Link from 'next/link';
 import "./search.css"
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { Button } from '../ui/button';
 
 
@@ -33,9 +33,9 @@ const SearchPage = ({ type, click }: SearchPageProps) => {
     };
   }, [searchTerm]);
 
-  const {user} = useUser();
+  const {user} = useAuth();
 
-  const mongoId=user?.publicMetadata?.mongoId
+  const mongoId=user?._id
 
   useEffect(() => {
     const fetchResults = async () => {

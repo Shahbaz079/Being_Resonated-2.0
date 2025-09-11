@@ -4,7 +4,7 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
@@ -113,7 +113,7 @@ const DocumentPage = () => {
   const params = useSearchParams();
   const sem = params.get("sem");
   const exam = params.get("ex");
-  const { user } = useUser();
+  const { user } = useAuth();
   
   // Validate and sanitize URL parameters
   const validatedParams = useMemo(() => {
@@ -142,23 +142,22 @@ const DocumentPage = () => {
   const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   
-  // Validate user metadata and check admin status
+  // Validate user and check admin status
   const { kernel, validatedUser } = useMemo(() => {
     try {
-      const metadata = UserMetadataSchema.safeParse(user?.publicMetadata);
-      if (!metadata.success || !metadata.data.mongoId) {
+      if (!user?._id) {
         return { kernel: false, validatedUser: null };
       }
       
-      const isAdmin = ADMIN_MONGO_IDS.includes(metadata.data.mongoId);
+      const isAdmin = ADMIN_MONGO_IDS.includes(user._id);
       return { 
         kernel: isAdmin, 
-        validatedUser: { mongoId: metadata.data.mongoId } 
+        validatedUser: { mongoId: user._id } 
       };
     } catch {
       return { kernel: false, validatedUser: null };
     }
-  }, [user?.publicMetadata, ADMIN_MONGO_IDS]);
+  }, [user?._id, ADMIN_MONGO_IDS]);
 
   // Upload modal state with validation
   const [uploadModalData, setUploadModalData] = useState<null | {

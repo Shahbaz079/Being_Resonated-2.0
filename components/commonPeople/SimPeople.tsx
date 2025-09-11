@@ -3,7 +3,7 @@
 import { Suspense, useState, useCallback } from "react";
 import Link from "next/link";
 import { ExpandableCardDemo, IUser } from "@/components/expandableCards/card";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Loader2, Users } from "lucide-react";
 
@@ -65,8 +65,8 @@ const fetchLoggedUser = async (id: string) :Promise<IUser>=> {
 }
 
 const SimPeople = ({id}:{id:string}) => {
-    const {isLoaded, user} = useUser();
-    const mongoId = user?.publicMetadata?.mongoId as string;
+    const {loading, user} = useAuth();
+    const mongoId = user?._id as string;
     
     // Pagination state
     const [paginationMode, setPaginationMode] = useState<'pagination' | 'infinite'>('pagination');
@@ -82,7 +82,7 @@ const SimPeople = ({id}:{id:string}) => {
     } = useQuery({
         queryKey: ['similarPeople', mongoId, currentPage],
         queryFn: () => fetchSimilarPeople({ id: mongoId, page: currentPage, limit: 6 }),
-        enabled: isLoaded && !!mongoId && paginationMode === 'pagination',
+        enabled: !loading && !!mongoId && paginationMode === 'pagination',
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000, // 5 minutes
         gcTime: 10 * 60 * 1000, // 10 minutes
@@ -105,7 +105,7 @@ const SimPeople = ({id}:{id:string}) => {
         getNextPageParam: (lastPage) => {
             return lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined;
         },
-        enabled: isLoaded && !!mongoId && paginationMode === 'infinite',
+        enabled: !loading && !!mongoId && paginationMode === 'infinite',
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
@@ -133,7 +133,7 @@ const SimPeople = ({id}:{id:string}) => {
     } = useQuery({
         queryKey: ['loggedUser', mongoId],
         queryFn: () => fetchLoggedUser(mongoId),
-        enabled: isLoaded && !!mongoId,
+        enabled: !loading && !!mongoId,
         refetchOnWindowFocus: false,
         staleTime: 10 * 60 * 1000, // 10 minutes
     });

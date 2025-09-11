@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 //import Modal from 'react-modal';
 import { MapPin, Clock } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { ObjectId } from 'mongoose';
 
 import { toast } from 'react-toastify';
