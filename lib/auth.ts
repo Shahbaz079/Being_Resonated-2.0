@@ -103,17 +103,20 @@ export const comparePassword = async (password: string, hash: string): Promise<b
 }
 
 // Email verification token
-export const generateVerificationToken = (email: string): string => {
-  return jwt.sign(
-    { email, type: 'email-verification' },
-    JWT_SECRET,
-    { expiresIn: '24h' } // Email verification expires in 24 hours
-  )
+export const generateVerificationToken = async (email: string): Promise<string> => {
+  const token = await new SignJWT({ email, type: 'email-verification' })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('24h') // Email verification expires in 24 hours
+    .sign(JWT_SECRET)
+    
+  return token
 }
 
-export const verifyEmailToken = (token: string): { email: string } | null => {
+export const verifyEmailToken = async (token: string): Promise<{ email: string } | null> => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { email: string, type: string }
+    const { payload } = await jwtVerify(token, JWT_SECRET)
+    const decoded = payload as { email: string, type: string }
     if (decoded.type === 'email-verification') {
       return { email: decoded.email }
     }

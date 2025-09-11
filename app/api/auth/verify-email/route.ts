@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Verify the token
-    const decoded = verifyEmailToken(token)
+    const decoded = await verifyEmailToken(token)
     if (!decoded) {
       return NextResponse.json(
         { error: 'Invalid or expired verification token' },
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify the token
-    const decoded = verifyEmailToken(token)
+    const decoded = await verifyEmailToken(token)
     if (!decoded) {
       return NextResponse.json(
         { error: 'Invalid or expired verification token' },
